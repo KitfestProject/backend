@@ -43,9 +43,11 @@ docker compose up -d
 ```
 ## Docs
 DB design
+
 ![alt db design](/docs/db_design.png)
 
 DFD
+
 ![alt dfd design](/docs/dfd.png)
 
 Check API documatation on postman
