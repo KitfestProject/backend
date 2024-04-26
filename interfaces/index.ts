@@ -58,3 +58,8 @@ export interface ITransaction {
   ref_code: string;
   time: string;
 }
+export interface IResponseEnvelope<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
