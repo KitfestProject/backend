@@ -63,3 +63,8 @@ export interface IResponseEnvelope<T> {
   message: string;
   data: T;
 }
+export interface IJwtPayload {
+  id: string;
+  email: string;
+  is_admin: boolean;
+}
