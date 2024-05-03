@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { IUsers } from "../../interfaces/index.js";
+import { IUsers } from "../../../interfaces/index.js";
 
 const userSchema = new Schema<IUsers>({
   name: {
@@ -28,7 +28,7 @@ const userSchema = new Schema<IUsers>({
   },
   last_login: {
     type: String,
-    required: true,
+    default: "",
   },
 });
 

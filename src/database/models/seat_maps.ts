@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { ISeatMaps } from "../../interfaces/index.js";
+import { ISeatMaps } from "../../../interfaces/index.js";
 
 const seatMapSchema = new Schema<ISeatMaps>({
   events_id: {
