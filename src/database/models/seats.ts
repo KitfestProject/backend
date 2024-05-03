@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { ISeats } from "../../interfaces/index.js";
+import { ISeats } from "../../../interfaces/index.js";
 
 const seatsSchema = new Schema<ISeats>({
   raw: {

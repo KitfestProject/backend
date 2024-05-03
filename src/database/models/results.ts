@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { IResults } from "../../interfaces/index.js";
+import { IResults } from "../../../interfaces/index.js";
 
 const resultsSchema = new Schema<IResults>({
   categories_id: {

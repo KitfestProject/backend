@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { IEvents } from "../../interfaces/index.js";
+import { IEvents } from "../../../interfaces/index.js";
 
 const eventsSchema = new Schema<IEvents>({
   categories_id: {
