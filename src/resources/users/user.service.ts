@@ -4,6 +4,7 @@ import Users from "../../database/models/users.js";
 import { get_current_date_time } from "../../utils/date_time.js";
 import createResponse from "../../utils/response_envelope.js";
 import { create_token } from "../../utils/jwt.js";
+import { send_email } from "../../utils/email.js";
 
 const create_user = async (user: IUsers) => {
   const user_exists = await get_user_by_email(user.email);
@@ -24,6 +25,9 @@ const create_user = async (user: IUsers) => {
     email: new_user.email,
     is_admin: new_user.is_admin,
   });
+  //TODO: Admin should set up the message, from email
+  const message = `Thank you for creating an account with us, we are super excited to have you. click this link <a href="https://thearter.ke">verify</a> to verify your email`;
+  send_email(new_user.email, "Welcome to Theater.ke", message, new_user.name);
   const response_data = {
     token,
   };
