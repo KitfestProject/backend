@@ -3,11 +3,41 @@ import logger from "../utils/logging.js";
 
 config();
 
-const { PORT, JWT_SECRET, NODE_ENV, MONGODB_URI } = process.env;
+const {
+  PORT,
+  JWT_SECRET,
+  NODE_ENV,
+  MONGODB_URI,
+  REDIS_HOST,
+  REDIS_PASSWORD,
+  REDIS_PORT,
+  EMAIL_USER,
+  EMAIL_PASS,
+} = process.env;
 
-if (!PORT || !JWT_SECRET || !NODE_ENV || !MONGODB_URI) {
+if (
+  !PORT ||
+  !JWT_SECRET ||
+  !NODE_ENV ||
+  !MONGODB_URI ||
+  !REDIS_HOST ||
+  !REDIS_PASSWORD ||
+  !REDIS_PORT ||
+  !EMAIL_USER ||
+  !EMAIL_PASS
+) {
   logger.info("Missing environment variables");
   process.exit(1);
 }
 
-export default { PORT, JWT_SECRET, NODE_ENV, MONGODB_URI };
+export default {
+  PORT,
+  JWT_SECRET,
+  NODE_ENV,
+  MONGODB_URI,
+  REDIS_HOST,
+  REDIS_PASSWORD,
+  REDIS_PORT,
+  EMAIL_USER,
+  EMAIL_PASS,
+};
