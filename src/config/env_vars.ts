@@ -11,6 +11,8 @@ const {
   REDIS_HOST,
   REDIS_PASSWORD,
   REDIS_PORT,
+  EMAIL_USER,
+  EMAIL_PASS,
 } = process.env;
 
 if (
@@ -20,7 +22,9 @@ if (
   !MONGODB_URI ||
   !REDIS_HOST ||
   !REDIS_PASSWORD ||
-  !REDIS_PORT
+  !REDIS_PORT ||
+  !EMAIL_USER ||
+  !EMAIL_PASS
 ) {
   logger.info("Missing environment variables");
   process.exit(1);
@@ -34,4 +38,6 @@ export default {
   REDIS_HOST,
   REDIS_PASSWORD,
   REDIS_PORT,
+  EMAIL_USER,
+  EMAIL_PASS,
 };

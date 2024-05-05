@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import logger from "./logging.js";
+import env_vars from "../config/env_vars.js";
 
 export const send_email = (
   to: string,
@@ -13,12 +14,12 @@ export const send_email = (
     port: 587,
     secure: false,
     auth: {
-      user: "hi@kerenketepela.com",
-      pass: "bPfdFkVzFV1B",
+      user: env_vars.EMAIL_USER,
+      pass: env_vars.EMAIL_PASS,
     },
   });
   const mail_options = {
-    from: "hi@kerenketepela.com",
+    from: env_vars.EMAIL_USER,
     to,
     subject,
     html: HTML_TEMPLATE(text, subject, name),
