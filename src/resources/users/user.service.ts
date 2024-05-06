@@ -5,6 +5,7 @@ import { get_current_date_time } from "../../utils/date_time.js";
 import createResponse from "../../utils/response_envelope.js";
 import { create_token } from "../../utils/jwt.js";
 import { send_email } from "../../utils/email.js";
+import env_vars from "../../config/env_vars.js";
 
 const create_user = async (user: IUsers) => {
   const user_exists = await get_user_by_email(user.email);
@@ -26,7 +27,8 @@ const create_user = async (user: IUsers) => {
     is_admin: new_user.is_admin,
   });
   //TODO: Admin should set up the message, from email
-  const message = `Thank you for creating an account with us, we are super excited to have you. click this link <a href="https://thearter.ke">verify</a> to verify your email`;
+  const verification_link = `${env_vars.EMAIL_VERIFICATION_URL}?token=${token}`;
+  const message = `Thank you for creating an account with us, we are super excited to have you. click this link <a href=${verification_link}>verify</a> to verify your email`;
   send_email(new_user.email, "Welcome to Theater.ke", message, new_user.name);
   const response_data = {
     token,
@@ -40,6 +42,18 @@ const get_user_by_email = async (email: string) => {
     return createResponse(false, "User not found", null);
   }
   return createResponse(true, "User found", user);
+};
+
+const update_user = async (id: string, user: IUsers) => {
+  const updated_at = get_current_date_time();
+  user.updated_at = updated_at;
+  const updated_user = await Users.findOneAndUpdate({ _id: id }, user, {
+    returnDocument: "after",
+  });
+  if (!updated_user) {
+    return createResponse(false, "Failed to update user", null);
+  }
+  return createResponse(true, "User updated successfully", updated_user);
 };
 
 const sign_in = async (email: string, password: string) => {
@@ -65,4 +79,22 @@ const sign_in = async (email: string, password: string) => {
   return createResponse(true, "User signed in successfully", response_data);
 };
 
-export default { create_user, get_user_by_email, sign_in };
+const verify_user = async (id: string) => {
+  const update_query = { is_verified: true } as IUsers;
+  const verify = await update_user(id, update_query);
+  if (!verify.success) {
+    verify.message = "Failed to verify user";
+    return verify;
+  }
+  verify.message = "Verification successfully";
+  verify.data = null;
+  return verify;
+};
+
+export default {
+  create_user,
+  get_user_by_email,
+  sign_in,
+  update_user,
+  verify_user,
+};
