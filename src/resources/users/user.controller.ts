@@ -32,4 +32,19 @@ const sign_in = async (req: Request, res: Response) => {
   }
 };
 
-export default { sign_up, sign_in };
+const verify_user = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.user;
+    const response = await user_service.verify_user(id);
+    if (!response.success) {
+      return res.status(400).json(response);
+    }
+    return res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
+
+export default { sign_up, sign_in, verify_user };

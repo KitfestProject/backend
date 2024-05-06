@@ -13,6 +13,7 @@ const {
   REDIS_PORT,
   EMAIL_USER,
   EMAIL_PASS,
+  EMAIL_VERIFICATION_URL,
 } = process.env;
 
 if (
@@ -24,7 +25,8 @@ if (
   !REDIS_PASSWORD ||
   !REDIS_PORT ||
   !EMAIL_USER ||
-  !EMAIL_PASS
+  !EMAIL_PASS ||
+  !EMAIL_VERIFICATION_URL
 ) {
   logger.info("Missing environment variables");
   process.exit(1);
@@ -40,4 +42,5 @@ export default {
   REDIS_PORT,
   EMAIL_USER,
   EMAIL_PASS,
+  EMAIL_VERIFICATION_URL,
 };
