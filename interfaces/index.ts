@@ -7,6 +7,8 @@ export interface IUsers {
   password: string;
   created_at: string;
   updated_at: string;
+  active: boolean;
+  is_verified: boolean;
   last_login: string;
 }
 export interface Icategories {

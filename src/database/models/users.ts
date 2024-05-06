@@ -30,6 +30,14 @@ const userSchema = new Schema<IUsers>({
     type: String,
     default: "",
   },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  is_verified: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Users = model("Users", userSchema);
