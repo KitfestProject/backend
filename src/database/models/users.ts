@@ -18,6 +18,7 @@ const userSchema = new Schema<IUsers>({
     type: String,
     required: true,
   },
+  preferences: {},
   created_at: {
     type: String,
     required: true,
