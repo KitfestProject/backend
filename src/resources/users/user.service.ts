@@ -26,7 +26,6 @@ const create_user = async (user: IUsers) => {
     email: new_user.email,
     is_admin: new_user.is_admin,
   });
-  //TODO: Admin should set up the message, from email
   const verification_link = `${env_vars.EMAIL_VERIFICATION_URL}?token=${token}`;
   const message = `Thank you for creating an account with us, we are super excited to have you. click this link <a href=${verification_link}>verify</a> to verify your email`;
   send_email(new_user.email, "Welcome to Theater.ke", message, new_user.name);
