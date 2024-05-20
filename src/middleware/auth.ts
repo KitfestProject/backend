@@ -37,4 +37,23 @@ const authenticate = async (
   }
 };
 
-export default { authenticate };
+const authorize_admin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.user.is_admin) {
+      const response = createResponse(false, "You are not allowed here", null);
+      return res.status(401).json(response);
+    }
+    next();
+  } catch (error) {
+    const err = error as Error;
+    const response = createResponse(false, "An Error occured try again.", null);
+    logger.error(err.message);
+    return res.status(500).json(response);
+  }
+};
+
+export default { authenticate, authorize_admin };
