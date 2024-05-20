@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Schema, Document } from "mongoose";
 
 export interface IUsers {
   name: string;
@@ -12,7 +12,7 @@ export interface IUsers {
   is_verified: boolean;
   last_login: string;
 }
-export interface Icategories {
+export interface ICategories extends Document {
   name: string;
   description: string;
 }

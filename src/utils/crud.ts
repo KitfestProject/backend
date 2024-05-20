@@ -14,7 +14,7 @@ const createOne =
           .json(createResponse(false, "Create failed", doc));
       }
       return res
-        .status(200)
+        .status(201)
         .json(createResponse(true, "Created Successfully", doc));
     } catch (error) {}
   };
@@ -53,7 +53,7 @@ const updateOne =
     try {
       const { id } = req.params;
       const data = req.body;
-      const doc = model.findOneAndUpdate({ _id: id }, data, {
+      const doc = await model.findOneAndUpdate({ _id: id }, data, {
         returnDocument: "after",
       });
       if (!doc) {
@@ -71,7 +71,7 @@ const deleteOne =
   async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const doc = model.findOneAndDelete({ _id: id });
+      const doc = await model.findOneAndDelete({ _id: id });
       if (!doc) {
         return res
           .status(200)
