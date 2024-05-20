@@ -1,14 +1,9 @@
 import { Schema, model } from "mongoose";
-import { ISeatMaps } from "../../../interfaces/index.js";
+import { ISections } from "../../../interfaces/index.js";
 
-const seatMapSchema = new Schema<ISeatMaps>({
-  events_id: {
-    type: Schema.Types.ObjectId,
-    ref: "Events",
-    required: true,
-  },
-  total_capacity: {
-    type: Number,
+const seatMapSchema = new Schema<ISections>({
+  name: {
+    type: "String",
     required: true,
   },
   seats: [
