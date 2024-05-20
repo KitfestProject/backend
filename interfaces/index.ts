@@ -5,6 +5,7 @@ export interface IUsers {
   email: string;
   is_admin: boolean;
   password: string;
+  preferences: IPreference;
   created_at: string;
   updated_at: string;
   active: boolean;
@@ -69,4 +70,9 @@ export interface IJwtPayload {
   id: string;
   email: string;
   is_admin: boolean;
+}
+export interface IPreference {
+  musical: string[];
+  play: string[];
+  dance: string[];
 }
