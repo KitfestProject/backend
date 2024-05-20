@@ -4,6 +4,8 @@ export interface IUsers {
   name: string;
   email: string;
   is_admin: boolean;
+  is_organizer: boolean;
+  organizer_name: string;
   password: string;
   preferences: IPreference;
   created_at: string;
@@ -17,25 +19,52 @@ export interface ICategories extends Document {
   description: string;
 }
 export interface IEvents {
-  categories_id: Schema.Types.ObjectId;
+  category: Schema.Types.ObjectId;
+  venue: Schema.Types.ObjectId;
+  tickets: Schema.Types.ObjectId[];
+  organizer: Schema.Types.ObjectId;
+  reviews: Schema.Types.ObjectId[];
+  attendees: Schema.Types.ObjectId[];
   name: string;
   description: string;
-  location: string;
-  date: string;
   icon: string;
+  location: string;
+  starts_on: string;
+  ends_on: string;
+  duration: string;
   images: string[];
   videos: string[];
 }
+export interface IVenues {
+  sections: Schema.Types.ObjectId[];
+  name: string;
+  location: string;
+  capacity: number;
+  contact: string;
+}
+export interface ISections {
+  name: string;
+  seats: Schema.Types.ObjectId[];
+}
 export interface ISeats {
   raw: number;
-  column: number;
+  x_axis: number;
+  y_axis: number;
   number: number;
+  price: number;
   is_taken: boolean;
+  is_selected: boolean;
 }
-export interface ISeatMaps {
-  events_id: Schema.Types.ObjectId;
-  total_capacity: number;
-  seats: Schema.Types.ObjectId[];
+export interface IReviews {
+  user_id: Schema.Types.ObjectId;
+  event_id: Schema.Types.ObjectId;
+  rating: number;
+  comment: string;
+  created_at: string;
+}
+export interface IOrganizers {
+  name: string;
+  email: string;
 }
 export interface IResults {
   categories_id: Schema.Types.ObjectId;
@@ -47,10 +76,11 @@ export interface IResults {
 export interface ITickets {
   user_id: Schema.Types.ObjectId | null;
   events_id: Schema.Types.ObjectId;
+  seat_id: Schema.Types.ObjectId;
   price: number;
-  email: string | null;
+  ticket_type: string;
   seat_number: number;
-  is_paid: boolean;
+  purchased_at: string;
 }
 export interface ITransaction {
   ticket_id: Schema.Types.ObjectId;
