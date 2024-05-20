@@ -11,6 +11,11 @@ describe("User API", () => {
     user = {
       name: faker.person.fullName(),
       email: faker.internet.email(),
+      preferences: {
+        musical: ["urban tone"],
+        play: ["Comedy", "Tragedy"],
+        dance: ["Miondoko", "bale"],
+      },
       password: faker.internet.password(),
     } as IUsers;
   });
@@ -25,8 +30,7 @@ describe("User API", () => {
   it("should create a new user", async () => {
     const response = await request(app)
       .post("/api/v1/users/sign_up")
-      .send(user)
-      .set("Authorization", `Bearer ${token}`);
+      .send(user);
     expect(response.status).to.equal(201);
     expect(response.body.success).to.be.true;
   });
