@@ -11,20 +11,24 @@ const ticketsSchema = new Schema<ITickets>({
     ref: "Events",
     required: true,
   },
+  seat_id: {
+    type: Schema.Types.ObjectId,
+    ref: "Seats",
+  },
   price: {
     type: Number,
     required: true,
-  },
-  email: {
-    type: String,
   },
   seat_number: {
     type: Number,
     required: true,
   },
-  is_paid: {
-    type: Boolean,
-    default: false,
+  ticket_type: {
+    type: String,
+  },
+  purchased_at: {
+    type: String,
+    required: true,
   },
 });
 

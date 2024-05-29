@@ -6,7 +6,11 @@ const seatsSchema = new Schema<ISeats>({
     type: Number,
     required: true,
   },
-  column: {
+  x_axis: {
+    type: Number,
+    required: true,
+  },
+  y_axis: {
     type: Number,
     required: true,
   },
@@ -14,7 +18,15 @@ const seatsSchema = new Schema<ISeats>({
     type: Number,
     required: true,
   },
+  price: {
+    type: Number,
+    required: true,
+  },
   is_taken: {
+    type: Boolean,
+    default: false,
+  },
+  is_selected: {
     type: Boolean,
     default: false,
   },

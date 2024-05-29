@@ -14,6 +14,14 @@ const userSchema = new Schema<IUsers>({
     type: Boolean,
     default: false,
   },
+  is_organizer: {
+    type: Boolean,
+    default: false,
+  },
+  organizer_name: {
+    type: String,
+    default: "",
+  },
   password: {
     type: String,
     required: true,
