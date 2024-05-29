@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { ISections } from "../../../interfaces/index.js";
 
-const seatMapSchema = new Schema<ISections>({
+const section_schema = new Schema<ISections>({
   name: {
     type: "String",
     required: true,
@@ -15,5 +15,5 @@ const seatMapSchema = new Schema<ISections>({
   ],
 });
 
-const SeatMaps = model("SeatMaps", seatMapSchema);
-export default SeatMaps;
+const Sections = model("Sections", section_schema);
+export default Sections;
