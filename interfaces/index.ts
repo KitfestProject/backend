@@ -35,12 +35,13 @@ export interface IEvents {
   images: string[];
   videos: string[];
 }
-export interface IVenues {
+export interface IVenues extends Document {
   sections: Schema.Types.ObjectId[];
   name: string;
   location: string;
   capacity: number;
   contact: string;
+  image: string;
 }
 export interface ISections {
   name: string;
