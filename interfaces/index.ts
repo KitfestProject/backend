@@ -92,6 +92,14 @@ export interface ITransaction {
   ref_code: string;
   time: string;
 }
+export interface IPreference extends Document {
+  name: string;
+  icon: string;
+  interests: IInterests[];
+}
+export interface IInterests {
+  title: string;
+}
 export interface IResponseEnvelope<T> {
   success: boolean;
   message: string;
@@ -103,7 +111,7 @@ export interface IJwtPayload {
   is_admin: boolean;
 }
 export interface IPreference {
-  musical: string[];
-  play: string[];
-  dance: string[];
+  musical: Schema.Types.ObjectId[];
+  play: Schema.Types.ObjectId[];
+  dance: Schema.Types.ObjectId[];
 }
