@@ -3,6 +3,7 @@ import { expect } from "chai";
 import { faker } from "@faker-js/faker";
 import app from "../src/app.js";
 import { IUsers } from "../interfaces/index.js";
+import { Schema } from "mongoose";
 
 describe("User API", () => {
   let user: IUsers;
@@ -11,9 +12,9 @@ describe("User API", () => {
       name: faker.person.fullName(),
       email: faker.internet.email(),
       preferences: {
-        musical: ["urban tone"],
-        play: ["Comedy", "Tragedy"],
-        dance: ["Miondoko", "bale"],
+        musical: [new Schema.Types.ObjectId("66613d4bb66491550bc6a6e3")],
+        play: [new Schema.Types.ObjectId("66613d4bb66491550bc6a6e3")],
+        dance: [new Schema.Types.ObjectId("66613d4bb66491550bc6a6e3")],
       },
       password: faker.internet.password(),
     } as IUsers;
