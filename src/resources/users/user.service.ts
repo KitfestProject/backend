@@ -29,10 +29,18 @@ const create_user = async (user: IUsers) => {
   const verification_link = `${env_vars.EMAIL_VERIFICATION_URL}?token=${token}`;
   const message = `Thank you for creating an account with us, we are super excited to have you. click this link <a href=${verification_link}>verify</a> to verify your email`;
   send_email(new_user.email, "Welcome to Theater.ke", message, new_user.name);
-  const response_data = {
+  let role = "user";
+  if (new_user.is_admin) {
+    role = "admin";
+  }
+  const response_data = user_response(
+    new_user.name,
+    new_user.email,
+    role,
     token,
-  };
-  return createResponse(true, "User created successfully", response_data);
+    "User created successfully",
+  );
+  return response_data;
 };
 
 const get_user_by_email = async (email: string) => {
@@ -72,10 +80,18 @@ const sign_in = async (email: string, password: string) => {
     email: user.data?.email!,
     is_admin: user.data?.is_admin!,
   });
-  const response_data = {
+  let role = "user";
+  if (user.data?.is_admin) {
+    role = "admin";
+  }
+  const response_data = user_response(
+    user.data?.name!,
+    user.data?.email!,
+    role,
     token,
-  };
-  return createResponse(true, "User signed in successfully", response_data);
+    "User signed in successfully",
+  );
+  return response_data;
 };
 
 const verify_user = async (id: string) => {
@@ -88,6 +104,15 @@ const verify_user = async (id: string) => {
   verify.message = "Verification successfully";
   verify.data = null;
   return verify;
+};
+const user_response = (
+  name: string,
+  email: string,
+  role: string,
+  token: string,
+  message: string,
+) => {
+  return createResponse(true, message, { name, email, role, token });
 };
 
 export default {
