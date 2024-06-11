@@ -14,6 +14,11 @@ const {
   EMAIL_USER,
   EMAIL_PASS,
   EMAIL_VERIFICATION_URL,
+  ACCESS_KEY_ID,
+  ACCESS_SECRET_KEY,
+  REGION,
+  ENDPOINT,
+  BUCKET,
 } = process.env;
 
 if (
@@ -26,7 +31,12 @@ if (
   !REDIS_PORT ||
   !EMAIL_USER ||
   !EMAIL_PASS ||
-  !EMAIL_VERIFICATION_URL
+  !EMAIL_VERIFICATION_URL ||
+  !ACCESS_KEY_ID ||
+  !ACCESS_SECRET_KEY ||
+  !REGION ||
+  !ENDPOINT ||
+  !BUCKET
 ) {
   logger.info("Missing environment variables");
   process.exit(1);
@@ -43,4 +53,9 @@ export default {
   EMAIL_USER,
   EMAIL_PASS,
   EMAIL_VERIFICATION_URL,
+  ACCESS_KEY_ID,
+  ACCESS_SECRET_KEY,
+  REGION,
+  ENDPOINT,
+  BUCKET,
 };
