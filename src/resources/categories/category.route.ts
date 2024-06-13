@@ -4,7 +4,7 @@ import auth from "../../middleware/auth.js";
 
 const category_routes = Router();
 
-category_routes.use(auth.authenticate, auth.authorize_admin);
+category_routes.use(auth.authenticate);
 
 category_routes.post("/", category_controller.create_category);
 category_routes.get("/", category_controller.get_categories);

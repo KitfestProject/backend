@@ -18,22 +18,34 @@ export interface ICategories extends Document {
   name: string;
   description: string;
 }
-export interface IEvents {
+export interface IEvents extends Document {
   category: Schema.Types.ObjectId;
   venue: Schema.Types.ObjectId;
-  tickets: Schema.Types.ObjectId[];
+  tickets: ITickets[];
   organizer: Schema.Types.ObjectId;
   reviews: Schema.Types.ObjectId[];
   attendees: Schema.Types.ObjectId[];
-  name: string;
   description: string;
-  icon: string;
-  location: string;
-  starts_on: string;
-  ends_on: string;
   duration: string;
   images: string[];
   videos: string[];
+  title: string;
+  tags: string[];
+  cover_image: string;
+  address: string;
+  longitude: string;
+  latitude: string;
+  event_date: EventDate;
+  event_start_time: string;
+  event_end_time: string;
+  is_paid: "paid" | "free";
+  is_scheduled_published: boolean;
+  publication_date: string;
+  publish_time: string;
+}
+interface EventDate {
+  start_date: string;
+  end_date: string;
 }
 export interface IVenues extends Document {
   sections: Schema.Types.ObjectId[];
@@ -78,10 +90,17 @@ export interface ITickets {
   user_id: Schema.Types.ObjectId | null;
   events_id: Schema.Types.ObjectId;
   seat_id: Schema.Types.ObjectId;
-  price: number;
   ticket_type: string;
   seat_number: number;
   purchased_at: string;
+  ticket_price: number;
+  ticket_discount_price: number;
+  ticket_quantity: number;
+  ticket_description: string;
+  ticket_start_date: string;
+  ticket_end_date: string;
+  ticket_start_time: string;
+  ticket_end_time: string;
 }
 export interface ITransaction {
   ticket_id: Schema.Types.ObjectId;
@@ -115,3 +134,38 @@ export interface IPreference {
   play: Schema.Types.ObjectId[];
   dance: Schema.Types.ObjectId[];
 }
+/*
+{
+  "title": "",
+  "description": "",
+  "category": "",
+  "tags": [],
+  "coverImage": null,
+  "address": "",
+  "longitude": "",
+  "latitude": "",
+  "eventDate": {
+    "start_date": null,
+    "end_date": null
+  },
+  "eventStartTime": "",
+  "eventEndTime": "",
+  "isPaid": "paid",
+  "tickets": [
+    {
+      "ticketType": "earlyBird",
+      "ticketPrice": "",
+      "ticketDiscountPrice": "",
+      "ticketQuantity": "",
+      "ticketDescription": "",
+      "ticketStartDate": "2024-06-12T08:20:36.619Z",
+      "ticketEndDate": "2024-06-12T08:20:36.619Z",
+      "ticketStartTime": null,
+      "ticketEndTime": null
+    }
+  ],
+  "isScheduledPublished": false,
+  "publicationDate": null,
+  "publishTime": null
+}
+*/

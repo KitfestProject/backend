@@ -6,27 +6,54 @@ const ticketsSchema = new Schema<ITickets>({
     type: Schema.Types.ObjectId,
     ref: "Users",
   },
-  events_id: {
-    type: Schema.Types.ObjectId,
-    ref: "Events",
-    required: true,
-  },
+  // events_id: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: "Events",
+  //   required: true,
+  // },
   seat_id: {
     type: Schema.Types.ObjectId,
     ref: "Seats",
   },
-  price: {
+  ticket_price: {
     type: Number,
     required: true,
   },
   seat_number: {
     type: Number,
-    required: true,
   },
   ticket_type: {
     type: String,
   },
   purchased_at: {
+    type: String,
+    required: true,
+  },
+  ticket_discount_price: {
+    type: Number,
+    required: true,
+  },
+  ticket_quantity: {
+    type: Number,
+    required: true,
+  },
+  ticket_description: {
+    type: String,
+    required: true,
+  },
+  ticket_start_date: {
+    type: String,
+    required: true,
+  },
+  ticket_end_date: {
+    type: String,
+    required: true,
+  },
+  ticket_start_time: {
+    type: String,
+    required: true,
+  },
+  ticket_end_time: {
     type: String,
     required: true,
   },

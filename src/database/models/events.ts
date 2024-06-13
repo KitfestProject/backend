@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { IEvents } from "../../../interfaces/index.js";
+import { TModel } from "../../../types/index.js";
 
 const eventsSchema = new Schema<IEvents>({
   category: {
@@ -12,12 +13,7 @@ const eventsSchema = new Schema<IEvents>({
     ref: "Venues",
     required: true,
   },
-  tickets: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Tickets",
-    },
-  ],
+  tickets: [],
   organizer: {
     type: Schema.Types.ObjectId,
     ref: "Users",
@@ -35,7 +31,7 @@ const eventsSchema = new Schema<IEvents>({
       ref: "Users",
     },
   ],
-  name: {
+  title: {
     type: String,
     required: true,
   },
@@ -43,26 +39,7 @@ const eventsSchema = new Schema<IEvents>({
     type: String,
     required: true,
   },
-  location: {
-    type: String,
-    required: true,
-  },
-  starts_on: {
-    type: String,
-    required: true,
-  },
-  ends_on: {
-    type: String,
-    required: true,
-  },
-  duration: {
-    type: String,
-    required: true,
-  },
-  icon: {
-    type: String,
-    required: true,
-  },
+
   images: [
     {
       type: String,
@@ -73,7 +50,63 @@ const eventsSchema = new Schema<IEvents>({
       type: String,
     },
   ],
+  tags: [
+    {
+      type: String,
+    },
+  ],
+  cover_image: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  longitude: {
+    type: String,
+    required: true,
+  },
+  latitude: {
+    type: String,
+    required: true,
+  },
+  event_date: {
+    start_date: {
+      type: String,
+      required: true,
+    },
+    end_date: {
+      type: String,
+      required: true,
+    },
+  },
+  event_start_time: {
+    type: String,
+    required: true,
+  },
+  event_end_time: {
+    type: String,
+    required: true,
+  },
+  is_paid: {
+    type: String,
+    enum: ["paid", "free"],
+    required: true,
+  },
+  is_scheduled_published: {
+    type: Boolean,
+    default: false,
+  },
+  publication_date: {
+    type: String,
+    required: true,
+  },
+  publish_time: {
+    type: String,
+    required: true,
+  },
 });
 
-const Events = model("Events", eventsSchema);
+const Events: TModel<IEvents> = model("Events", eventsSchema);
 export default Events;
