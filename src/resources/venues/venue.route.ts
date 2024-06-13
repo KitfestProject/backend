@@ -4,16 +4,10 @@ import auth from "../../middleware/auth.js";
 
 const venue_routes = Router();
 
-venue_routes.post(
-  "/",
-  auth.authenticate,
-  auth.authorize_admin,
-  venue_controller.create_venue,
-);
+venue_routes.post("/", auth.authenticate, venue_controller.create_venue);
 venue_routes.post(
   "/section",
   auth.authenticate,
-  auth.authorize_admin,
   venue_controller.add_venue_section,
 );
 venue_routes.get("/", venue_controller.get_venues);
