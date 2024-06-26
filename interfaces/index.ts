@@ -111,6 +111,17 @@ export interface ITransaction {
   ref_code: string;
   time: string;
 }
+export interface IBlog {
+  name: String;
+  description: String;
+  category: Schema.Types.ObjectId;
+  tags: String[];
+  cover_image: string;
+  content: String;
+  created_at: String;
+  updated_at: String;
+  active: Boolean;
+}
 export interface IPreference extends Document {
   name: string;
   icon: string;
