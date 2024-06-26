@@ -23,6 +23,7 @@ const create_user = async (user: IUsers) => {
   }
   const token = create_token({
     id: new_user._id.toString(),
+    name: new_user.name,
     email: new_user.email,
     is_admin: new_user.is_admin,
   });
@@ -77,6 +78,7 @@ const sign_in = async (email: string, password: string) => {
   }
   const token = create_token({
     id: user.data?._id.toString()!,
+    name: user.data?.name!,
     email: user.data?.email!,
     is_admin: user.data?.is_admin!,
   });
