@@ -111,7 +111,7 @@ export interface ITransaction {
   ref_code: string;
   time: string;
 }
-export interface IBlog {
+export interface IBlog extends Document {
   name: String;
   description: String;
   category: Schema.Types.ObjectId;
@@ -137,6 +137,7 @@ export interface IResponseEnvelope<T> {
 }
 export interface IJwtPayload {
   id: string;
+  name: string;
   email: string;
   is_admin: boolean;
 }
