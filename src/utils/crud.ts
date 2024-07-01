@@ -2,11 +2,16 @@ import { Request, Response } from "express";
 import { TModel } from "../../types/index.js";
 import { Document } from "mongoose";
 import createResponse from "./response_envelope.js";
+import { get_current_date_time } from "./date_time.js";
 
 const createOne =
   <T extends Document>(model: TModel<T>) =>
   async (req: Request, res: Response) => {
     try {
+      const data = req.body;
+      const created_at = get_current_date_time();
+      data.created_at = created_at;
+      data.updated_at = created_at;
       const doc = await model.create(req.body);
       if (!doc) {
         return res
@@ -53,6 +58,8 @@ const updateOne =
     try {
       const { id } = req.params;
       const data = req.body;
+      const updated_at = get_current_date_time();
+      data.updated_at = updated_at;
       const doc = await model.findOneAndUpdate({ _id: id }, data, {
         returnDocument: "after",
       });
