@@ -122,6 +122,14 @@ export interface IBlog extends Document {
   updated_at: String;
   active: Boolean;
 }
+export interface IArtist extends Document {
+  name: string;
+  category: Schema.Types.ObjectId;
+  description: string;
+  image: string;
+  created_at: string;
+  updated_at: string;
+}
 export interface IPreference extends Document {
   name: string;
   icon: string;
