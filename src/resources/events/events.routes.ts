@@ -5,11 +5,6 @@ import auth from "../../middleware/auth.js";
 
 const events_routes = Router();
 
-events_routes.post(
-  "/files",
-  files.upload.single("cover"),
-  event_controller.file_upload,
-);
 events_routes
   .route("/")
   .post(auth.authenticate, event_controller.create_event)

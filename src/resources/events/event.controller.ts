@@ -7,26 +7,6 @@ import { IEvents } from "../../../interfaces/index.js";
 import crud from "../../utils/crud.js";
 import Events from "../../database/models/events.js";
 
-const file_upload = (req: Request, res: Response) => {
-  try {
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ success: false, message: "No file uploaded" });
-    }
-    // @ts-ignore
-    const key = req.file.key;
-    const uri = files.get_public_url(key);
-    return res
-      .status(200)
-      .json({ success: true, message: "File uploaded", data: { uri } });
-  } catch (error) {
-    const err = error as Error;
-    logger.error(err.message);
-    return res.status(500).end();
-  }
-};
-
 const create_event = async (req: Request, res: Response) => {
   try {
     const data = req.body;
@@ -78,7 +58,6 @@ const fetch_one_event = async (req: Request, res: Response) => {
 const delete_event = crud.deleteOne(Events);
 
 export default {
-  file_upload,
   create_event,
   fetch_events,
   fetch_one_event,
