@@ -134,6 +134,14 @@ export interface IPreference {
   play: Schema.Types.ObjectId[];
   dance: Schema.Types.ObjectId[];
 }
+export interface IContact extends Document {
+  full_name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  created_at: string;
+}
 /*
 {
   "title": "",
