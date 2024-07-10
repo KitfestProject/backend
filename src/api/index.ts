@@ -7,6 +7,7 @@ import events_routes from "../resources/events/events.routes.js";
 import blog_router from "../resources/blogs/blog.router.js";
 import artist_router from "../resources/artists/artist.router.js";
 import file_router from "../resources/files/file.router.js";
+import ticket_router from "../resources/tickets/ticket.router.js";
 
 const api = Router();
 
@@ -18,5 +19,6 @@ api.use("/events", events_routes);
 api.use("/blogs", blog_router);
 api.use("/artists", artist_router);
 api.use("/files", file_router);
+api.use("/tickets", ticket_router);
 
 export default api;
