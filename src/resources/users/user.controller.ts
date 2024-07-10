@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import user_service from "./user.service.js";
 import logger from "../../utils/logging.js";
+import crud from "../../utils/crud.js";
+import User from "../../database/models/users.js";
 
 const sign_up = async (req: Request, res: Response) => {
   try {
@@ -46,5 +48,7 @@ const verify_user = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const fetch_users = crud.getMany(User);
+const update_user = crud.updateOne(User);
 
-export default { sign_up, sign_in, verify_user };
+export default { sign_up, sign_in, verify_user, fetch_users, update_user };
