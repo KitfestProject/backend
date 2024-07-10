@@ -164,6 +164,8 @@ export interface IContact extends Document {
   phone: string;
   subject: string;
   message: string;
+  responded: boolean;
+  response: string;
   created_at: string;
 }
 /*

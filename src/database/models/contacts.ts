@@ -23,6 +23,13 @@ const contact_schema = new Schema<IContact>({
     type: String,
     required: true,
   },
+  responded: {
+    type: Boolean,
+    default: false,
+  },
+  response: {
+    type: String,
+  },
   created_at: {
     type: String,
     required: true,
