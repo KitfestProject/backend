@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { IUsers } from "../../../interfaces/index.js";
+import { TModel } from "../../../types/index.js";
 
 const userSchema = new Schema<IUsers>({
   name: {
@@ -49,5 +50,5 @@ const userSchema = new Schema<IUsers>({
   },
 });
 
-const Users = model("Users", userSchema);
+const Users: TModel<IUsers> = model("Users", userSchema);
 export default Users;
