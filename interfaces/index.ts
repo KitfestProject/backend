@@ -1,6 +1,6 @@
 import { Schema, Document } from "mongoose";
 
-export interface IUsers {
+export interface IUsers extends Document {
   name: string;
   email: string;
   is_admin: boolean;
@@ -86,9 +86,13 @@ export interface IResults {
   artist_image: string;
   bio: string;
 }
-export interface ITickets {
+export interface ITickets extends Document {
   user_id: Schema.Types.ObjectId | null;
-  events_id: Schema.Types.ObjectId;
+  event: {
+    id: Schema.Types.ObjectId;
+    title: string;
+  };
+  organizer: Schema.Types.ObjectId;
   seat_id: Schema.Types.ObjectId;
   ticket_type: string;
   seat_number: number;
