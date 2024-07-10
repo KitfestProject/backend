@@ -1,16 +1,25 @@
 import { Schema, model } from "mongoose";
 import { ITickets } from "../../../interfaces/index.js";
+import { TModel } from "../../../types/index.js";
 
 const ticketsSchema = new Schema<ITickets>({
   user_id: {
     type: Schema.Types.ObjectId,
     ref: "Users",
   },
-  // events_id: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: "Events",
-  //   required: true,
-  // },
+  event: {
+    id: {
+      type: Schema.Types.ObjectId,
+    },
+    title: {
+      type: String,
+    },
+  },
+  organizer: {
+    type: Schema.Types.ObjectId,
+    ref: "Users",
+    required: true,
+  },
   seat_id: {
     type: Schema.Types.ObjectId,
     ref: "Seats",
@@ -59,5 +68,5 @@ const ticketsSchema = new Schema<ITickets>({
   },
 });
 
-const Tickets = model("Tickets", ticketsSchema);
+const Tickets: TModel<ITickets> = model("Tickets", ticketsSchema);
 export default Tickets;

@@ -6,9 +6,11 @@ import createResponse from "../../utils/response_envelope.js";
 
 const create_event = async (event: IEvents) => {
   const current_date_time = get_current_date_time();
+
   const tickets_promise = event.tickets.map(async (ticket: ITickets) => {
     return await Tickets.create({
       ...ticket,
+      organizer: event.organizer,
       purchased_at: current_date_time,
     });
   });
@@ -20,6 +22,14 @@ const create_event = async (event: IEvents) => {
   if (!new_event) {
     return createResponse(false, "Could not create event", null);
   }
+  const _event = {
+    id: new_event._id,
+    title: new_event.title,
+  };
+  await Tickets.updateMany(
+    { _id: { $in: tickets.map((ticket) => ticket._id) } },
+    { event: _event },
+  );
   return createResponse(true, "Event created successfully", new_event);
 };
 

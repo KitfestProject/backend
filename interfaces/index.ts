@@ -1,6 +1,6 @@
 import { Schema, Document } from "mongoose";
 
-export interface IUsers {
+export interface IUsers extends Document {
   name: string;
   email: string;
   is_admin: boolean;
@@ -86,9 +86,13 @@ export interface IResults {
   artist_image: string;
   bio: string;
 }
-export interface ITickets {
+export interface ITickets extends Document {
   user_id: Schema.Types.ObjectId | null;
-  events_id: Schema.Types.ObjectId;
+  event: {
+    id: Schema.Types.ObjectId;
+    title: string;
+  };
+  organizer: Schema.Types.ObjectId;
   seat_id: Schema.Types.ObjectId;
   ticket_type: string;
   seat_number: number;
@@ -111,6 +115,25 @@ export interface ITransaction {
   ref_code: string;
   time: string;
 }
+export interface IBlog extends Document {
+  name: String;
+  description: String;
+  category: Schema.Types.ObjectId;
+  tags: String[];
+  cover_image: string;
+  content: String;
+  created_at: String;
+  updated_at: String;
+  active: Boolean;
+}
+export interface IArtist extends Document {
+  name: string;
+  category: Schema.Types.ObjectId;
+  description: string;
+  image: string;
+  created_at: string;
+  updated_at: string;
+}
 export interface IPreference extends Document {
   name: string;
   icon: string;
@@ -126,6 +149,7 @@ export interface IResponseEnvelope<T> {
 }
 export interface IJwtPayload {
   id: string;
+  name: string;
   email: string;
   is_admin: boolean;
 }
