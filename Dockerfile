@@ -1,7 +1,9 @@
 FROM node:20-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+ENV NODE_OPTIONS="--no-deprecation --http-fetch-timeout=60000"
+RUN corepack prepare pnpm@latest --activate
+
 COPY . /app
 WORKDIR /app
 
@@ -15,5 +17,5 @@ RUN pnpm run build
 FROM base
 COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app/dist
-EXPOSE 5500
+EXPOSE 5000
 CMD [ "pnpm", "start" ]
