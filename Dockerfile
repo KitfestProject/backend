@@ -1,7 +1,6 @@
 FROM node:20-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-ENV NODE_OPTIONS="--no-deprecation --http-fetch-timeout=60000"
 RUN corepack enable
 
 COPY . /app
