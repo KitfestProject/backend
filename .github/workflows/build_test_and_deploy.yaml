@@ -45,7 +45,7 @@ jobs:
         run: |
           {
             echo 'file<<EOF'
-            sed 's/\${/\\\${/g' docker-compose.yml
+            sed 's/\${/\\\${/g' docker-compose.yaml
             echo EOF
           } >> "$GITHUB_OUTPUT"
       - name: run docker compose
@@ -58,7 +58,7 @@ jobs:
             mkdir -p ${{ steps.repo_name.outputs.REPO_NAME }}
             cd ${{ steps.repo_name.outputs.REPO_NAME }}
             echo '${{ secrets.ENV_FILE }}' > .env
-            cat << EOF > docker-compose.yml
+            cat << EOF > docker-compose.yaml
             ${{ steps.copy_compose.outputs.file }}
             EOF
             docker compose pull
