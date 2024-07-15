@@ -1,31 +1,19 @@
-FROM node:lts-alpine AS builder
-
-RUN apk add --no-cache curl bash
-ENV SHELL /bin/bash
-RUN curl -fsSL https://get.pnpm.io/install.sh | sh -
-ENV PATH="/root/.local/share/pnpm:/root/.local/share/pnpm/global/5/node_modules/.bin:$PATH"
-
+FROM node:22-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+COPY . /app
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install
+FROM base AS prod-deps
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
-COPY . .
+FROM base AS build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run build
 
-FROM node:lts-alpine
-
-RUN apk add --no-cache curl bash \
-    && curl -fsSL https://get.pnpm.io/install.sh | sh - \
-    && apk del curl
-ENV SHELL /bin/bash
-ENV PATH="/root/.local/share/pnpm:/root/.local/share/pnpm/global/5/node_modules/.bin:$PATH"
-
-WORKDIR /app
-
-COPY --from=builder /app/node_modules /app/node_modules
-COPY --from=builder /app/dist /app/dist
-
+FROM base
+COPY --from=prod-deps /app/node_modules /app/node_modules
+COPY --from=build /app/dist /app/dist
 EXPOSE 5000
-
 CMD [ "pnpm", "start" ]
