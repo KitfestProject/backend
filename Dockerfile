@@ -1,6 +1,7 @@
 FROM node:lts-alpine AS builder
 
 RUN apk add --no-cache curl bash
+ENV SHELL /bin/bash
 RUN curl -fsSL https://get.pnpm.io/install.sh | sh -
 ENV PATH="/root/.local/share/pnpm:/root/.local/share/pnpm/global/5/node_modules/.bin:$PATH"
 
@@ -17,7 +18,7 @@ FROM node:lts-alpine
 RUN apk add --no-cache curl bash \
     && curl -fsSL https://get.pnpm.io/install.sh | sh - \
     && apk del curl
-
+ENV SHELL /bin/bash
 ENV PATH="/root/.local/share/pnpm:/root/.local/share/pnpm/global/5/node_modules/.bin:$PATH"
 
 WORKDIR /app
