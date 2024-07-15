@@ -11,6 +11,9 @@ venue_routes.post(
   venue_controller.add_venue_section,
 );
 venue_routes.get("/", venue_controller.get_venues);
-venue_routes.get("/:id", venue_controller.get_venue);
+venue_routes
+  .route("/:id")
+  .get(venue_controller.get_venue)
+  .delete(venue_controller.remove_venue);
 
 export default venue_routes;

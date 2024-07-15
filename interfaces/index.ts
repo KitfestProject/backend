@@ -48,12 +48,21 @@ interface EventDate {
   end_date: string;
 }
 export interface IVenues extends Document {
-  sections: Schema.Types.ObjectId[];
   name: string;
   location: string;
-  capacity: number;
-  contact: string;
+  capacity: string;
+  longitude: string;
+  latitude: string;
+  address: string;
   image: string;
+  amenities: [
+    {
+      name: string;
+      value: boolean;
+    },
+  ];
+  seat_map: string;
+  description: string;
 }
 export interface ISections {
   name: string;
@@ -202,4 +211,31 @@ export interface IContact extends Document {
   "publicationDate": null,
   "publishTime": null
 }
+*/
+/*
+  name: "",
+  location: "",
+  capacity: "",
+  longitude: "",
+  latitude: "",
+  address: "",
+  image: null,
+  amenities: [
+    { name: "Wifi", value: false },
+    {
+      name: "Parking",
+      value: false,
+    },
+    { name: "Catering", value: false },
+    { name: "Projector", value: false },
+    { name: "Whiteboard", value: false },
+    { name: "Microphone", value: false },
+    { name: "Tables", value: false },
+    { name: "Chairs", value: false },
+    { name: "Stage", value: false },
+    { name: "Sound System", value: false },
+  ],
+  seatMap: null,
+  description: "",
+};
 */

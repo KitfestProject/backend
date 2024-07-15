@@ -4,9 +4,12 @@ import Seats from "../../database/models/seats.js";
 import Sections from "../../database/models/sections.js";
 import createResponse from "../../utils/response_envelope.js";
 import logger from "../../utils/logging.js";
+import collection from "../../utils/collection.js";
+import crud from "../../utils/crud.js";
 
 const create_venue = async (venue: IVenues) => {
-  const new_venue = await Venues.create(venue);
+  const venue_data = collection.convert_keys(venue);
+  const new_venue = await Venues.create(venue_data);
   return createResponse(true, "Venue created successfully", new_venue);
 };
 
@@ -33,33 +36,4 @@ const add_venue_section = async (
   return createResponse(true, "Section added to venue", new_section);
 };
 
-const get_venue = async (venue_id: string) => {
-  const venue = await Venues.findOne({ _id: venue_id }).populate("sections");
-  if (!venue) {
-    return createResponse(false, "Venue not found", null);
-  }
-  const sections = await Sections.find({
-    _id: { $in: venue.sections },
-  }).populate("seats");
-  if (!sections) {
-    logger.info("Error querying sections");
-  }
-  const section_response = sections.map((section) => {
-    return {
-      name: section.name,
-      seats: section.seats,
-    };
-  });
-
-  const response = {
-    name: venue.name,
-    location: venue.location,
-    capacity: venue.capacity,
-    Image: venue.image,
-    sections: section_response,
-  };
-
-  return createResponse(true, "Venue fetched successfully", response);
-};
-
-export default { create_venue, add_venue_section, get_venue };
+export default { create_venue, add_venue_section };

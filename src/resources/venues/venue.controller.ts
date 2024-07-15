@@ -37,17 +37,13 @@ const add_venue_section = async (req: Request, res: Response) => {
   }
 };
 const get_venues = crud.getMany(Venues);
-const get_venue = async (req: Request, res: Response) => {
-  try {
-    const venue = await venues_service.get_venue(req.params.id);
-    if (!venue.success) {
-      return res.status(400).json(venue);
-    }
-    return res.status(200).json(venue);
-  } catch (error) {
-    const err = error as Error;
-    logger.error(err.message);
-    return res.status(500).end();
-  }
+const get_venue = crud.getMany(Venues);
+const remove_venue = crud.deleteOne(Venues);
+
+export default {
+  get_venues,
+  get_venue,
+  create_venue,
+  add_venue_section,
+  remove_venue,
 };
-export default { get_venues, get_venue, create_venue, add_venue_section };

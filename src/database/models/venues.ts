@@ -2,12 +2,6 @@ import { Schema, model } from "mongoose";
 import { IVenues } from "../../../interfaces/index.js";
 
 const venues_schema = new Schema<IVenues>({
-  sections: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Sections",
-    },
-  ],
   name: {
     type: String,
     required: true,
@@ -16,14 +10,31 @@ const venues_schema = new Schema<IVenues>({
     type: String,
     required: true,
   },
-  capacity: {
-    type: Number,
-    required: true,
-  },
   image: {
     type: String,
   },
-  contact: {
+  longitude: {
+    type: String,
+    required: true,
+  },
+  latitude: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  amenities: [
+    {
+      name: String,
+      value: Boolean,
+    },
+  ],
+  seat_map: {
+    type: String,
+  },
+  description: {
     type: String,
     required: true,
   },
