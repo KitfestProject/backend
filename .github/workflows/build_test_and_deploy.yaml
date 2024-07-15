@@ -1,9 +1,29 @@
-name: Scaleway Ubuntu(22.04)
+name: Build and Test
+
 on:
   push:
     branches: [develop]
+
 jobs:
-  Deploy:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - name: Read env file
+        run: echo '${{ secrets.ENV_FILE }}' > .env
+      - run: pnpm i
+      - run: pnpm run build
+      - run: pnpm test
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
