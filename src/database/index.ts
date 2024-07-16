@@ -24,7 +24,6 @@ redis_client.on("connect", () => {
 });
 redis_client.on("error", (error) => {
   logger.error(`Error connecting to Redis: ${error}`);
-  process.exit(0);
 });
 
 export default { start_mongodb, redis_client };
