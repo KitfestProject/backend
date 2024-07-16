@@ -27,7 +27,6 @@ if (
   !NODE_ENV ||
   !MONGODB_URI ||
   !REDIS_HOST ||
-  !REDIS_PASSWORD ||
   !REDIS_PORT ||
   !EMAIL_USER ||
   !EMAIL_PASS ||
