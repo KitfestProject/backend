@@ -18,7 +18,7 @@ const start_mongodb = async (uri: string) => {
 const redis_client = new Redis({
   host: env_vars.REDIS_HOST,
   port: parseInt(env_vars.REDIS_PORT),
-  password: env_vars.REDIS_PASSWORD,
+  password: env_vars.REDIS_PASSWORD || "",
 });
 redis_client.on("connect", () => {
   logger.info("Connected to Redis");
