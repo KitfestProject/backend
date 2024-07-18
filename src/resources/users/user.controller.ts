@@ -50,6 +50,7 @@ const verify_user = async (req: Request, res: Response) => {
 };
 const fetch_users = async (req: Request, res: Response) => {
   try {
+    logger.info("Body:", req.body, "Query:", req.query, "Params:", req.params);
     const { draw, start, length } = req.query;
     //@ts-ignore
     const search = req.query.search || "";
