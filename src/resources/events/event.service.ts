@@ -1,4 +1,4 @@
-import { IEvents, ITickets } from "../../../interfaces/index.js";
+import { IEventQuery, IEvents, ITickets } from "../../../interfaces/index.js";
 import Tickets from "../../database/models/tickets.js";
 import Events from "../../database/models/events.js";
 import { get_current_date_time } from "../../utils/date_time.js";
@@ -33,14 +33,36 @@ const create_event = async (event: IEvents) => {
   return createResponse(true, "Event created successfully", new_event);
 };
 
-const fetch_events = async () => {
-  const events = await Events.find()
-    .populate("category")
-    .populate({
-      path: "organizer",
-      select: "name email",
-    })
-    .populate("venue");
+const fetch_events = async (query: IEventQuery) => {
+  const events = await Events.aggregate([
+    {
+      $match: {
+        $and: [
+          query.date ? { "event_date.start_date": query.date } : {},
+          query.paid ? { is_paid: query.paid } : {},
+          query.location ? { location: query.location } : {},
+        ],
+      },
+    },
+    {
+      $sort: {
+        date: -1,
+      },
+    },
+    {
+      $limit: query.limit ? query.limit : 6,
+    },
+    {
+      $project: {
+        title: 1,
+        address: 1,
+        description: 1,
+        cover_image: 1,
+        "event_date.start_date": 1,
+      },
+    },
+  ]);
+
   if (!events) {
     return createResponse(false, "No events found", null);
   }

@@ -3,7 +3,7 @@ import logger from "../../utils/logging.js";
 import files from "../../utils/file_upload.js";
 import collection from "../../utils/collection.js";
 import events_service from "./event.service.js";
-import { IEvents } from "../../../interfaces/index.js";
+import { IEventQuery, IEvents } from "../../../interfaces/index.js";
 import crud from "../../utils/crud.js";
 import Events from "../../database/models/events.js";
 
@@ -28,7 +28,14 @@ const create_event = async (req: Request, res: Response) => {
 
 const fetch_events = async (req: Request, res: Response) => {
   try {
-    const response = await events_service.fetch_events();
+    const { date, location, limit, paid } = req.query;
+    const query = {
+      date: date as string,
+      location: location as string,
+      limit: parseInt(limit as string) as number,
+      paid: paid as string,
+    } as IEventQuery;
+    const response = await events_service.fetch_events(query);
     if (!response.success) {
       return res.status(400).json(response);
     }
