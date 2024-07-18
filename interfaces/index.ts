@@ -177,7 +177,14 @@ export interface IContact extends Document {
   response: string;
   created_at: string;
 }
+export interface IEventQuery {
+  limit: number;
+  location: string;
+  date: string;
+  paid: string;
+}
 /*
+pageYOffset
 {
   "title": "",
   "description": "",
