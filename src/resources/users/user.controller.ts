@@ -48,7 +48,30 @@ const verify_user = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
-const fetch_users = crud.getMany(User);
+const fetch_users = async (req: Request, res: Response) => {
+  try {
+    const { draw, start, length } = req.query;
+    //@ts-ignore
+    const search = req.query.search || "";
+    const response = await user_service.fetch_users(
+      draw as string,
+      Number(start),
+      Number(length),
+      search as string,
+    );
+    const response_data = {
+      draw: Number(draw),
+      recordsTotal: response.data?.total_records,
+      recordsFiltered: response.data?.total_records_with_filter,
+      data: response.data?.users,
+    };
+    return res.status(200).json(response_data);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status;
+  }
+};
 const update_user = crud.updateOne(User);
 
 export default { sign_up, sign_in, verify_user, fetch_users, update_user };

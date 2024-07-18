@@ -116,6 +116,38 @@ const user_response = (
 ) => {
   return createResponse(true, message, { name, email, role, token });
 };
+const fetch_users = async (
+  draw: string,
+  start: number,
+  length: number,
+  search: string,
+) => {
+  const total_records = await Users.countDocuments();
+  const total_records_with_filter = await Users.find({
+    $or: [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ],
+  });
+  const users = await Users.find({
+    $or: [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ],
+  })
+    .skip(start)
+    .limit(length)
+    .select("_id email name is_admin created_at");
+  if (!users) {
+    return createResponse(false, "Failed to fetch users", null);
+  }
+  return createResponse(true, "Users fetched successfully", {
+    users,
+    total_records,
+    total_records_with_filter: total_records_with_filter.length,
+    draw,
+  });
+};
 
 export default {
   create_user,
@@ -123,4 +155,5 @@ export default {
   sign_in,
   update_user,
   verify_user,
+  fetch_users,
 };
