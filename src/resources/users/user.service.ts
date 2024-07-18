@@ -117,7 +117,7 @@ const user_response = (
   return createResponse(true, message, { name, email, role, token });
 };
 const fetch_users = async (
-  draw: string,
+  draw: number,
   start: number,
   length: number,
   search: string,

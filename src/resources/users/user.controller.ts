@@ -50,16 +50,9 @@ const verify_user = async (req: Request, res: Response) => {
 };
 const fetch_users = async (req: Request, res: Response) => {
   try {
-    logger.info("Body:", req.body, "Query:", req.query, "Params:", req.params);
-    const { draw, start, length } = req.query;
-    //@ts-ignore
-    const search = req.query.search || "";
-    const response = await user_service.fetch_users(
-      draw as string,
-      Number(start),
-      Number(length),
-      search as string,
-    );
+    const { draw, start, length, search } = req.body;
+    const value = search.value;
+    const response = await user_service.fetch_users(draw, start, length, value);
     const response_data = {
       draw: Number(draw),
       recordsTotal: response.data?.total_records,
