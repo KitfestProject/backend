@@ -36,6 +36,10 @@ const add_venue_section = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const fetch_venues = async (req: Request, res: Response) => {
+  const venues = await venues_service.fetch_venue_admin();
+  return res.status(200).json(venues);
+};
 const get_venues = crud.getMany(Venues);
 const get_venue = crud.getMany(Venues);
 const remove_venue = crud.deleteOne(Venues);
@@ -46,4 +50,5 @@ export default {
   create_venue,
   add_venue_section,
   remove_venue,
+  fetch_venues,
 };
