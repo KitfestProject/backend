@@ -34,7 +34,7 @@ const add_venue_section = async (
   return createResponse(true, "Section added to venue", new_section);
 };
 const fetch_venue_admin = async () => {
-  const venues = await Venues.find().select("_id name seat_map_url");
+  const venues = await Venues.find().select("_id name");
   return createResponse(true, "Venues fetched successfully", venues);
 };
 
