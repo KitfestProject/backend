@@ -18,24 +18,6 @@ const create_venue = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
-const add_venue_section = async (req: Request, res: Response) => {
-  try {
-    const { venue_id, name, seats } = req.body;
-    const new_section = await venues_service.add_venue_section(
-      venue_id,
-      name,
-      seats,
-    );
-    if (!new_section.success) {
-      return res.status(400).json(new_section);
-    }
-    return res.status(201).json(new_section);
-  } catch (error) {
-    const err = error as Error;
-    logger.error(err.message);
-    return res.status(500).end();
-  }
-};
 const fetch_venues = async (req: Request, res: Response) => {
   const venues = await venues_service.fetch_venue_admin();
   return res.status(200).json(venues);
@@ -48,7 +30,6 @@ export default {
   get_venues,
   get_venue,
   create_venue,
-  add_venue_section,
   remove_venue,
   fetch_venues,
 };

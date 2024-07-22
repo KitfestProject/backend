@@ -20,7 +20,30 @@ const create_blog = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
-const fetch_blogs = crud.getMany(Blogs);
+const fetch_blogs = async (req: Request, res: Response) => {
+  try {
+    const { length, start, draw, search } = req.body;
+    const response = await blogs_service.fetch_blogs(
+      length,
+      search.value,
+      start,
+    );
+    if (!response.success) {
+      return res.status(400).json(response);
+    }
+    const response_data = {
+      draw,
+      recordsTotal: response.data?.total_records,
+      recordsFiltered: response.data?.blogs,
+      data: response.data?.blogs,
+    };
+    return res.status(200).json(response_data);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
 const fetch_blog = crud.getOne(Blogs);
 const update_blog = crud.updateOne(Blogs);
 const delete_blog = crud.deleteOne(Blogs);

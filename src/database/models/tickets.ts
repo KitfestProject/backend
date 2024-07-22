@@ -50,22 +50,6 @@ const ticketsSchema = new Schema<ITickets>({
     type: String,
     required: true,
   },
-  ticket_start_date: {
-    type: String,
-    required: true,
-  },
-  ticket_end_date: {
-    type: String,
-    required: true,
-  },
-  ticket_start_time: {
-    type: String,
-    required: true,
-  },
-  ticket_end_time: {
-    type: String,
-    required: true,
-  },
 });
 
 const Tickets: TModel<ITickets> = model("Tickets", ticketsSchema);

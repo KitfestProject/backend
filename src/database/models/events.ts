@@ -71,6 +71,10 @@ const eventsSchema = new Schema<IEvents>({
     type: String,
     required: true,
   },
+  has_seat_map: {
+    type: Boolean,
+    default: false,
+  },
   event_date: {
     start_date: {
       type: String,
@@ -100,11 +104,9 @@ const eventsSchema = new Schema<IEvents>({
   },
   publication_date: {
     type: String,
-    required: true,
   },
   publish_time: {
     type: String,
-    required: true,
   },
 });
 

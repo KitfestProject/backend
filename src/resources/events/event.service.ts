@@ -1,10 +1,25 @@
 import { IEventQuery, IEvents, ITickets } from "../../../interfaces/index.js";
 import Tickets from "../../database/models/tickets.js";
 import Events from "../../database/models/events.js";
+import Venues from "../../database/models/venues.js";
 import { get_current_date_time } from "../../utils/date_time.js";
 import createResponse from "../../utils/response_envelope.js";
 
 const create_event = async (event: IEvents) => {
+  if (event.has_seat_map) {
+    const [venue, new_event] = await Promise.all([
+      Venues.findOne({ _id: event.venue }).select("name seat_map_url"),
+      Events.create(event),
+    ]);
+    if (!venue) {
+      throw new Error("Venue not found!");
+    }
+    const data = {
+      event_id: new_event._id,
+      venue,
+    };
+    return createResponse(true, "Proceed to adding seat prices", data);
+  }
   const current_date_time = get_current_date_time();
 
   const tickets_promise = event.tickets.map(async (ticket: ITickets) => {

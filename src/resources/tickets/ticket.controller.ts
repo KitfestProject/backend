@@ -5,8 +5,23 @@ import logger from "../../utils/logging.js";
 const fetch_tickets = async (req: Request, res: Response) => {
   try {
     const { id } = req.user;
-    const tickets = await ticket_service.fetch_tickets(id);
-    return res.status(200).json(tickets);
+    const { length, start, draw, search } = req.body;
+
+    const response = await ticket_service.fetch_tickets(
+      id,
+      start,
+      length,
+      search.value,
+    );
+
+    return res.status(200).json({
+      success: response.success,
+      message: response.message,
+      draw,
+      recordsTotal: response.data?.total_records,
+      recordsFiltered: response.data?.tickets.length,
+      data: response.data?.tickets,
+    });
   } catch (error) {
     const err = error as Error;
     logger.error(err.message);

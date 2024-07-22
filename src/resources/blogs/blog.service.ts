@@ -31,5 +31,28 @@ const create_blog = async (author: IJwtPayload, data: IBlog) => {
   send_email(author.email, subject, message, author.name);
   return createResponse(true, "Blog created, and published successfully", blog);
 };
+const fetch_blogs = async (length: number, search: string, start: number) => {
+  const total_records = await Blogs.countDocuments();
+  const blogs = await Blogs.find({
+    $or: [
+      { name: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+    ],
+  })
+    .skip(start)
+    .limit(length)
+    .select("_id cover_image name active category created_at");
+  if (!blogs) {
+    return createResponse(
+      false,
+      "Could not fetch blogs, try again later",
+      null,
+    );
+  }
+  return createResponse(true, "Blogs fetched successfully", {
+    blogs,
+    total_records,
+  });
+};
 
-export default { create_blog };
+export default { create_blog, fetch_blogs };

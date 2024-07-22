@@ -2,15 +2,61 @@ import { Schema, model } from "mongoose";
 import { ISections } from "../../../interfaces/index.js";
 
 const section_schema = new Schema<ISections>({
-  name: {
-    type: "String",
+  event_id: {
+    type: Schema.Types.ObjectId,
     required: true,
   },
-  seats: [
+  location: {
+    type: String,
+    required: true,
+  },
+  abbr_name: {
+    type: String,
+    required: true,
+  },
+  full_sec_name: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  rows: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "Seats",
-      required: true,
+      rowLabel: {
+        type: String,
+        required: true,
+      },
+      seats: [
+        {
+          id: {
+            type: Number,
+            required: true,
+          },
+          SN: {
+            type: String,
+            required: true,
+          },
+          column: {
+            type: Number,
+            required: true,
+          },
+          price: {
+            type: Number,
+            default: 0,
+          },
+          discount: {
+            type: Number,
+            default: 0,
+          },
+          status: {
+            type: String,
+            enum: ["selected", "booked", "available"],
+            required: true,
+          },
+        },
+      ],
     },
   ],
 });

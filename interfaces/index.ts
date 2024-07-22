@@ -38,6 +38,7 @@ export interface IEvents extends Document {
   event_date: EventDate;
   event_start_time: string;
   event_end_time: string;
+  has_seat_map: boolean;
   is_paid: "paid" | "free";
   is_scheduled_published: boolean;
   publication_date: string;
@@ -66,17 +67,26 @@ export interface IVenues extends Document {
   description: string;
 }
 export interface ISections {
-  name: string;
-  seats: Schema.Types.ObjectId[];
+  event_id: Schema.Types.ObjectId;
+  location: string;
+  abbr_name: string;
+  full_sec_name: string;
+  description: string;
+  rows: IsectionRaw[];
 }
+
+export interface IsectionRaw {
+  rowLabel: string;
+  seats: ISeats[];
+}
+
 export interface ISeats {
-  raw: number;
-  x_axis: number;
-  y_axis: number;
-  number: number;
+  id: number;
+  SN: string; //seat number
+  column: number;
   price: number;
-  is_taken: boolean;
-  is_selected: boolean;
+  discount: number;
+  status: "selected" | "booked" | "available";
 }
 export interface IReviews {
   user_id: Schema.Types.ObjectId;
