@@ -9,7 +9,7 @@ const create_venue = async (req: Request, res: Response) => {
     const venue = req.body;
     const new_venue = await venues_service.create_venue(venue);
     if (!new_venue.success) {
-      return res.status(400).json(new_venue);
+      return res.status(200).json(new_venue);
     }
     return res.status(201).json(new_venue);
   } catch (error) {

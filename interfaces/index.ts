@@ -62,6 +62,7 @@ export interface IVenues extends Document {
     },
   ];
   seat_map: string;
+  seat_map_url: string;
   description: string;
 }
 export interface ISections {

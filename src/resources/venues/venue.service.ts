@@ -3,9 +3,7 @@ import Venues from "../../database/models/venues.js";
 import Seats from "../../database/models/seats.js";
 import Sections from "../../database/models/sections.js";
 import createResponse from "../../utils/response_envelope.js";
-import logger from "../../utils/logging.js";
 import collection from "../../utils/collection.js";
-import crud from "../../utils/crud.js";
 
 const create_venue = async (venue: IVenues) => {
   const venue_data = collection.convert_keys(venue);
