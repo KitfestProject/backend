@@ -82,7 +82,7 @@ export interface IsectionRaw {
 
 export interface ISeats {
   id: number;
-  SN: string; //seat number
+  SN: string | null; //seat number
   column: number;
   price: number;
   discount: number;

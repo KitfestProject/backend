@@ -36,7 +36,6 @@ const section_schema = new Schema<ISections>({
           },
           SN: {
             type: String,
-            required: true,
           },
           column: {
             type: Number,
