@@ -8,6 +8,7 @@ const create_seatmap_section = async (data: ISections) => {
     data.abbr_name,
     data.event_id.toString(),
   );
+
   if (check_section.success) {
     return createResponse(true, "Section already exists", check_section.data);
   }
@@ -25,6 +26,9 @@ const fetch_section_by_abbr_name = async (
     abbr_name,
     event_id,
   });
+  if (!section) {
+    return createResponse(false, "Section not found", null);
+  }
   switch (abbr_name) {
     case "GFFL":
       const GFFL = {

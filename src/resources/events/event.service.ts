@@ -56,12 +56,13 @@ const fetch_events = async (query: IEventQuery) => {
           query.date ? { "event_date.start_date": query.date } : {},
           query.paid ? { is_paid: query.paid } : {},
           query.location ? { location: query.location } : {},
+          { "event_date.start_date": { $gte: get_current_date_time() } },
         ],
       },
     },
     {
       $sort: {
-        date: -1,
+        "event_date.start_date": 1,
       },
     },
     {
