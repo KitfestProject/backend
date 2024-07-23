@@ -85,6 +85,10 @@ const eventsSchema = new Schema<IEvents>({
       required: true,
     },
   },
+  featured: {
+    type: Boolean,
+    default: false,
+  },
   event_start_time: {
     type: String,
     required: true,

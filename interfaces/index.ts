@@ -39,6 +39,7 @@ export interface IEvents extends Document {
   event_start_time: string;
   event_end_time: string;
   has_seat_map: boolean;
+  featured: boolean;
   is_paid: "paid" | "free";
   is_scheduled_published: boolean;
   publication_date: string;
@@ -194,6 +195,7 @@ export interface IEventQuery {
   location: string;
   date: string;
   paid: string;
+  featured: boolean;
 }
 /*
 pageYOffset
