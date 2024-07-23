@@ -3,6 +3,10 @@ import seatmap_controller from "./seatmap.controller.js";
 
 const seatmap_router = Router();
 
-seatmap_router.post("/", seatmap_controller.create_seatmap_section);
+seatmap_router
+  .post("/", seatmap_controller.create_seatmap_section)
+  .get("/", seatmap_controller.fetch_seatmap_section);
+
+seatmap_router.route("/:id").get(seatmap_controller.fetch_section);
 
 export default seatmap_router;

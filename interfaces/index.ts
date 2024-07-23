@@ -66,11 +66,12 @@ export interface IVenues extends Document {
   seat_map_url: string;
   description: string;
 }
-export interface ISections {
+export interface ISections extends Document {
   event_id: Schema.Types.ObjectId;
   location: string;
   abbr_name: string;
   full_sec_name: string;
+  total_seats: number;
   description: string;
   rows: IsectionRaw[];
 }

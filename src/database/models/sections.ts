@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { ISections } from "../../../interfaces/index.js";
+import { TModel } from "../../../types/index.js";
 
 const section_schema = new Schema<ISections>({
   event_id: {
@@ -9,6 +10,9 @@ const section_schema = new Schema<ISections>({
   location: {
     type: String,
     required: true,
+  },
+  total_seats: {
+    type: Number,
   },
   abbr_name: {
     type: String,
@@ -60,5 +64,5 @@ const section_schema = new Schema<ISections>({
   ],
 });
 
-const Sections = model("Sections", section_schema);
+const Sections: TModel<ISections> = model("Sections", section_schema);
 export default Sections;
