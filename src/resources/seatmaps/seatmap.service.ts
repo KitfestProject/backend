@@ -78,7 +78,6 @@ const fetch_section_by_abbr_name = async (
 };
 const fetch_sections = async (event_id: string) => {
   const data = {
-    total_seats: 0,
     downStairsLeftSection: {} as ISections,
     downStairsMiddleSection: {} as ISections,
     downStairsRightSection: {} as ISections,
@@ -154,7 +153,6 @@ const fetch_sections = async (event_id: string) => {
         break;
     }
   });
-  data.total_seats = theater_total_seats(data);
 
   return createResponse(true, "Sections fetched successfully", data);
 };
@@ -169,19 +167,6 @@ function count_section_seats(section: ISections) {
     });
   });
   return total_seats;
-}
-function theater_total_seats(data: IResponse) {
-  return (
-    data.downStairsLeftSection.total_seats +
-    data.downStairsMiddleSection.total_seats +
-    data.downStairsRightSection.total_seats +
-    data.upstairsFrontRightSection.total_seats +
-    data.upstairsFrontLeftSection.total_seats +
-    data.upstairsFrontMiddleSection.total_seats +
-    data.upstairsBackLeftSection.total_seats +
-    data.upstairsBackRightSection.total_seats +
-    data.upstairsBackMiddleSection.total_seats
-  );
 }
 
 type IResponse = {
