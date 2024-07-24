@@ -6,6 +6,7 @@ services:
     container_name: theaterke-api
     ports:
       - "5000:5000"
+      - "587:587"
     restart: on-failure
     env_file: .env
     volumes:
