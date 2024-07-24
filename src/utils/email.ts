@@ -13,7 +13,7 @@ export const send_email = (
     service: "zoho",
     host: "smtp.zoho.com",
     port: 587,
-    secure: false,
+    secure: true,
     auth: {
       user: env_vars.EMAIL_USER,
       pass: env_vars.EMAIL_PASS,
