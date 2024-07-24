@@ -10,6 +10,7 @@ import artist_router from "../resources/artists/artist.router.js";
 import file_router from "../resources/files/file.router.js";
 import ticket_router from "../resources/tickets/ticket.router.js";
 import seatmap_router from "../resources/seatmaps/seatmap.router.js";
+import booking_router from "../resources/bookings/booking.router.js";
 
 const api = Router();
 
@@ -24,5 +25,6 @@ api.use("/artists", artist_router);
 api.use("/files", file_router);
 api.use("/tickets", ticket_router);
 api.use("/seatmap", seatmap_router);
+api.use("/booking", booking_router);
 
 export default api;

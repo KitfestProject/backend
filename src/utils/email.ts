@@ -7,6 +7,7 @@ export const send_email = (
   subject: string,
   text: string,
   name: string,
+  path?: string,
 ) => {
   const transporter = nodemailer.createTransport({
     service: "zoho",
@@ -23,6 +24,12 @@ export const send_email = (
     to,
     subject,
     html: HTML_TEMPLATE(text, subject, name),
+    attachments: [
+      {
+        filename: "qrcode.pdf",
+        path,
+      },
+    ],
   };
   transporter.sendMail(mail_options, (error, info) => {
     if (error) {

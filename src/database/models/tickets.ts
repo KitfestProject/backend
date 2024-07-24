@@ -28,9 +28,11 @@ const ticketsSchema = new Schema<ITickets>({
     type: Number,
     required: true,
   },
-  seat_number: {
-    type: Number,
-  },
+  seat_number: [
+    {
+      type: String,
+    },
+  ],
   ticket_type: {
     type: String,
   },

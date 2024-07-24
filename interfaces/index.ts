@@ -24,7 +24,7 @@ export interface IEvents extends Document {
   tickets: ITickets[];
   organizer: Schema.Types.ObjectId;
   reviews: Schema.Types.ObjectId[];
-  attendees: Schema.Types.ObjectId[];
+  attendees: [];
   description: string;
   duration: string;
   images: string[];
@@ -117,7 +117,7 @@ export interface ITickets extends Document {
   organizer: Schema.Types.ObjectId;
   seat_id: Schema.Types.ObjectId;
   ticket_type: string;
-  seat_number: number;
+  seat_number: string[];
   purchased_at: string;
   ticket_price: number;
   ticket_discount_price: number;

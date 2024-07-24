@@ -25,12 +25,7 @@ const eventsSchema = new Schema<IEvents>({
       ref: "Reviews",
     },
   ],
-  attendees: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Users",
-    },
-  ],
+  attendees: [],
   title: {
     type: String,
     required: true,
