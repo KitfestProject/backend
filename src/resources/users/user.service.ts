@@ -85,6 +85,8 @@ const sign_in = async (email: string, password: string) => {
   let role = "user";
   if (user.data?.is_admin) {
     role = "admin";
+  } else if (user.data?.is_organizer) {
+    role = "organizer";
   }
   const response_data = user_response(
     user.data?.name!,
