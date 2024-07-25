@@ -78,7 +78,7 @@ const fetch_events_admin = async (req: Request, res: Response) => {
     return res.status(200).json({
       draw,
       recordsTotal: response.data?.total_records,
-      recordsFiltered: response.data?.events.length,
+      recordsFiltered: response.data?.total_records,
       data: response.data?.events,
     });
   } catch (error) {

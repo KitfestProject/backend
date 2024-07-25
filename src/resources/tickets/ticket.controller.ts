@@ -17,7 +17,7 @@ const fetch_tickets = async (req: Request, res: Response) => {
     return res.status(200).json({
       draw,
       recordsTotal: response.data?.total_records,
-      recordsFiltered: response.data?.tickets.length,
+      recordsFiltered: response.data?.total_records,
       data: response.data?.tickets,
     });
   } catch (error) {
