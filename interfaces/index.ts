@@ -13,6 +13,7 @@ export interface IUsers extends Document {
   active: boolean;
   is_verified: boolean;
   last_login: string;
+  role: "user" | "organizer" | "admin";
 }
 export interface ICategories extends Document {
   name: string;

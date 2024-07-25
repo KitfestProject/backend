@@ -137,12 +137,33 @@ const fetch_users = async (
   })
     .skip(start)
     .limit(length)
-    .select("_id email name is_admin created_at");
+    .select("_id email name is_admin is_organizer created_at")
+    .sort({ created_at: -1 });
+  users.forEach((user) => {
+    if (user.is_organizer) {
+      user.role = "organizer";
+    } else if (user.is_admin) {
+      user.role = "admin";
+    } else {
+      user.role = "user";
+    }
+  });
+
+  const transformed_users = users.map((user) => {
+    return {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      created_at: user.created_at,
+    };
+  });
+
   if (!users) {
     return createResponse(false, "Failed to fetch users", null);
   }
   return createResponse(true, "Users fetched successfully", {
-    users,
+    users: transformed_users,
     total_records,
     total_records_with_filter: total_records_with_filter.length,
     draw,
