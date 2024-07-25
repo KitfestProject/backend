@@ -16,8 +16,6 @@ const fetch_transactions = async (req: Request, res: Response) => {
     );
 
     return res.status(200).json({
-      success: response.success,
-      message: response.message,
       draw,
       recordsTotal: response.data?.total_records,
       recordsFiltered: response.data?.transactions.length,
