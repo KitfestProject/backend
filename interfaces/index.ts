@@ -44,6 +44,7 @@ export interface IEvents extends Document {
   is_scheduled_published: boolean;
   publication_date: string;
   publish_time: string;
+  status: "draft" | "published" | "cacncelled";
 }
 interface EventDate {
   start_date: string;
@@ -150,6 +151,7 @@ export interface IBlog extends Document {
 }
 export interface IArtist extends Document {
   name: string;
+  email: string;
   category: Schema.Types.ObjectId;
   description: string;
   image: string;
