@@ -18,7 +18,8 @@ const fetch_tickets = async (
     .skip(start)
     .limit(length)
     .populate("user_id", "name")
-    .select("_id event  ticket_price purchased_at seat_number");
+    .select("_id event  ticket_price purchased_at seat_number")
+    .sort({ purchased_at: -1 });
 
   const tranformed_tickets = tickets
     .map((ticket: ITickets) => ({

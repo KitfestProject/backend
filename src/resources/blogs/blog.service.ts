@@ -41,7 +41,10 @@ const fetch_blogs = async (length: number, search: string, start: number) => {
   })
     .skip(start)
     .limit(length)
-    .select("_id cover_image name active category created_at");
+    .select("_id cover_image name active category created_at")
+    .sort({
+      created_at: -1,
+    });
   if (!blogs) {
     return createResponse(
       false,
