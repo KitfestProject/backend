@@ -124,6 +124,7 @@ export interface ITickets extends Document {
   ticket_price: number;
   ticket_discount_price: number;
   ticket_quantity: number;
+  _id: string;
 }
 export interface ITransaction {
   ticket_id: Schema.Types.ObjectId;

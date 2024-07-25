@@ -25,7 +25,7 @@ type Booking = {
   paymentReference: string;
   tx_processor: paymentProcessorResponse;
   seats: Ticket[];
-  tickets: [] | null;
+  tickets: ITickets[];
 };
 
 type Ticket = {
@@ -73,12 +73,15 @@ const book_ticket = async (
     seats,
     tickets,
   } = data;
-  const seat_ids = seats.map((seat) => seat.id);
-
-  const time = moment().tz("Africa/Nairobi").format("YYYY-MM-DD HH:mm:ss");
-
-  const [update_seat_availability, event] = await Promise.all([
-    Sections.updateMany(
+  const event = await event_service.fetch_one_event(eventId);
+  const event_data = event.data;
+  if (!event_data) {
+    logger.error("Event not found");
+    return { success: false, message: "Could not proccess event" };
+  }
+  if (tickets.length < 1) {
+    const seat_ids = seats.map((seat) => seat.id);
+    await Sections.updateMany(
       {
         event_id: eventId,
       },
@@ -94,15 +97,12 @@ const book_ticket = async (
         ],
         multi: true,
       },
-    ),
-    event_service.fetch_one_event(eventId),
-  ]);
-  console.log(update_seat_availability);
-  const event_data = event.data;
-  if (!event_data) {
-    logger.error("Event not found");
-    return { success: false, message: "Could not proccess event" };
+    );
+  } else {
+    // update ticket quantity
   }
+
+  const time = moment().tz("Africa/Nairobi").format("YYYY-MM-DD HH:mm:ss");
   const title = event.data.title;
   const organizer = event.data.organizer;
 
@@ -117,12 +117,11 @@ const book_ticket = async (
     },
     organizer,
     ticket_price: amount,
-    seat_number: seats.map((seat) => seat.seatNumber),
+    seat_number: seats.map((seat) => seat.seatNumber) || null,
     ticket_type: "E-Ticket",
     purchased_at: time,
     ticket_discount_price: discount,
-    ticket_quantity: seats.length,
-    ticket_description: "E-Ticket",
+    ticket_quantity: seats.length || tickets.length,
   });
   console.log(ticket);
 
