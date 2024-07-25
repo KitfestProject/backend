@@ -14,5 +14,10 @@ artist_router
   .get(artist_controller.get_artist)
   .patch(auth.authenticate, artist_controller.update_artist)
   .delete(auth.authenticate, artist_controller.delete_artist);
+artist_router.post(
+  "/admin_fetch",
+  auth.authenticate,
+  artist_controller.fetch_artists_admin,
+);
 
 export default artist_router;

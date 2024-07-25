@@ -13,5 +13,10 @@ events_routes
   .route("/:id")
   .get(event_controller.fetch_one_event)
   .delete(event_controller.delete_event);
+events_routes.post(
+  "/admin_fetch",
+  auth.authenticate,
+  event_controller.fetch_events_admin,
+);
 
 export default events_routes;

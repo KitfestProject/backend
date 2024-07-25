@@ -1,0 +1,35 @@
+import { Request, Response } from "express";
+import transaction_service from "./transaction.service.js";
+import logger from "../../utils/logging.js";
+
+const fetch_transactions = async (req: Request, res: Response) => {
+  try {
+    const { id, is_admin } = req.user;
+    const { length, start, draw, search } = req.body;
+
+    const response = await transaction_service.fetch_transactions(
+      id,
+      is_admin,
+      start,
+      length,
+      search.value,
+    );
+
+    return res.status(200).json({
+      success: response.success,
+      message: response.message,
+      draw,
+      recordsTotal: response.data?.total_records,
+      recordsFiltered: response.data?.transactions.length,
+      data: response.data?.transactions,
+    });
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
+
+export default {
+  fetch_transactions,
+};

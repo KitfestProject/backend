@@ -16,6 +16,9 @@ const artist_schema = new Schema<IArtist>({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+  },
   image: {
     type: String,
     required: true,

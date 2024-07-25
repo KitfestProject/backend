@@ -85,6 +85,73 @@ const fetch_events = async (query: IEventQuery) => {
   }
   return createResponse(true, "Events found", events);
 };
+const fetch_events_admin = async (
+  organizer_id: string,
+  is_admin: boolean,
+  start: number,
+  length: number,
+  search: string,
+) => {
+  let events = [];
+  let total_records = 0;
+  if (!is_admin) {
+    events = await Events.find({
+      organizer: organizer_id,
+      $or: [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ],
+    })
+      .skip(start)
+      .limit(length)
+      .sort({ "event_date.start_date": -1 })
+      .select(
+        "_id title description cover_image address status event_date.start_date",
+      );
+
+    total_records = await Events.countDocuments({
+      organizer: organizer_id,
+    });
+    // const sold_tickets = await Tickets.countDocuments({
+    //   "event.id": {
+    //     $in: events.map((event) => event._id)
+    //   },
+    // });
+  } else {
+    events = await Events.find({
+      $or: [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ],
+    })
+      .skip(start)
+      .limit(length)
+      .sort({ "event_date.start_date": -1 })
+      .select(
+        "_id title description cover_image address status event_date.start_date",
+      );
+
+    total_records = await Events.countDocuments({});
+  }
+
+  const tranformed_events = events.map((event) => ({
+    id: event._id,
+    date: event.event_date.start_date,
+    title: event.title,
+    description: event.description,
+    cover_image: event.cover_image,
+    address: event.address,
+    status: event.status,
+  }));
+
+  if (!events) {
+    return createResponse(false, "No events found", null);
+  }
+  return createResponse(true, "Events found", {
+    events: tranformed_events,
+    total_records,
+  });
+};
 
 const fetch_one_event = async (id: string) => {
   const event = await Events.findOne({ _id: id })
@@ -100,4 +167,9 @@ const fetch_one_event = async (id: string) => {
   return createResponse(true, "Event found", event);
 };
 
-export default { create_event, fetch_events, fetch_one_event };
+export default {
+  create_event,
+  fetch_events,
+  fetch_one_event,
+  fetch_events_admin,
+};

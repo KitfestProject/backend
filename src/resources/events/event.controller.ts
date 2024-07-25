@@ -62,6 +62,34 @@ const fetch_one_event = async (req: Request, res: Response) => {
   }
 };
 
+const fetch_events_admin = async (req: Request, res: Response) => {
+  try {
+    const { id, is_admin } = req.user;
+    const { length, start, draw, search } = req.body;
+
+    const response = await events_service.fetch_events_admin(
+      id,
+      is_admin,
+      start,
+      length,
+      search.value,
+    );
+
+    return res.status(200).json({
+      success: response.success,
+      message: response.message,
+      draw,
+      recordsTotal: response.data?.total_records,
+      recordsFiltered: response.data?.events.length,
+      data: response.data?.events,
+    });
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
+
 const delete_event = crud.deleteOne(Events);
 
 export default {
@@ -69,4 +97,5 @@ export default {
   fetch_events,
   fetch_one_event,
   delete_event,
+  fetch_events_admin,
 };

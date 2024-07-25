@@ -107,6 +107,11 @@ const eventsSchema = new Schema<IEvents>({
   publish_time: {
     type: String,
   },
+  status: {
+    type: String,
+    enum: ["draft", "published", "cacncelled"],
+    default: "published",
+  },
 });
 
 const Events: TModel<IEvents> = model("Events", eventsSchema);

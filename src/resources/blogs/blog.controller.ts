@@ -34,7 +34,7 @@ const fetch_blogs = async (req: Request, res: Response) => {
     const response_data = {
       draw,
       recordsTotal: response.data?.total_records,
-      recordsFiltered: response.data?.blogs,
+      recordsFiltered: response.data?.blogs.length,
       data: response.data?.blogs,
     };
     return res.status(200).json(response_data);
