@@ -12,6 +12,7 @@ import ticket_router from "../resources/tickets/ticket.router.js";
 import seatmap_router from "../resources/seatmaps/seatmap.router.js";
 import booking_router from "../resources/bookings/booking.router.js";
 import transaction_router from "../resources/transactions/transaction.router.js";
+import overview_router from "../resources/overview/overview.router.js";
 
 const api = Router();
 
@@ -28,5 +29,6 @@ api.use("/tickets", ticket_router);
 api.use("/seatmap", seatmap_router);
 api.use("/booking", booking_router);
 api.use("/transactions", transaction_router);
+api.use("/overview", overview_router);
 
 export default api;
