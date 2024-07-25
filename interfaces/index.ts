@@ -124,11 +124,6 @@ export interface ITickets extends Document {
   ticket_price: number;
   ticket_discount_price: number;
   ticket_quantity: number;
-  ticket_description: string;
-  ticket_start_date: string;
-  ticket_end_date: string;
-  ticket_start_time: string;
-  ticket_end_time: string;
 }
 export interface ITransaction {
   ticket_id: Schema.Types.ObjectId;

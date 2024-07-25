@@ -48,10 +48,6 @@ const ticketsSchema = new Schema<ITickets>({
     type: Number,
     required: true,
   },
-  ticket_description: {
-    type: String,
-    required: true,
-  },
 });
 
 const Tickets: TModel<ITickets> = model("Tickets", ticketsSchema);

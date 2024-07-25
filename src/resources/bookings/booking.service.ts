@@ -193,7 +193,7 @@ function generate_ticket_pdf(ticket_data: ITickets, qr_code: string) {
 
   doc.fontSize(11);
   const details = [
-    `Name: ${ticket_data.ticket_description}`,
+    `Name: ${ticket_data.ticket_type}`,
     `Event: ${ticket_data.event.title}`,
     `Date: ${ticket_data.purchased_at}`,
     `Seat: ${ticket_data.seat_number}`,
