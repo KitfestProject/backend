@@ -11,8 +11,8 @@ export const send_email = (
 ) => {
   const transporter = nodemailer.createTransport({
     service: "zoho",
-    host: "smtp.zoho.com",
-    port: 465,
+    host: "smtppro.zoho.com",
+    port: 587,
     secure: true,
     auth: {
       user: env_vars.EMAIL_USER,
