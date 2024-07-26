@@ -1,4 +1,5 @@
 import Transactions from "../../database/models/transactions.js";
+import Events from "../../database/models/events.js";
 import createResponse from "../../utils/response_envelope.js";
 const fetch_transactions = async (
   organizer_id: string,
@@ -10,8 +11,10 @@ const fetch_transactions = async (
   let transactions = [];
   let total_records = 0;
   if (!is_admin) {
+    const events = await Events.find({ organizer: organizer_id });
+    const event_ids = events.map((event) => event._id);
     transactions = await Transactions.find({
-      organizer: organizer_id,
+      events_id: { $in: event_ids },
       $or: [
         { ref_code: { $regex: search, $options: "i" } },
         { tx_processor: { $regex: search, $options: "i" } },
@@ -22,7 +25,7 @@ const fetch_transactions = async (
       .limit(length)
       .select("ref_code status amount time");
     total_records = await Transactions.countDocuments({
-      organizer: organizer_id,
+      events_id: { $in: event_ids },
     });
   } else {
     transactions = await Transactions.find({

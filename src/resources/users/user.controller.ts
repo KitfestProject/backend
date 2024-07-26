@@ -66,6 +66,25 @@ const fetch_users = async (req: Request, res: Response) => {
     return res.status;
   }
 };
+const user_dashboard = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.user;
+    const response = await user_service.user_dashboard(id);
+    return res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
+
 const update_user = crud.updateOne(User);
 
-export default { sign_up, sign_in, verify_user, fetch_users, update_user };
+export default {
+  sign_up,
+  sign_in,
+  verify_user,
+  fetch_users,
+  update_user,
+  user_dashboard,
+};

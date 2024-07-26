@@ -20,5 +20,6 @@ user_routes.patch(
   auth.authorize_admin,
   user_controller.update_user,
 );
+user_routes.get("/dashbord", auth.authenticate, user_controller.user_dashboard);
 
 export default user_routes;

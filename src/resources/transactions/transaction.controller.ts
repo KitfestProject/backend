@@ -14,7 +14,6 @@ const fetch_transactions = async (req: Request, res: Response) => {
       length,
       search.value,
     );
-
     return res.status(200).json({
       draw,
       recordsTotal: response.data?.total_records,

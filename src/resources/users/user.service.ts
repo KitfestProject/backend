@@ -1,11 +1,14 @@
+import { Types } from "mongoose";
 import { IUsers } from "../../../interfaces/index.js";
 import hashing from "../../utils/hashing.js";
 import Users from "../../database/models/users.js";
+import Tickets from "../../database/models/tickets.js";
 import { get_current_date_time } from "../../utils/date_time.js";
 import createResponse from "../../utils/response_envelope.js";
 import { create_token } from "../../utils/jwt.js";
 import { send_email } from "../../utils/email.js";
 import env_vars from "../../config/env_vars.js";
+import { identity } from "lodash";
 
 const create_user = async (user: IUsers) => {
   const user_exists = await get_user_by_email(user.email);
@@ -172,6 +175,66 @@ const fetch_users = async (
   });
 };
 
+const user_dashboard = async (id: string) => {
+  /**
+  - count tickets bought
+  */
+  const tickets = await Tickets.find({ user_id: id });
+  const total_tickets = tickets.length;
+
+  const monthly_counts = await Tickets.aggregate([
+    { $match: { user_id: new Types.ObjectId(id) } },
+    {
+      $project: {
+        month: {
+          $month: {
+            $dateFromString: {
+              dateString: "$purchased_at",
+              format: "%Y-%m-%d %H:%M:%S",
+            },
+          },
+        },
+      },
+    },
+    {
+      $group: {
+        _id: "$month",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const label = [
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "oct",
+    "nov",
+    "dec",
+  ];
+  const data = new Array(12).fill(0);
+
+  monthly_counts.forEach((month) => {
+    data[month._id - 1] = month.count;
+  });
+
+  const response = {
+    total_tickets,
+    notification: 0,
+    monthly_tickets: {
+      label,
+      data,
+    },
+  };
+  return createResponse(true, "User dashboard fetched successfully", response);
+};
+
 export default {
   create_user,
   get_user_by_email,
@@ -179,4 +242,5 @@ export default {
   update_user,
   verify_user,
   fetch_users,
+  user_dashboard,
 };
