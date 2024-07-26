@@ -179,18 +179,14 @@ const update_password = async (
   old_password: string,
   new_password: string,
 ) => {
-  //check previous password
   const user = await Users.findOne({ _id: id });
   if (!user) {
     return createResponse(false, "User not found", null);
   }
-  console.log(user.password);
   const is_password_valid = await hashing.compare_hash(
     old_password,
     user.password,
   );
-
-  console.log(is_password_valid);
 
   if (!is_password_valid) {
     return createResponse(false, "Invalid password", null);

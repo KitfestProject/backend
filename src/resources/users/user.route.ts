@@ -14,13 +14,16 @@ user_routes.post(
   auth.authorize_admin,
   user_controller.fetch_users,
 );
-user_routes.patch("/:id", auth.authenticate, user_controller.update_user);
+user_routes
+  .route("/:id")
+  .patch(auth.authenticate, user_controller.update_user)
+  .get(auth.authenticate, user_controller.fetch_user);
 user_routes.get(
   "/dashboard",
   auth.authenticate,
   user_controller.user_dashboard,
 );
-user_routes.patch(
+user_routes.put(
   "/my_password",
   auth.authenticate,
   user_controller.update_password,

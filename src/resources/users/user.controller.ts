@@ -108,6 +108,7 @@ const fetch_my_tickets = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const fetch_user = crud.getOne(User);
 export default {
   sign_up,
   sign_in,
@@ -117,4 +118,5 @@ export default {
   user_dashboard,
   update_password,
   fetch_my_tickets,
+  fetch_user,
 };
