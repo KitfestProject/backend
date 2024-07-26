@@ -79,7 +79,7 @@ const book_ticket = async (
     logger.error("Event not found");
     return { success: false, message: "Could not proccess event" };
   }
-  if (tickets.length < 1) {
+  if (tickets.length < 2) {
     const seat_ids = seats.map((seat) => seat.id);
     await Sections.updateMany(
       {
