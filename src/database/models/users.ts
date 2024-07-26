@@ -15,6 +15,18 @@ const userSchema = new Schema<IUsers>({
     type: Boolean,
     default: false,
   },
+  profile_picture: {
+    type: String,
+  },
+  country: {
+    type: String,
+  },
+  address: {
+    type: String,
+  },
+  phone_number: {
+    type: String,
+  },
   is_organizer: {
     type: Boolean,
     default: false,

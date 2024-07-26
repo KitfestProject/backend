@@ -14,16 +14,21 @@ user_routes.post(
   auth.authorize_admin,
   user_controller.fetch_users,
 );
-user_routes.patch(
-  "/:id",
-  auth.authenticate,
-  auth.authorize_admin,
-  user_controller.update_user,
-);
+user_routes.patch("/:id", auth.authenticate, user_controller.update_user);
 user_routes.get(
   "/dashboard",
   auth.authenticate,
   user_controller.user_dashboard,
+);
+user_routes.patch(
+  "/my_password",
+  auth.authenticate,
+  user_controller.update_password,
+);
+user_routes.get(
+  "/my_tickets",
+  auth.authenticate,
+  user_controller.fetch_my_tickets,
 );
 
 export default user_routes;

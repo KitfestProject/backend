@@ -3,6 +3,10 @@ import { Schema, Document } from "mongoose";
 export interface IUsers extends Document {
   name: string;
   email: string;
+  profile_picture: string;
+  phone_number: string;
+  address: string;
+  country: string;
   is_admin: boolean;
   is_organizer: boolean;
   organizer_name: string;

@@ -174,6 +174,44 @@ const fetch_users = async (
     draw,
   });
 };
+const update_password = async (
+  id: string,
+  old_password: string,
+  new_password: string,
+) => {
+  //check previous password
+  const user = await Users.findOne({ _id: id });
+  if (!user) {
+    return createResponse(false, "User not found", null);
+  }
+  console.log(user.password);
+  const is_password_valid = await hashing.compare_hash(
+    old_password,
+    user.password,
+  );
+
+  console.log(is_password_valid);
+
+  if (!is_password_valid) {
+    return createResponse(false, "Invalid password", null);
+  }
+  const hashed_password = await hashing.hash_text(new_password);
+  const update_query = { password: hashed_password } as IUsers;
+  const updated_user = await update_user(id, update_query);
+  if (!updated_user.success) {
+    return createResponse(false, "Failed to update password", null);
+  }
+  return createResponse(true, "Password updated successfully", null);
+};
+const fetch_my_tickets = async (id: string) => {
+  const tickets = await Tickets.find({ user_id: id }).sort({
+    purchased_at: -1,
+  });
+  if (!tickets) {
+    return createResponse(false, "Failed to fetch tickets", null);
+  }
+  return createResponse(true, "Tickets fetched successfully", tickets);
+};
 
 const user_dashboard = async (id: string) => {
   /**
@@ -243,4 +281,6 @@ export default {
   verify_user,
   fetch_users,
   user_dashboard,
+  update_password,
+  fetch_my_tickets,
 };

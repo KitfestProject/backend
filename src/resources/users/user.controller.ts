@@ -80,6 +80,34 @@ const user_dashboard = async (req: Request, res: Response) => {
 
 const update_user = crud.updateOne(User);
 
+const update_password = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.user;
+    const { old_password, new_password } = req.body;
+    console.log(old_password, new_password);
+    const response = await user_service.update_password(
+      id,
+      old_password,
+      new_password,
+    );
+    return res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
+const fetch_my_tickets = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.user;
+    const response = await user_service.fetch_my_tickets(id);
+    return res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
 export default {
   sign_up,
   sign_in,
@@ -87,4 +115,6 @@ export default {
   fetch_users,
   update_user,
   user_dashboard,
+  update_password,
+  fetch_my_tickets,
 };
