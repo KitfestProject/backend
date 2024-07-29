@@ -159,6 +159,10 @@ export interface IArtist extends Document {
   created_at: string;
   updated_at: string;
 }
+export interface IWishlist extends Document {
+  event: Schema.Types.ObjectId;
+  user: Schema.Types.ObjectId;
+}
 export interface IPreference extends Document {
   name: string;
   icon: string;
@@ -200,66 +204,3 @@ export interface IEventQuery {
   paid: string;
   featured: boolean;
 }
-/*
-pageYOffset
-{
-  "title": "",
-  "description": "",
-  "category": "",
-  "tags": [],
-  "coverImage": null,
-  "address": "",
-  "longitude": "",
-  "latitude": "",
-  "eventDate": {
-    "start_date": null,
-    "end_date": null
-  },
-  "eventStartTime": "",
-  "eventEndTime": "",
-  "isPaid": "paid",
-  "tickets": [
-    {
-      "ticketType": "earlyBird",
-      "ticketPrice": "",
-      "ticketDiscountPrice": "",
-      "ticketQuantity": "",
-      "ticketDescription": "",
-      "ticketStartDate": "2024-06-12T08:20:36.619Z",
-      "ticketEndDate": "2024-06-12T08:20:36.619Z",
-      "ticketStartTime": null,
-      "ticketEndTime": null
-    }
-  ],
-  "isScheduledPublished": false,
-  "publicationDate": null,
-  "publishTime": null
-}
-*/
-/*
-  name: "",
-  location: "",
-  capacity: "",
-  longitude: "",
-  latitude: "",
-  address: "",
-  image: null,
-  amenities: [
-    { name: "Wifi", value: false },
-    {
-      name: "Parking",
-      value: false,
-    },
-    { name: "Catering", value: false },
-    { name: "Projector", value: false },
-    { name: "Whiteboard", value: false },
-    { name: "Microphone", value: false },
-    { name: "Tables", value: false },
-    { name: "Chairs", value: false },
-    { name: "Stage", value: false },
-    { name: "Sound System", value: false },
-  ],
-  seatMap: null,
-  description: "",
-};
-*/

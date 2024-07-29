@@ -13,6 +13,7 @@ import seatmap_router from "../resources/seatmaps/seatmap.router.js";
 import booking_router from "../resources/bookings/booking.router.js";
 import transaction_router from "../resources/transactions/transaction.router.js";
 import overview_router from "../resources/overview/overview.router.js";
+import wishlist_router from "../resources/wishlists/wishlist.router.js";
 
 const api = Router();
 
@@ -30,5 +31,6 @@ api.use("/seatmap", seatmap_router);
 api.use("/booking", booking_router);
 api.use("/transactions", transaction_router);
 api.use("/overview", overview_router);
+api.use("/wishlist", wishlist_router);
 
 export default api;
