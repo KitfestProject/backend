@@ -87,6 +87,7 @@ const fetch_events_admin = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const update_event = crud.updateOne(Events);
 
 const delete_event = crud.deleteOne(Events);
 
@@ -96,4 +97,5 @@ export default {
   fetch_one_event,
   delete_event,
   fetch_events_admin,
+  update_event,
 };

@@ -12,7 +12,8 @@ events_routes
 events_routes
   .route("/:id")
   .get(event_controller.fetch_one_event)
-  .delete(event_controller.delete_event);
+  .patch(auth.authenticate, event_controller.update_event)
+  .delete(auth.authenticate, event_controller.delete_event);
 events_routes.post(
   "/admin_fetch",
   auth.authenticate,
