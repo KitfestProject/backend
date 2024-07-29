@@ -165,7 +165,12 @@ async function generate_qr_code(qr_code_data: {}) {
 }
 
 function generate_ticket_pdf(ticket_data: ITickets, qr_code: string) {
-  const output = `${ticket_data.id}-tickect.pdf`;
+  const dir = "./bookings";
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+  const output = `bookings/${ticket_data.id}-tickect.pdf`;
   const doc = new PDFDocument({
     size: "A6",
     margins: {
