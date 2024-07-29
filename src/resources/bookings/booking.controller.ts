@@ -14,6 +14,17 @@ const book_ticket = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+// const verify_qr_code = async (req: Request, res: Response) => {
+//   try {
+//     const { qr_code } = req.params;
+//     // const response = await booking_service.verify_qr_code(qr_code);
+//     // return res.status(200).json(response);
+//   } catch (err) {
+//     const error = err as Error;
+//     logger.error(error.message);
+//     return res.status(500).end();
+//   }
+// };
 
 export default {
   book_ticket,

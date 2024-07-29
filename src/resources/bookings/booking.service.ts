@@ -48,17 +48,13 @@ type paymentProcessorResponse = {
   trxref: string;
   redirecturl: string;
 };
+type QRCodeData = {};
 
 const book_ticket = async (
   data: Booking,
   user_id: string,
   user_name: string,
 ) => {
-  /*
-  4. generate qr code
-  5. send email to user
-  6. send email to organizer
-  */
   const {
     firstName,
     lastName,
@@ -99,15 +95,38 @@ const book_ticket = async (
       },
     );
   } else {
-    // update ticket quantity
+    let sold_out_message = null;
+    for (const ticket of tickets) {
+      const ticket_index = event_data.tickets.findIndex(
+        (t) => t._id.toString() === ticket.id,
+      );
+      if (ticket_index !== -1) {
+        const current_quantity =
+          event_data.tickets[ticket_index].ticket_quantity;
+        if (current_quantity === 0) {
+          sold_out_message = `Ticket type with ID ${ticket.id} is sold out.`;
+          break;
+        } else {
+          event_data.tickets[ticket_index].ticket_quantity -= 1;
+        }
+      }
+    }
+
+    if (sold_out_message) {
+      return createResponse(false, sold_out_message, null);
+    }
+    const update_result = await Events.updateOne(
+      { _id: eventId },
+      { $set: { tickets: event_data.tickets } },
+      { returnDocument: "after" },
+    );
+
+    logger.info("Event ticket purchase quantity updated", update_result);
   }
 
   const time = moment().tz("Africa/Nairobi").format("YYYY-MM-DD HH:mm:ss");
   const title = event.data.title;
   const organizer = event.data.organizer;
-
-  console.log("data", data);
-  console.log(amount, discount, seats.length);
 
   const ticket = await Tickets.create({
     user_id,
@@ -123,7 +142,6 @@ const book_ticket = async (
     ticket_discount_price: discount,
     ticket_quantity: seats.length || tickets.length,
   });
-  console.log(ticket);
 
   const transaction = await Transactions.create({
     ticket_id: ticket._id,
@@ -168,9 +186,9 @@ function generate_ticket_pdf(ticket_data: ITickets, qr_code: string) {
   const dir = "./uploads/bookings";
 
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
   }
-  const output = `bookings/${ticket_data.id}-tickect.pdf`;
+  const output = `uploads/bookings/${ticket_data.id}-tickect.pdf`;
   const doc = new PDFDocument({
     size: "A6",
     margins: {
@@ -223,5 +241,6 @@ function generate_ticket_pdf(ticket_data: ITickets, qr_code: string) {
   doc.end();
   return output;
 }
+// const verify_qr_code = async (data: qrda) => {};
 
 export default { book_ticket };
