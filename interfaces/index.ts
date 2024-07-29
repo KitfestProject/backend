@@ -49,7 +49,7 @@ export interface IEvents extends Document {
   is_scheduled_published: boolean;
   publication_date: string;
   publish_time: string;
-  status: "draft" | "published" | "cacncelled";
+  status: "draft" | "published" | "cancelled" | "sold_out";
 }
 interface EventDate {
   start_date: string;

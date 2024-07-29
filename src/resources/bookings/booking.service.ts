@@ -165,7 +165,7 @@ async function generate_qr_code(qr_code_data: {}) {
 }
 
 function generate_ticket_pdf(ticket_data: ITickets, qr_code: string) {
-  const dir = "./bookings";
+  const dir = "./uploads/bookings";
 
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
