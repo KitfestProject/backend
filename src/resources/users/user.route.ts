@@ -19,7 +19,7 @@ user_routes
   .patch(auth.authenticate, user_controller.update_user)
   .get(auth.authenticate, user_controller.fetch_user);
 user_routes.get(
-  "/dashboard",
+  "/dashboard/stats",
   auth.authenticate,
   user_controller.user_dashboard,
 );
@@ -29,7 +29,7 @@ user_routes.put(
   user_controller.update_password,
 );
 user_routes.get(
-  "/my_tickets",
+  "/tickets/fetch",
   auth.authenticate,
   user_controller.fetch_my_tickets,
 );
