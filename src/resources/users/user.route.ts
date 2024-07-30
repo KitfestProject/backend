@@ -15,13 +15,13 @@ user_routes.post(
   user_controller.fetch_users,
 );
 user_routes.post(
-  "/oganizer_requests",
+  "/organizer_requests",
   auth.authenticate,
   auth.authorize_admin,
   user_controller.fetch_oganizers_requests,
 );
 user_routes.patch(
-  "/oganizer_requests/:id",
+  "/organizer_requests/:id",
   auth.authenticate,
   auth.authorize_admin,
   user_controller.review_organizer_request,
