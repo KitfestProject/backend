@@ -100,7 +100,12 @@ const update_password = async (req: Request, res: Response) => {
 const fetch_my_tickets = async (req: Request, res: Response) => {
   try {
     const { id } = req.user;
-    const response = await user_service.fetch_my_tickets(id);
+    const { length, start } = req.query;
+    const response = await user_service.fetch_my_tickets(
+      id,
+      Number(length),
+      Number(start),
+    );
     return res.status(200).json(response);
   } catch (error) {
     const err = error as Error;

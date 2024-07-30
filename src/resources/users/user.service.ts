@@ -8,7 +8,8 @@ import createResponse from "../../utils/response_envelope.js";
 import { create_token } from "../../utils/jwt.js";
 import { send_email } from "../../utils/email.js";
 import env_vars from "../../config/env_vars.js";
-import { identity } from "lodash";
+import Events from "../../database/models/events.js";
+import logger from "../../utils/logging.js";
 
 const create_user = async (user: IUsers) => {
   const user_exists = await get_user_by_email(user.email);
@@ -199,15 +200,6 @@ const update_password = async (
   }
   return createResponse(true, "Password updated successfully", null);
 };
-const fetch_my_tickets = async (id: string) => {
-  const tickets = await Tickets.find({ user_id: id }).sort({
-    purchased_at: -1,
-  });
-  if (!tickets) {
-    return createResponse(false, "Failed to fetch tickets", null);
-  }
-  return createResponse(true, "Tickets fetched successfully", tickets);
-};
 
 const user_dashboard = async (id: string) => {
   /**
@@ -267,6 +259,40 @@ const user_dashboard = async (id: string) => {
     },
   };
   return createResponse(true, "User dashboard fetched successfully", response);
+};
+const fetch_my_tickets = async (id: string, length: number, start: number) => {
+  const tickets = await Tickets.find({ user_id: id })
+    .sort({
+      purchased_at: -1,
+    })
+    .populate({
+      path: "event.id",
+      select: "title event_date address cover_image",
+      model: "Events",
+    })
+    .skip(start)
+    .limit(length);
+
+  if (!tickets) {
+    return createResponse(false, "Failed to fetch tickets", null);
+  }
+  const transformed_tickets = tickets.map((ticket: any) => {
+    return {
+      id: ticket._id,
+      event: ticket.event.title,
+      purchased_at: ticket.purchased_at,
+      quantity: ticket.ticket_quantity,
+      total_price: ticket.ticket_price,
+      event_start_date: ticket.event.id.event_date.start_date,
+      location: ticket.event.id.address,
+      cover_image: ticket.event.id.cover_image,
+    };
+  });
+  return createResponse(
+    true,
+    "Tickets fetched successfully",
+    transformed_tickets,
+  );
 };
 
 export default {

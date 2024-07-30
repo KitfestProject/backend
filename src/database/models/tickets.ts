@@ -10,6 +10,7 @@ const ticketsSchema = new Schema<ITickets>({
   event: {
     id: {
       type: Schema.Types.ObjectId,
+      ref: "Events",
     },
     title: {
       type: String,
