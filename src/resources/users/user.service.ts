@@ -367,7 +367,7 @@ const fetch_organizer_requests = async (
   return createResponse(true, "organizers requests fetched successfully", {
     users: transformed_users,
     total_records,
-    total_records_with_filter: transformed_users.length,
+    total_records_with_filter: total_records,
   });
 };
 const review_organizer_request = async (
