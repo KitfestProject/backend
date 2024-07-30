@@ -294,6 +294,119 @@ const fetch_my_tickets = async (id: string, length: number, start: number) => {
     transformed_tickets,
   );
 };
+const become_organizer = async (id: string) => {
+  const [user, admin] = await Promise.all([
+    Users.findOne({ _id: id }),
+    Users.findOne({ is_admin: true }),
+  ]);
+  if (!user) {
+    return createResponse(false, "User not found", null);
+  }
+  const update_query = { organizer_request_status: "pending" } as IUsers;
+  const updated_user = await update_user(id, update_query);
+  if (!updated_user.success) {
+    return createResponse(false, "Failed to update user", null);
+  }
+  if (!admin) {
+    logger.error("Admin not found");
+  }
+  send_email(
+    admin!.email,
+    "Organizer Request",
+    `User ${user!.name} with email ${user!.email} has requested to become an organizer, please review the request`,
+    admin!.name,
+  );
+  return createResponse(true, "Request sent to admin ", null);
+};
+const fetch_organizer_requests = async (
+  length: number,
+  start: number,
+  search: string,
+) => {
+  const total_records = await Users.countDocuments();
+  const users = await Users.find({
+    organizer_request_status: { $in: ["pending", "rejected", "inprogress"] },
+    is_organizer: false,
+    is_admin: false,
+
+    $or: [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ],
+  })
+    .skip(start)
+    .limit(length)
+    .select(
+      "_id email name is_admin is_organizer created_at organizer_request_status",
+    )
+    .sort({ created_at: -1 });
+  users.forEach((user) => {
+    if (user.is_organizer) {
+      user.role = "organizer";
+    } else if (user.is_admin) {
+      user.role = "admin";
+    } else {
+      user.role = "user";
+    }
+  });
+
+  const transformed_users = users.map((user) => {
+    return {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      created_at: user.created_at,
+      organizer_request_status: user.organizer_request_status,
+    };
+  });
+
+  if (!users) {
+    return createResponse(false, "Failed to fetch organizers requests", null);
+  }
+  return createResponse(true, "organizers requests fetched successfully", {
+    users: transformed_users,
+    total_records,
+    total_records_with_filter: transformed_users.length,
+  });
+};
+const review_organizer_request = async (
+  id: string,
+  status: string,
+  message: string,
+) => {
+  let update_query: IUsers;
+  const user = await Users.findOne({ _id: id });
+  if (!user) {
+    return createResponse(false, "User not found", null);
+  }
+  switch (status) {
+    case "approved":
+      update_query = {
+        is_organizer: true,
+        organizer_request_status: "approved",
+      } as IUsers;
+      break;
+    case "rejected":
+      update_query = {
+        organizer_request_status: "rejected",
+      } as IUsers;
+      break;
+    case "inprogress":
+      update_query = {
+        organizer_request_status: "inprogress",
+      } as IUsers;
+      break;
+    default:
+      return createResponse(false, "Invalid status", null);
+  }
+  const updated_user = await update_user(id, update_query);
+  if (!updated_user.success) {
+    return createResponse(false, "Failed to update user", null);
+  }
+  send_email(user.email, "Organizer Request", message, user.name);
+  return createResponse(true, "Request reviewed successfully", null);
+};
 
 export default {
   create_user,
@@ -305,4 +418,7 @@ export default {
   user_dashboard,
   update_password,
   fetch_my_tickets,
+  become_organizer,
+  fetch_organizer_requests,
+  review_organizer_request,
 };

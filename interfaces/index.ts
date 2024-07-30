@@ -18,6 +18,12 @@ export interface IUsers extends Document {
   is_verified: boolean;
   last_login: string;
   role: "user" | "organizer" | "admin";
+  organizer_request_status:
+    | "pending"
+    | "inprogress"
+    | "approved"
+    | "rejected"
+    | "";
 }
 export interface ICategories extends Document {
   name: string;

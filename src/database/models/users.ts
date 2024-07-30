@@ -31,6 +31,10 @@ const userSchema = new Schema<IUsers>({
     type: Boolean,
     default: false,
   },
+  organizer_request_status: {
+    type: String,
+    default: "",
+  },
   organizer_name: {
     type: String,
     default: "",

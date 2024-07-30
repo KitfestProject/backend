@@ -113,6 +113,55 @@ const fetch_my_tickets = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const become_organizer = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.user;
+    const response = await user_service.become_organizer(id);
+    return res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status;
+  }
+};
+const fetch_oganizers_requests = async (req: Request, res: Response) => {
+  try {
+    const { draw, start, length, search } = req.body;
+    const value = search.value;
+    const response = await user_service.fetch_organizer_requests(
+      length,
+      start,
+      value,
+    );
+    const response_data = {
+      draw,
+      recordsTotal: response.data?.total_records,
+      recordsFiltered: response.data?.total_records_with_filter,
+      data: response.data?.users,
+    };
+    return res.status(200).json(response_data);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status;
+  }
+};
+const review_organizer_request = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status, message } = req.body;
+    const response = await user_service.review_organizer_request(
+      id,
+      status,
+      message,
+    );
+    return res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status;
+  }
+};
 const fetch_user = crud.getOne(User);
 export default {
   sign_up,
@@ -124,4 +173,7 @@ export default {
   update_password,
   fetch_my_tickets,
   fetch_user,
+  become_organizer,
+  fetch_oganizers_requests,
+  review_organizer_request,
 };

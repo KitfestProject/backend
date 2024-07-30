@@ -14,6 +14,18 @@ user_routes.post(
   auth.authorize_admin,
   user_controller.fetch_users,
 );
+user_routes.post(
+  "/oganizer_requests",
+  auth.authenticate,
+  auth.authorize_admin,
+  user_controller.fetch_oganizers_requests,
+);
+user_routes.patch(
+  "/oganizer_requests/:id",
+  auth.authenticate,
+  auth.authorize_admin,
+  user_controller.review_organizer_request,
+);
 user_routes
   .route("/:id")
   .patch(auth.authenticate, user_controller.update_user)
@@ -32,6 +44,11 @@ user_routes.get(
   "/tickets/fetch",
   auth.authenticate,
   user_controller.fetch_my_tickets,
+);
+user_routes.post(
+  "/become_organizer",
+  auth.authenticate,
+  user_controller.become_organizer,
 );
 
 export default user_routes;
