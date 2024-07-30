@@ -13,7 +13,8 @@ events_routes
   .route("/:id")
   .get(event_controller.fetch_one_event)
   .patch(auth.authenticate, event_controller.update_event)
-  .delete(auth.authenticate, event_controller.delete_event);
+  .delete(auth.authenticate, event_controller.delete_event)
+  .put(auth.authenticate, event_controller.change_event_status);
 events_routes.post(
   "/admin_fetch",
   auth.authenticate,

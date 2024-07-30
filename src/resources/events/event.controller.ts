@@ -87,6 +87,18 @@ const fetch_events_admin = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const change_event_status = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const response = await events_service.change_event_status(id, status);
+    return res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
 const update_event = crud.updateOne(Events);
 
 const delete_event = crud.deleteOne(Events);
@@ -98,4 +110,5 @@ export default {
   delete_event,
   fetch_events_admin,
   update_event,
+  change_event_status,
 };

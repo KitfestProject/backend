@@ -111,7 +111,7 @@ const eventsSchema = new Schema<IEvents>(
     status: {
       type: String,
       enum: ["draft", "published", "cancelled", "sold_out"],
-      default: "published",
+      default: "draft",
     },
   },
   { timestamps: true },

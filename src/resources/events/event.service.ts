@@ -4,6 +4,8 @@ import Events from "../../database/models/events.js";
 import Venues from "../../database/models/venues.js";
 import { get_current_date_time } from "../../utils/date_time.js";
 import createResponse from "../../utils/response_envelope.js";
+import { send_email } from "../../utils/email.js";
+import logger from "../../utils/logging.js";
 
 const create_event = async (event: IEvents) => {
   if (event.has_seat_map) {
@@ -58,6 +60,7 @@ const fetch_events = async (query: IEventQuery) => {
           query.location ? { location: query.location } : {},
           query.featured ? { featured: query.featured } : {},
           { "event_date.start_date": { $gte: get_current_date_time() } },
+          { status: "published" },
         ],
       },
     },
@@ -166,10 +169,47 @@ const fetch_one_event = async (id: string) => {
   }
   return createResponse(true, "Event found", event);
 };
+const change_event_status = async (id: string, status: string) => {
+  const event = await Events.findOne({ _id: id }).populate(
+    "organizer",
+    "name email",
+  );
+  if (!event) {
+    return createResponse(false, "Event not found", null);
+  }
+  if (event.status === status) {
+    return createResponse(false, `Event is already on status ${status}`, null);
+  }
+  const updated_event = await Events.findOneAndUpdate(
+    { _id: id },
+    { status },
+    { returnDocument: "after" },
+  );
+  if (!updated_event) {
+    return createResponse(false, "Could not update event status", null);
+  }
+  const sent_email = send_email(
+    // @ts-ignore
+    event.organizer.email,
+    `Event ${status}`,
+    `Your event ${event.title} has been ${status} successfully.`,
+    // @ts-ignore
+    event.organizer.name,
+  );
+  //@ts-ignore
+  logger.info(`Email sent to ${event.organizer.email} ${sent_email}`);
+
+  return createResponse(
+    true,
+    `Event status updated to ${status} successfully`,
+    null,
+  );
+};
 
 export default {
   create_event,
   fetch_events,
   fetch_one_event,
   fetch_events_admin,
+  change_event_status,
 };
