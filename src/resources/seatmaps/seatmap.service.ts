@@ -1,4 +1,4 @@
-import { ISections } from "../../../interfaces/index.js";
+import { ISeats, ISections } from "../../../interfaces/index.js";
 import Sections from "../../database/models/sections.js";
 import createResponse from "../../utils/response_envelope.js";
 import logger from "../../utils/logging.js";
@@ -160,7 +160,33 @@ const fetch_sections = async (event_id: string) => {
 
   return createResponse(true, "Sections fetched successfully", data);
 };
+const update_section_seats = async (section_id: string, seats: ISeats[]) => {
+  const bulk_write_operation = seats.map((seat) => {
+    const filter = {
+      _id: section_id,
+      "rows.seats.id": seat.id,
+    };
+    const update = {
+      $set: {
+        "rows.$[].seats.$[j]": seat,
+      },
+    };
+    const arrayFilters = [{ "j.id": seat.id }];
 
+    return {
+      updateOne: {
+        filter,
+        update,
+        arrayFilters,
+      },
+    };
+  });
+  const result = await Sections.bulkWrite(bulk_write_operation);
+  if (!result) {
+    return createResponse(false, "Seats not updated", null);
+  }
+  return createResponse(true, "Seats updated successfully", null);
+};
 function count_section_seats(section: ISections) {
   let total_seats = 0;
   section.rows.map((row) => {
@@ -186,4 +212,4 @@ type IResponse = {
   total_seats: number;
 };
 
-export default { create_seatmap_section, fetch_sections };
+export default { create_seatmap_section, fetch_sections, update_section_seats };

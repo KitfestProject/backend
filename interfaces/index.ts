@@ -95,6 +95,7 @@ export interface IsectionRaw {
 }
 
 export interface ISeats {
+  _id: Schema.Types.ObjectId;
   id: number;
   SN: string | null; //seat number
   column: number;

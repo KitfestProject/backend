@@ -26,4 +26,23 @@ const fetch_section = async (req: Request, res: Response) => {
   }
 };
 const fetch_seatmap_section = crud.getMany(Sections);
-export default { create_seatmap_section, fetch_seatmap_section, fetch_section };
+const update_seatmap_section = crud.updateOne(Sections);
+const update_seatmap_section_seat = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { seats } = req.body;
+    const response = await seatmap_service.update_section_seats(id, seats);
+    return res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
+export default {
+  create_seatmap_section,
+  fetch_seatmap_section,
+  fetch_section,
+  update_seatmap_section,
+  update_seatmap_section_seat,
+};
