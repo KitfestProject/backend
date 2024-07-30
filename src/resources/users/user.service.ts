@@ -323,7 +323,6 @@ const fetch_organizer_requests = async (
   start: number,
   search: string,
 ) => {
-  const total_records = await Users.countDocuments();
   const users = await Users.find({
     organizer_request_status: { $in: ["pending", "rejected", "inprogress"] },
     is_organizer: false,
@@ -366,8 +365,8 @@ const fetch_organizer_requests = async (
   }
   return createResponse(true, "organizers requests fetched successfully", {
     users: transformed_users,
-    total_records,
-    total_records_with_filter: total_records,
+    total_records: users.length,
+    total_records_with_filter: users.length,
   });
 };
 const review_organizer_request = async (
