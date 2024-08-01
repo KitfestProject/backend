@@ -13,5 +13,26 @@ const fetch_venue_admin = async () => {
   const venues = await Venues.find().select("_id name");
   return createResponse(true, "Venues fetched successfully", venues);
 };
-
-export default { create_venue, fetch_venue_admin };
+const fetch_venues_admin = async (
+  start: number,
+  length: number,
+  search: string,
+) => {
+  const venues = await Venues.find({
+    $or: [
+      { name: { $regex: search, $options: "i" } },
+      { address: { $regex: search, $options: "i" } },
+    ],
+  })
+    .skip(start)
+    .limit(length)
+    .select("_id name address image capacity")
+    .sort({ created_at: -1 });
+  const total_records = await Venues.countDocuments();
+  return createResponse(true, "Venues fetched successfully", {
+    venues,
+    filtered_records: venues.length,
+    total_records,
+  });
+};
+export default { create_venue, fetch_venue_admin, fetch_venues_admin };

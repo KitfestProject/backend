@@ -22,6 +22,28 @@ const fetch_venues = async (req: Request, res: Response) => {
   const venues = await venues_service.fetch_venue_admin();
   return res.status(200).json(venues);
 };
+const fetch_venues_admin = async (req: Request, res: Response) => {
+  try {
+    const { draw, start, length, search } = req.body;
+    const value = search.value;
+    const venues = await venues_service.fetch_venues_admin(
+      Number(start),
+      Number(length),
+      value,
+    );
+    return res.status(200).json({
+      draw,
+      recordsTotal: venues.data.total_records,
+      recordsFiltered: venues.data.filtered_records,
+      data: venues.data.venues,
+    });
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
+
 const get_venues = crud.getMany(Venues);
 const get_venue = crud.getMany(Venues);
 const remove_venue = crud.deleteOne(Venues);
@@ -32,4 +54,5 @@ export default {
   create_venue,
   remove_venue,
   fetch_venues,
+  fetch_venues_admin,
 };
