@@ -74,6 +74,9 @@ const fetch_events = async (query: IEventQuery) => {
       $limit: query.limit ? query.limit : 6,
     },
     {
+      $skip: query.start ? query.start : 0,
+    },
+    {
       $project: {
         title: 1,
         address: 1,

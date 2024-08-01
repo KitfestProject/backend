@@ -27,11 +27,17 @@ const create_event = async (req: Request, res: Response) => {
 
 const fetch_events = async (req: Request, res: Response) => {
   try {
-    const { date, location, limit, paid, featured } = req.query;
+    for (let key in req.query) {
+      if (req.query[key] === null || req.query[key] === "null") {
+        req.query[key] = undefined;
+      }
+    }
+    const { date, location, limit, paid, featured, start } = req.query;
     const query = {
       date: date as string,
       location: location as string,
       limit: parseInt(limit as string) as number,
+      start: parseInt(start as string) as number,
       paid: paid as string,
       featured: Boolean(featured as string) as boolean,
     } as IEventQuery;

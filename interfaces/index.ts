@@ -206,6 +206,7 @@ export interface IContact extends Document {
 }
 export interface IEventQuery {
   limit: number;
+  start: number;
   location: string;
   date: string;
   paid: string;
