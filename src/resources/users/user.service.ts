@@ -302,6 +302,9 @@ const become_organizer = async (id: string) => {
   if (!user) {
     return createResponse(false, "User not found", null);
   }
+  if (user.organizer_request_status === "inprogress" || "pending") {
+    return createResponse(false, "Request already in progress", null);
+  }
   const update_query = { organizer_request_status: "pending" } as IUsers;
   const updated_user = await update_user(id, update_query);
   if (!updated_user.success) {
