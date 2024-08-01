@@ -3,6 +3,7 @@ import { TModel } from "../../types/index.js";
 import { Document } from "mongoose";
 import createResponse from "./response_envelope.js";
 import { get_current_date_time } from "./date_time.js";
+import collection from "./collection.js";
 
 const createOne =
   <T extends Document>(model: TModel<T>) =>
@@ -57,7 +58,8 @@ const updateOne =
   async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const data = req.body;
+      let data = req.body;
+      data = collection.convert_keys(data);
       const updated_at = get_current_date_time();
       data.updated_at = updated_at;
       const doc = await model.findOneAndUpdate({ _id: id }, data, {
