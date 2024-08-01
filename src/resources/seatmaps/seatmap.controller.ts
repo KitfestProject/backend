@@ -39,10 +39,12 @@ const update_seatmap_section_seat = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const delete_seatmap_section = crud.deleteOne(Sections);
 export default {
   create_seatmap_section,
   fetch_seatmap_section,
   fetch_section,
   update_seatmap_section,
   update_seatmap_section_seat,
+  delete_seatmap_section,
 };
