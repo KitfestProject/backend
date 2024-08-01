@@ -22,7 +22,7 @@ const fetch_wishlist = async (user: string) => {
     return createResponse(false, "No wishlists found", null);
   }
   const response_data = wishlists.map((wishlist: any) => ({
-    id: wishlist._id,
+    id: wishlist.event._id,
     tittle: wishlist.event.title,
     start_date: wishlist.event.event_date.start_date,
     description: wishlist.event.description,
