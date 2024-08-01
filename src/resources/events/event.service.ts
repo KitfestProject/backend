@@ -52,7 +52,6 @@ const create_event = async (event: IEvents) => {
 };
 
 const fetch_events = async (query: IEventQuery) => {
-  console.log("Event query", query);
   const events = await Events.aggregate([
     {
       $match: {
