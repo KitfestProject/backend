@@ -64,7 +64,7 @@ interface EventDate {
 export interface IVenues extends Document {
   name: string;
   location: string;
-  capacity: string;
+  capacity: number;
   longitude: string;
   latitude: string;
   address: string;

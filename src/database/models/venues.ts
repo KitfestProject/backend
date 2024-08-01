@@ -10,6 +10,10 @@ const venues_schema = new Schema<IVenues>({
     type: String,
     required: true,
   },
+  capacity: {
+    type: Number,
+    required: true,
+  },
   image: {
     type: String,
   },
