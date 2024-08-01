@@ -9,7 +9,7 @@ const artist_schema = new Schema<IArtist>({
   },
   category: {
     type: Schema.Types.ObjectId,
-    ref: "Category",
+    ref: "Categories",
     required: true,
   },
   description: {
