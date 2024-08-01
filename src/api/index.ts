@@ -14,6 +14,7 @@ import booking_router from "../resources/bookings/booking.router.js";
 import transaction_router from "../resources/transactions/transaction.router.js";
 import overview_router from "../resources/overview/overview.router.js";
 import wishlist_router from "../resources/wishlists/wishlist.router.js";
+import search_router from "../resources/search/search.router.js";
 
 const api = Router();
 
@@ -32,5 +33,6 @@ api.use("/booking", booking_router);
 api.use("/transactions", transaction_router);
 api.use("/overview", overview_router);
 api.use("/wishlist", wishlist_router);
+api.use("/search", search_router);
 
 export default api;
