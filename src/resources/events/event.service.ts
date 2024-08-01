@@ -181,7 +181,7 @@ const change_event_status = async (id: string, status: string) => {
   if (event.status === status) {
     return createResponse(false, `Event is already on status ${status}`, null);
   }
-  if (status === "published") {
+  if (status === "published" && event.has_seat_map) {
     const seat_map = await seatmap_service.fetch_sections(id);
     const seat_map_data = seat_map.data;
     const validate_seatmap = find_emptyobject_keys(seat_map_data!);
