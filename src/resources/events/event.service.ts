@@ -6,6 +6,7 @@ import { get_current_date_time } from "../../utils/date_time.js";
 import createResponse from "../../utils/response_envelope.js";
 import { send_email } from "../../utils/email.js";
 import logger from "../../utils/logging.js";
+import seatmap_service from "../seatmaps/seatmap.service.js";
 
 const create_event = async (event: IEvents) => {
   if (event.has_seat_map) {
@@ -180,6 +181,22 @@ const change_event_status = async (id: string, status: string) => {
   if (event.status === status) {
     return createResponse(false, `Event is already on status ${status}`, null);
   }
+  if (status === "published") {
+    const seat_map = await seatmap_service.fetch_sections(id);
+    const seat_map_data = seat_map.data;
+    const validate_seatmap = find_emptyobject_keys(seat_map_data!);
+    if (validate_seatmap.length > 0) {
+      send_email(
+        // @ts-ignore
+        event.organizer.email,
+        `Event could not be published`,
+        `Your event ${event.title} could not be published, Reason:Event has sections without seatmap. kindly fill out all sections and try again`,
+        // @ts-ignore
+        event.organizer.name,
+      );
+      return createResponse(false, `Event has sections without seatmap`, null);
+    }
+  }
   const updated_event = await Events.findOneAndUpdate(
     { _id: id },
     { status },
@@ -205,6 +222,18 @@ const change_event_status = async (id: string, status: string) => {
     null,
   );
 };
+
+function find_emptyobject_keys(obj: Record<string, any>): string[] {
+  return Object.keys(obj).filter((key) => {
+    const value = obj[key];
+    return (
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      Object.keys(value).length === 0
+    );
+  });
+}
 
 export default {
   create_event,
