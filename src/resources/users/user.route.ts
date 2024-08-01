@@ -14,6 +14,7 @@ user_routes.post(
   auth.authorize_admin,
   user_controller.fetch_users,
 );
+user_routes.get("/my_profile", auth.authenticate, user_controller.user_profile);
 user_routes.post(
   "/organizer_requests",
   auth.authenticate,

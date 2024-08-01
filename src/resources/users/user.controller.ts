@@ -162,6 +162,56 @@ const review_organizer_request = async (req: Request, res: Response) => {
     return res.status;
   }
 };
+const user_profile = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.user;
+    const response = await user_service.get_user_by_email(email);
+    if (!response.data) {
+      return res.status(200).json(response);
+    }
+    const {
+      _id,
+      name,
+      is_admin,
+      is_organizer,
+      organizer_name,
+      preferences,
+      created_at,
+      updated_at,
+      last_login,
+      active,
+      profile_picture,
+      is_verified,
+      organizer_request_status,
+    } = response.data;
+    const user = {
+      _id,
+      name,
+      email,
+      is_admin,
+      is_organizer,
+      organizer_name,
+      preferences,
+      created_at,
+      updated_at,
+      last_login,
+      active,
+      is_verified,
+      profile_picture,
+      organizer_request_status,
+    };
+    const response_data = {
+      success: true,
+      message: "User profile fetched successfully",
+      data: user,
+    };
+    return res.status(200).json(response_data);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end;
+  }
+};
 const fetch_user = crud.getOne(User);
 export default {
   sign_up,
@@ -176,4 +226,5 @@ export default {
   become_organizer,
   fetch_oganizers_requests,
   review_organizer_request,
+  user_profile,
 };
