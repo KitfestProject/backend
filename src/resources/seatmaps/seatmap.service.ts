@@ -160,31 +160,26 @@ const fetch_sections = async (event_id: string) => {
 
   return createResponse(true, "Sections fetched successfully", data);
 };
-const update_section_seats = async (section_id: string, seats: ISeats[]) => {
-  const bulk_write_operation = seats.map((seat) => {
-    const filter = {
+const update_section_seats = async (section_id: string, seat: ISeats) => {
+  // console.log(seats);
+  const result = await Sections.findOneAndUpdate(
+    {
       _id: section_id,
-      "rows.seats.id": seat.id,
-    };
-    const update = {
+      "rows.seats._id": seat._id,
+    },
+    {
       $set: {
-        "rows.$[].seats.$[j]": seat,
+        seat,
       },
-    };
-    const arrayFilters = [{ "j.id": seat.id }];
-
-    return {
-      updateOne: {
-        filter,
-        update,
-        arrayFilters,
-      },
-    };
-  });
-  const result = await Sections.bulkWrite(bulk_write_operation);
-  if (!result) {
-    return createResponse(false, "Seats not updated", null);
-  }
+    },
+    {
+      returnDocument: "after",
+    },
+  );
+  console.log(result);
+  // if (result === 0) {
+  //   return createResponse(false, "Seats not updated", null);
+  // }
   return createResponse(true, "Seats updated successfully", null);
 };
 function count_section_seats(section: ISections) {

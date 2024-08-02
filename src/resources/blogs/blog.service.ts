@@ -28,7 +28,7 @@ const create_blog = async (author: IJwtPayload, data: IBlog) => {
   }
   const message = `Your blog ${data.name} has been published successfully`;
   const subject = "Blog Published";
-  send_email(author.email, subject, message, author.name);
+  await send_email(author.email, subject, message, author.name);
   return createResponse(true, "Blog created, and published successfully", blog);
 };
 const fetch_blogs = async (length: number, search: string, start: number) => {
