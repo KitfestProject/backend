@@ -26,9 +26,13 @@ const createOne =
   };
 const getMany =
   <T extends Document>(model: TModel<T>) =>
-  async (_: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
-      const docs = await model.find({});
+      const { start, limit } = req.query;
+      const docs = await model
+        .find({})
+        .skip(Number(start))
+        .limit(Number(limit));
       return res
         .status(200)
         .json(createResponse(true, "Data fetched Successfully", docs));
