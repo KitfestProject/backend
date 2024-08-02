@@ -5,7 +5,7 @@ services:
     image: oletepela/backend:latest
     container_name: theaterke-api
     ports:
-      - "5000:5000"
+      - "5100:5100"
       - "587:587"
     restart: on-failure
     env_file: .env
