@@ -44,6 +44,7 @@ const fetch_blogs = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const fetch_blogs_users = crud.getMany(Blogs);
 const fetch_blog = crud.getOne(Blogs);
 const update_blog = crud.updateOne(Blogs);
 const delete_blog = crud.deleteOne(Blogs);
@@ -54,4 +55,5 @@ export default {
   fetch_blog,
   update_blog,
   delete_blog,
+  fetch_blogs_users,
 };

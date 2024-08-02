@@ -34,5 +34,25 @@ const fetch_artists_admin = async (
     total_records,
   });
 };
+const fetch_artists = async (start: number, limit: number) => {
+  const artists = await Artists.find()
+    .skip(start)
+    .limit(limit)
+    .sort({ name: -1 })
+    .populate("category");
 
-export default { fetch_artists_admin };
+  const tranformed_artists = artists.map((artist) => ({
+    id: artist._id,
+    name: artist.name,
+    image: artist.image,
+    description: artist.description,
+    //@ts-ignore
+    category: artist.category ? artist.category.name : "No category",
+  }));
+  if (artists.length < 1) {
+    return createResponse(false, "No artists found", null);
+  }
+  return createResponse(true, "Artists found", tranformed_artists);
+};
+
+export default { fetch_artists_admin, fetch_artists };

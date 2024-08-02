@@ -26,9 +26,23 @@ const fetch_artists_admin = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+
+const get_artists = async (req: Request, res: Response) => {
+  try {
+    const { start, limit } = req.query;
+    const response = await artist_service.fetch_artists(
+      Number(start),
+      Number(limit),
+    );
+    return res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
 const create_artist = crud.createOne(Artists);
 const get_artist = crud.getOne(Artists);
-const get_artists = crud.getMany(Artists);
 const update_artist = crud.updateOne(Artists);
 const delete_artist = crud.deleteOne(Artists);
 
