@@ -56,8 +56,8 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            mkdir -p ${{ steps.repo_name.outputs.REPO_NAME }}
-            cd ${{ steps.repo_name.outputs.REPO_NAME }}
+            mkdir -p api-staging
+            cd api-staging
             echo '${{ secrets.ENV_FILE }}' > .env
             cat << EOF > docker-compose.yaml
             ${{ steps.copy_compose.outputs.file }}
