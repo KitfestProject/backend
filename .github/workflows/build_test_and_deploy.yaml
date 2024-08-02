@@ -36,10 +36,10 @@ jobs:
         run: |
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
       - name: Build Docker image
-        run: docker build -t oletepela/${{ steps.repo_name.outputs.REPO_NAME }} .
+        run: docker build -t oletepela/theatreke-prod .
 
       - name: Push Docker image to registry
-        run: docker push oletepela/${{ steps.repo_name.outputs.REPO_NAME }}
+        run: docker push oletepela/theatreke-prod
       - name: Copy compose file
         id: copy_compose
         run: |
