@@ -2,7 +2,7 @@ version: "3"
 
 services:
   SERVICE_NAME:
-    image: oletepela/backend:latest
+    image: oletepela/theatreke-prod:latest
     container_name: theaterke-api
     ports:
       - "5100:5100"
