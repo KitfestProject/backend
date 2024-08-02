@@ -40,7 +40,6 @@ const venues_schema = new Schema<IVenues>({
   },
   seat_map_url: {
     type: String,
-    required: true,
   },
   description: {
     type: String,

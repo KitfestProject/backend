@@ -2,7 +2,7 @@ import moment from "moment-timezone";
 import QRCode from "qrcode";
 import PDFDocument from "pdfkit";
 import fs from "fs";
-import { send_email } from "../../utils/email.js";
+import { send_email_with_attachment } from "../../utils/email.js";
 import { ISeats, ITickets, IUsers } from "../../../interfaces/index.js";
 import Sections from "../../database/models/sections.js";
 import Events from "../../database/models/events.js";
@@ -69,13 +69,15 @@ const book_ticket = async (
     seats,
     tickets,
   } = data;
+  // const user_to_notify = [];
   const event = await event_service.fetch_one_event(eventId);
   const event_data = event.data;
   if (!event_data) {
     logger.error("Event not found");
     return { success: false, message: "Could not proccess event" };
   }
-  if (seats.length > 0) {
+
+  if (event_data.has_seat_map) {
     const seat_ids = seats.map((seat) => seat.id);
     await Sections.updateMany(
       {
@@ -168,7 +170,7 @@ const book_ticket = async (
 
   const pdf = generate_ticket_pdf(ticket, qr_code) as string;
 
-  send_email(
+  await send_email_with_attachment(
     email,
     "Ticket Purchase",
     "You have successfully purchased a ticket",
@@ -188,7 +190,7 @@ function generate_ticket_pdf(ticket_data: ITickets, qr_code: string) {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
-  const output = `uploads/bookings/${ticket_data.id}-tickect.pdf`;
+  const output = `${dir}/${ticket_data.id}-tickect.pdf`;
   const doc = new PDFDocument({
     size: "A6",
     margins: {

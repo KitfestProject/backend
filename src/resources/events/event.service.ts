@@ -189,7 +189,7 @@ const change_event_status = async (id: string, status: string) => {
     const seat_map_data = seat_map.data;
     const validate_seatmap = find_emptyobject_keys(seat_map_data!);
     if (validate_seatmap.length > 0) {
-      send_email(
+      await send_email(
         // @ts-ignore
         event.organizer.email,
         `Event could not be published`,
@@ -208,7 +208,7 @@ const change_event_status = async (id: string, status: string) => {
   if (!updated_event) {
     return createResponse(false, "Could not update event status", null);
   }
-  const sent_email = send_email(
+  const sent_email = await send_email(
     // @ts-ignore
     event.organizer.email,
     `Event ${status}`,

@@ -8,7 +8,6 @@ import createResponse from "../../utils/response_envelope.js";
 import { create_token } from "../../utils/jwt.js";
 import { send_email } from "../../utils/email.js";
 import env_vars from "../../config/env_vars.js";
-import Events from "../../database/models/events.js";
 import logger from "../../utils/logging.js";
 
 const create_user = async (user: IUsers) => {
@@ -33,7 +32,12 @@ const create_user = async (user: IUsers) => {
   });
   const verification_link = `${env_vars.EMAIL_VERIFICATION_URL}?token=${token}`;
   const message = `Thank you for creating an account with us, we are super excited to have you. click this link <a href=${verification_link}>verify</a> to verify your email`;
-  send_email(new_user.email, "Welcome to Theater.ke", message, new_user.name);
+  await send_email(
+    new_user.email,
+    "Welcome to Theater.ke",
+    message,
+    new_user.name,
+  );
   let role = "user";
   if (new_user.is_admin) {
     role = "admin";
@@ -313,7 +317,7 @@ const become_organizer = async (id: string) => {
   if (!admin) {
     logger.error("Admin not found");
   }
-  send_email(
+  await send_email(
     admin!.email,
     "Organizer Request",
     `User ${user!.name} with email ${user!.email} has requested to become an organizer, please review the request`,
@@ -406,7 +410,7 @@ const review_organizer_request = async (
   if (!updated_user.success) {
     return createResponse(false, "Failed to update user", null);
   }
-  send_email(user.email, "Organizer Request", message, user.name);
+  await send_email(user.email, "Organizer Request", message, user.name);
   return createResponse(true, "Request reviewed successfully", null);
 };
 
