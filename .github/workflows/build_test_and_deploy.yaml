@@ -58,7 +58,7 @@ jobs:
           script: |
             mkdir -p api-staging
             cd api-staging
-            echo '${{ secrets.ENV_FILE }}' > .env
+            echo '${{ secrets.ENV_FILE_PROD }}' > .env
             cat << EOF > docker-compose.yaml
             ${{ steps.copy_compose.outputs.file }}
             EOF
