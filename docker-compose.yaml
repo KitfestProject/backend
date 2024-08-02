@@ -3,7 +3,7 @@ version: "3"
 services:
   SERVICE_NAME:
     image: oletepela/backend:latest
-    container_name: theaterke-api
+    container_name: theaterke-api-staging
     ports:
       - "5000:5000"
       - "587:587"
