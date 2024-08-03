@@ -60,7 +60,7 @@ const fetch_events = async (query: IEventQuery) => {
           query.paid ? { is_paid: query.paid } : {},
           query.location ? { location: query.location } : {},
           query.featured ? { featured: query.featured } : {},
-          { "event_date.start_date": { $gte: get_current_date_time() } },
+          { "event_date.end_date": { $gte: get_current_date_time() } },
           { status: "published" },
         ],
       },
