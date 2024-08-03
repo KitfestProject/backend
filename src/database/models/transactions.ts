@@ -27,7 +27,7 @@ const transactionsSchema = new Schema<ITransaction>({
   },
   ref_code: {
     type: String,
-    required: true,
+    default: "no_ref",
   },
   time: {
     type: String,

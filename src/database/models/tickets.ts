@@ -6,6 +6,7 @@ const ticketsSchema = new Schema<ITickets>({
   user_id: {
     type: Schema.Types.ObjectId,
     ref: "Users",
+    required: true,
   },
   event: {
     id: {

@@ -4,22 +4,39 @@ import createResponse from "../../utils/response_envelope.js";
 
 const fetch_tickets = async (
   organizer: string,
+  is_admin: boolean,
   start: number,
   length: number,
   search: string,
 ) => {
-  const tickets = await Tickets.find({
-    organizer,
-    $or: [
-      { ticket_type: { $regex: search, $options: "i" } },
-      { ticket_description: { $regex: search, $options: "i" } },
-    ],
-  })
-    .skip(start)
-    .limit(length)
-    .populate("user_id", "name")
-    .select("_id event  ticket_price purchased_at seat_number")
-    .sort({ purchased_at: -1 });
+  let tickets = [];
+  if (!is_admin) {
+    tickets = await Tickets.find({
+      organizer,
+      $or: [
+        { ticket_type: { $regex: search, $options: "i" } },
+        { ticket_description: { $regex: search, $options: "i" } },
+      ],
+    })
+      .skip(start)
+      .limit(length)
+      .populate("user_id", "name")
+      .select("_id event  ticket_price purchased_at seat_number")
+      .sort({ purchased_at: -1 });
+  } else {
+    tickets = await Tickets.find({
+      $or: [
+        { ticket_type: { $regex: search, $options: "i" } },
+        { ticket_description: { $regex: search, $options: "i" } },
+      ],
+    })
+      .skip(start)
+      .limit(length)
+      .sort({ purchased_at: -1 })
+      .populate("user_id", "name")
+      .select("_id event  ticket_price purchased_at seat_number")
+      .sort({ purchased_at: -1 });
+  }
 
   const tranformed_tickets = tickets
     .map((ticket: ITickets) => ({
