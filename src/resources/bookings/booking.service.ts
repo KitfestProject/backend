@@ -151,7 +151,7 @@ const book_ticket = async (
     events_id: eventId,
     amount,
     tx_processor: "Mpesa | Card",
-    ref_code: tx_processor.reference,
+    ref_code: tx_processor ? tx_processor.reference : "no_ref",
     time,
   });
   if (!ticket || !transaction) {
