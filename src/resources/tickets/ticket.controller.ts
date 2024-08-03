@@ -4,11 +4,12 @@ import logger from "../../utils/logging.js";
 
 const fetch_tickets = async (req: Request, res: Response) => {
   try {
-    const { id } = req.user;
+    const { id, is_admin } = req.user;
     const { length, start, draw, search } = req.body;
 
     const response = await ticket_service.fetch_tickets(
       id,
+      is_admin,
       start,
       length,
       search.value,

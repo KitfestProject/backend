@@ -2,7 +2,7 @@ import moment from "moment-timezone";
 import QRCode from "qrcode";
 import PDFDocument from "pdfkit";
 import fs from "fs";
-import { send_email_with_attachment } from "../../utils/email.js";
+import { send_email, send_email_with_attachment } from "../../utils/email.js";
 import { ISeats, ITickets, IUsers } from "../../../interfaces/index.js";
 import Sections from "../../database/models/sections.js";
 import Events from "../../database/models/events.js";
@@ -170,12 +170,11 @@ const book_ticket = async (
 
   const pdf = generate_ticket_pdf(ticket, qr_code) as string;
 
-  await send_email_with_attachment(
+  await send_email(
     email,
     "Ticket Purchase",
     "You have successfully purchased a ticket",
     user_name,
-    pdf,
   );
   return createResponse(true, "Ticket purchased, Check email", null);
 };
