@@ -106,7 +106,7 @@ const book_ticket = async (
         const current_quantity =
           event_data.tickets[ticket_index].ticket_quantity;
         if (current_quantity === 0) {
-          sold_out_message = `Ticket type with ID ${ticket.id} is sold out.`;
+          sold_out_message = `This ticket is sold out.`;
           break;
         } else {
           event_data.tickets[ticket_index].ticket_quantity -= 1;
