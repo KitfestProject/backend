@@ -35,7 +35,7 @@ export interface IEvents extends Document {
   tickets: ITickets[];
   organizer: Schema.Types.ObjectId;
   reviews: Schema.Types.ObjectId[];
-  attendees: [];
+  attendees: {}[]; //Indeicate the type of attendees
   description: string;
   duration: string;
   images: string[];
