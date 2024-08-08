@@ -26,7 +26,7 @@ const eventsSchema = new Schema<IEvents>(
         ref: "Reviews",
       },
     ],
-    attendees: [],
+    attendees: [{}],
     title: {
       type: String,
       required: true,

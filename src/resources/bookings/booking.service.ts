@@ -2,6 +2,7 @@ import moment from "moment-timezone";
 import QRCode from "qrcode";
 import PDFDocument from "pdfkit";
 import fs from "fs";
+import path from "path";
 import { send_email, send_email_with_attachment } from "../../utils/email.js";
 import { ISeats, ITickets, IUsers } from "../../../interfaces/index.js";
 import Sections from "../../database/models/sections.js";
@@ -25,7 +26,7 @@ type Booking = {
   paymentReference: string;
   tx_processor: paymentProcessorResponse;
   seats: Ticket[];
-  tickets: ITickets[];
+  tickets: Ticket[];
 };
 
 type Ticket = {
@@ -38,6 +39,7 @@ type Ticket = {
   lastName: string;
   email: string;
   phoneNumber: string;
+  ticketType: string;
 };
 type paymentProcessorResponse = {
   reference: string;
@@ -69,7 +71,7 @@ const book_ticket = async (
     seats,
     tickets,
   } = data;
-  // const user_to_notify = [];
+  const attendees_emails: string[] = [];
   const event = await event_service.fetch_one_event(eventId);
   const event_data = event.data;
   if (!event_data) {
@@ -79,6 +81,17 @@ const book_ticket = async (
 
   if (event_data.has_seat_map) {
     const seat_ids = seats.map((seat) => seat.id);
+    for (const seat of seats) {
+      event_data.attendees.push({
+        first_name: seat.firstName,
+        last_name: seat.lastName,
+        email: seat.email,
+        phone_number: seat.phoneNumber,
+        seat_number: seat.seatNumber,
+        section_abr: seat.sectionAbr,
+      });
+      attendees_emails.push(seat.email);
+    }
     await Sections.updateMany(
       {
         event_id: eventId,
@@ -112,6 +125,14 @@ const book_ticket = async (
           event_data.tickets[ticket_index].ticket_quantity -= 1;
         }
       }
+      event_data.attendees.push({
+        first_name: ticket.firstName,
+        last_name: ticket.lastName,
+        email: ticket.email,
+        phone_number: ticket.phoneNumber,
+        ticket_type: ticket.ticketType,
+      });
+      attendees_emails.push(ticket.email);
     }
 
     if (sold_out_message) {
@@ -130,20 +151,23 @@ const book_ticket = async (
   const title = event.data.title;
   const organizer = event.data.organizer;
 
-  const ticket = await Tickets.create({
-    user_id,
-    event: {
-      id: eventId,
-      title,
-    },
-    organizer,
-    ticket_price: amount,
-    seat_number: seats.map((seat) => seat.seatNumber) || null,
-    ticket_type: "E-Ticket",
-    purchased_at: time,
-    ticket_discount_price: discount,
-    ticket_quantity: seats.length || tickets.length,
-  });
+  const [ticket, _] = await Promise.all([
+    Tickets.create({
+      user_id,
+      event: {
+        id: eventId,
+        title,
+      },
+      organizer,
+      ticket_price: amount,
+      seat_number: seats.map((seat) => seat.seatNumber) || null,
+      ticket_type: "E-Ticket",
+      purchased_at: time,
+      ticket_discount_price: discount,
+      ticket_quantity: seats.length || tickets.length,
+    }),
+    event_data.save(),
+  ]);
 
   const transaction = await Transactions.create({
     ticket_id: ticket._id,
@@ -168,13 +192,14 @@ const book_ticket = async (
 
   const qr_code = await generate_qr_code(qr_code_data);
 
-  const pdf = generate_ticket_pdf(ticket, qr_code) as string;
-
-  await send_email(
-    email,
+  const pdf = (await generate_ticket_pdf(ticket, qr_code)) as string;
+  const emails = tickets.map((ticket) => ticket.email);
+  await send_email_with_attachment(
+    attendees_emails,
     "Ticket Purchase",
     "You have successfully purchased a ticket",
     user_name,
+    pdf,
   );
   return createResponse(true, "Ticket purchased, Check email", null);
 };
@@ -183,64 +208,75 @@ async function generate_qr_code(qr_code_data: {}) {
   return await QRCode.toDataURL(JSON.stringify(qr_code_data));
 }
 
-function generate_ticket_pdf(ticket_data: ITickets, qr_code: string) {
-  const dir = "./uploads/bookings";
-
+function generate_ticket_pdf(
+  ticket_data: ITickets,
+  qr_code: string,
+): Promise<string> {
+  const dir = path.join(process.cwd(), "uploads", "bookings");
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
-  const output = `${dir}/${ticket_data.id}-tickect.pdf`;
-  const doc = new PDFDocument({
-    size: "A6",
-    margins: {
-      top: 50,
-      bottom: 50,
-      left: 50,
-      right: 50,
-    },
-  });
+  const output = path.join(dir, `${ticket_data.id}-tickect.pdf`);
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({
+      size: "A6",
+      margins: {
+        top: 50,
+        bottom: 50,
+        left: 50,
+        right: 50,
+      },
+    });
+    const write_stream = fs.createWriteStream(output);
+    doc.pipe(write_stream);
+    doc
+      .rect(25, 25, doc.page.width - 50, doc.page.height - 50)
+      .strokeColor("#732e1c")
+      .lineWidth(2)
+      .stroke();
 
-  doc.pipe(fs.createWriteStream(output));
-  doc
-    .rect(25, 25, doc.page.width - 50, doc.page.height - 50)
-    .strokeColor("#732e1c")
-    .lineWidth(2)
-    .stroke();
+    doc
+      .fontSize(20)
+      .text("Ticket Information", {
+        align: "center",
+      })
+      .moveDown(1);
 
-  doc
-    .fontSize(20)
-    .text("Ticket Information", {
+    doc.fontSize(11);
+    const details = [
+      `Name: ${ticket_data.ticket_type}`,
+      `Event: ${ticket_data.event.title}`,
+      `Date: ${ticket_data.purchased_at}`,
+      `Seat: ${ticket_data.seat_number}`,
+    ];
+
+    details.forEach((detail) => {
+      doc.text(detail, {
+        align: "left",
+      });
+    });
+    doc.moveDown(2);
+    const qrImageSize = 150;
+    doc.image(qr_code, (doc.page.width - qrImageSize) / 2, doc.y, {
+      fit: [qrImageSize, qrImageSize],
       align: "center",
-    })
-    .moveDown(1);
+      valign: "center",
+    });
 
-  doc.fontSize(11);
-  const details = [
-    `Name: ${ticket_data.ticket_type}`,
-    `Event: ${ticket_data.event.title}`,
-    `Date: ${ticket_data.purchased_at}`,
-    `Seat: ${ticket_data.seat_number}`,
-  ];
+    doc.fontSize(8).text("Scan QR code at the entrance © Theater.ke", {
+      align: "center",
+    });
 
-  details.forEach((detail) => {
-    doc.text(detail, {
-      align: "left",
+    doc.end();
+    write_stream.on("finish", () => {
+      resolve(output);
+    });
+
+    write_stream.on("error", (err) => {
+      logger.error("Error writing ticket pdf", err);
+      reject(err);
     });
   });
-  doc.moveDown(2);
-  const qrImageSize = 150;
-  doc.image(qr_code, (doc.page.width - qrImageSize) / 2, doc.y, {
-    fit: [qrImageSize, qrImageSize],
-    align: "center",
-    valign: "center",
-  });
-
-  doc.fontSize(8).text("Scan QR code at the entrance © Theater.ke", {
-    align: "center",
-  });
-
-  doc.end();
-  return output;
 }
 // const verify_qr_code = async (data: qrda) => {};
 

@@ -4,6 +4,9 @@ import env_vars from "../config/env_vars.js";
 import sendgrid from "@sendgrid/mail";
 import fs from "fs";
 import request from "request";
+import path from "path";
+import { fileURLToPath } from "url";
+import createResponse from "./response_envelope.js";
 
 const API_KEY =
   "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";
@@ -17,40 +20,53 @@ export const send_email = async (
 ) => {
   sendgrid.setApiKey(API_KEY);
   const msg: any = {
-    to: to,
+    to,
     from: "noreply@theatreke.com",
-    subject: subject,
-    text: text,
+    subject,
+    text,
     html: HTML_TEMPLATE(text, subject, name),
   };
   await sendgrid.send(msg);
 };
-export const send_email_with_attachment = async (
-  to: string,
+export const send_email_with_attachment = (
+  to: string[],
   subject: string,
   text: string,
   name: string,
   pdf: string,
 ) => {
   sendgrid.setApiKey(API_KEY);
-  const attachments = pdf
-    ? [
+  fs.readFile(pdf, (err, data) => {
+    if (err) {
+      logger.error(err.message);
+      to.map((email) => {
+        send_email(
+          email,
+          "Instructions for ticket retrieval",
+          "Your ticket was saved on the system, but there was an issue sending the email, kindly contact support for assistance or verify using your name on the entry list at the event",
+          name,
+        );
+      });
+    }
+    if (data) {
+      const attachments = [
         {
+          content: data.toString("base64"),
           filename: "ticket.pdf",
-          content: fs.readFileSync(pdf).toString("base64"),
           type: "application/pdf",
           disposition: "attachment",
         },
-      ]
-    : [];
-  const msg = {
-    to,
-    from: "noreply@theatreke.com",
-    subject,
-    html: HTML_TEMPLATE(text, subject, name),
-    attachments,
-  };
-  await sendgrid.send(msg);
+      ];
+      const msg = {
+        to,
+        from: "noreply@theatreke.com",
+        subject,
+        html: HTML_TEMPLATE(text, subject, name),
+        attachments,
+      };
+      sendgrid.send(msg);
+    }
+  });
 };
 
 const HTML_TEMPLATE = (text: string, subject: string, name: string) => {
