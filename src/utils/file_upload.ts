@@ -26,4 +26,4 @@ function get_public_url(key: string) {
   return `${env_vars.ENDPOINT}/${env_vars.BUCKET}/${key}`;
 }
 
-export default { upload, get_public_url };
+export default { upload, get_public_url, s3 };

@@ -10,6 +10,8 @@ import seatmap_service from "../seatmaps/seatmap.service.js";
 import fs from "fs";
 import PDFDocument from "pdfkit";
 import path from "path";
+import env_vars from "../../config/env_vars.js";
+import files from "../../utils/file_upload.js";
 
 const create_event = async (event: IEvents) => {
   if (event.has_seat_map) {
@@ -240,11 +242,85 @@ function find_emptyobject_keys(obj: Record<string, any>): string[] {
     );
   });
 }
+const download_event_attendees = async (event_id: string) => {
+  const event = await fetch_one_event(event_id);
+  if (!event.success) {
+    return event;
+  }
+  const event_attendees = event.data?.attendees!;
+  const directory = process.cwd() + "/uploads";
+  const file_path = path.join(directory, `${event.data?.title}_attendees.pdf`);
+  const doc = new PDFDocument({ size: "A3", layout: "portrait" });
+  doc.pipe(fs.createWriteStream(file_path));
 
+  doc.fontSize(25).text("Event Attendees", 50, 50);
+  doc.fontSize(15).text("Event Name: " + event.data?.title, 50, 100);
+  doc
+    .fontSize(15)
+    .text(
+      "Event Date: " + event.data?.event_date.start_date.split("T")[0],
+      50,
+      130,
+    );
+  doc
+    .fontSize(14)
+    .text("Firstname", 50, 180)
+    .text("Lastname", 200, 180)
+    .text("Email", 350, 180)
+    .text("Phone", 550, 180)
+    .text("TT/SN", 700, 180);
+  doc.moveTo(50, 200).lineTo(800, 200).stroke();
+
+  let current_y = 210;
+  const sorted_attendees = event_attendees.sort((a: any, b: any) =>
+    a.first_name.localeCompare(b.first_name),
+  );
+  sorted_attendees.forEach((attendee: any, index: number) => {
+    if (index % 2 === 0) {
+      doc
+        .rect(50, current_y - 5, 750, 20)
+        .fill("#e0e0e0")
+        .fillColor("#000");
+    } else {
+      doc
+        .rect(50, current_y - 5, 750, 20)
+        .fill("#c18a73")
+        .fillColor("#000");
+    }
+    doc
+      .fontSize(12)
+      .text(attendee.first_name, 50, current_y)
+      .text(attendee.last_name, 200, current_y)
+      .text(attendee.email, 350, current_y, { width: 200, ellipsis: true })
+      .text(attendee.phone_number, 550, current_y)
+      .text(attendee.ticket_type || attendee.seat_number, 700, current_y);
+    current_y += 20;
+  });
+  doc.end();
+  const file_stream = fs.createReadStream(file_path);
+  const upload_params = {
+    Bucket: env_vars.BUCKET,
+    Key: path.basename(file_path),
+    Body: file_stream,
+    ACL: "public-read",
+    ContentType: "application/pdf",
+  };
+  const upload_response = await files.s3.upload(upload_params).promise();
+  if (!upload_response) {
+    return createResponse(false, "Could not upload file", null);
+  }
+  const public_url = files.get_public_url(upload_params.Key);
+  return createResponse(
+    true,
+    "Here is your link to download the pdf",
+    public_url,
+  );
+};
 export default {
   create_event,
   fetch_events,
   fetch_one_event,
   fetch_events_admin,
   change_event_status,
+  download_event_attendees,
 };
