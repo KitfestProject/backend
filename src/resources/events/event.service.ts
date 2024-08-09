@@ -252,6 +252,7 @@ const download_event_attendees = async (event_id: string) => {
   const file_path = path.join(directory, `${event.data?.title}_attendees.pdf`);
   const doc = new PDFDocument({ size: "A3", layout: "portrait" });
   doc.pipe(fs.createWriteStream(file_path));
+  console.log(event_attendees);
 
   doc.fontSize(25).text("Event Attendees", 50, 50);
   doc.fontSize(15).text("Event Name: " + event.data?.title, 50, 100);
@@ -297,7 +298,9 @@ const download_event_attendees = async (event_id: string) => {
     current_y += 20;
   });
   doc.end();
+  console.log("PDF created");
   const file_stream = fs.createReadStream(file_path);
+  console.log("Uploading to s3");
   const upload_params = {
     Bucket: env_vars.BUCKET,
     Key: path.basename(file_path),
@@ -306,6 +309,7 @@ const download_event_attendees = async (event_id: string) => {
     ContentType: "application/pdf",
   };
   const upload_response = await files.s3.upload(upload_params).promise();
+  console.log(upload_response);
   if (!upload_response) {
     return createResponse(false, "Could not upload file", null);
   }
