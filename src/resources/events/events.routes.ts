@@ -15,6 +15,10 @@ events_routes
   .patch(auth.authenticate, event_controller.update_event)
   .delete(auth.authenticate, event_controller.delete_event)
   .put(auth.authenticate, event_controller.change_event_status);
+events_routes.get(
+  "/:id/download_attendees",
+  event_controller.download_event_attendees_pdf,
+);
 events_routes.post(
   "/admin_fetch",
   auth.authenticate,

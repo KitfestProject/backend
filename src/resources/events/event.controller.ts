@@ -5,6 +5,20 @@ import events_service from "./event.service.js";
 import { IEventQuery, IEvents } from "../../../interfaces/index.js";
 import crud from "../../utils/crud.js";
 import Events from "../../database/models/events.js";
+import PDFDocument from "pdfkit";
+import fs from "fs";
+import path from "path";
+import AWS from "aws-sdk";
+import env_vars from "../../config/env_vars.js";
+import files from "../../utils/file_upload.js";
+
+const s3 = new AWS.S3({
+  accessKeyId: env_vars.ACCESS_KEY_ID,
+  secretAccessKey: env_vars.ACCESS_SECRET_KEY,
+  endpoint: env_vars.ENDPOINT,
+  region: env_vars.REGION,
+  s3ForcePathStyle: true,
+});
 
 const create_event = async (req: Request, res: Response) => {
   try {
@@ -105,10 +119,20 @@ const change_event_status = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const download_event_attendees_pdf = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const response = await events_service.download_event_attendees(id);
+    return res.status(200).json(response);
+  } catch (err) {
+    const error = err as Error;
+    logger.error(error.message);
+    return res.status(500).end();
+  }
+};
 const update_event = crud.updateOne(Events);
 
 const delete_event = crud.deleteOne(Events);
-
 export default {
   create_event,
   fetch_events,
@@ -117,4 +141,5 @@ export default {
   fetch_events_admin,
   update_event,
   change_event_status,
+  download_event_attendees_pdf,
 };
