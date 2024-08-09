@@ -248,7 +248,10 @@ const download_event_attendees = async (event_id: string) => {
     return event;
   }
   const event_attendees = event.data?.attendees!;
-  const directory = process.cwd() + "/uploads";
+  const directory = path.join(process.cwd(), "uploads");
+  if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory, { recursive: true });
+  }
   const file_path = path.join(directory, `${event.data?.title}_attendees.pdf`);
   const doc = new PDFDocument({ size: "A3", layout: "portrait" });
   doc.pipe(fs.createWriteStream(file_path));
