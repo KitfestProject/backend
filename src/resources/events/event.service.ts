@@ -7,6 +7,9 @@ import createResponse from "../../utils/response_envelope.js";
 import { send_email } from "../../utils/email.js";
 import logger from "../../utils/logging.js";
 import seatmap_service from "../seatmaps/seatmap.service.js";
+import fs from "fs";
+import PDFDocument from "pdfkit";
+import path from "path";
 
 const create_event = async (event: IEvents) => {
   if (event.has_seat_map) {
