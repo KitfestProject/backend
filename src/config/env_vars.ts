@@ -19,6 +19,7 @@ const {
   REGION,
   ENDPOINT,
   BUCKET,
+  VERIFY_QRCODE_URL,
 } = process.env;
 
 if (
@@ -35,7 +36,8 @@ if (
   !ACCESS_SECRET_KEY ||
   !REGION ||
   !ENDPOINT ||
-  !BUCKET
+  !BUCKET ||
+  !VERIFY_QRCODE_URL
 ) {
   logger.info("Missing environment variables");
   process.exit(1);
@@ -57,4 +59,5 @@ export default {
   REGION,
   ENDPOINT,
   BUCKET,
+  VERIFY_QRCODE_URL,
 };
