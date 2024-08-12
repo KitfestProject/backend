@@ -29,7 +29,7 @@ export const send_email = async (
   await sendgrid.send(msg);
 };
 export const send_email_with_attachment = (
-  to: string[],
+  to: string,
   subject: string,
   text: string,
   name: string,
@@ -39,14 +39,12 @@ export const send_email_with_attachment = (
   fs.readFile(pdf, (err, data) => {
     if (err) {
       logger.error(err.message);
-      to.map((email) => {
-        send_email(
-          email,
-          "Instructions for ticket retrieval",
-          "Your ticket was saved on the system, but there was an issue sending the email, kindly contact support for assistance or verify using your name on the entry list at the event",
-          name,
-        );
-      });
+      send_email(
+        to,
+        "Instructions for ticket retrieval",
+        "Your ticket was saved on the system, but there was an issue sending the email, kindly contact support for assistance or verify using your name on the entry list at the event",
+        name,
+      );
     }
     if (data) {
       const attachments = [
