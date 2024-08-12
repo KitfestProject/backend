@@ -127,6 +127,7 @@ export interface ITickets extends Document {
     id: Schema.Types.ObjectId;
     title: string;
   };
+  purchased_for: string;
   organizer: Schema.Types.ObjectId;
   seat_id: Schema.Types.ObjectId;
   ticket_type: string;
@@ -136,6 +137,10 @@ export interface ITickets extends Document {
   ticket_discount_price: number;
   ticket_quantity: number;
   _id: string;
+  validated: {
+    status: boolean;
+    validated_at: string;
+  };
 }
 export interface ITransaction {
   ticket_id: Schema.Types.ObjectId;

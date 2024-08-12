@@ -3,6 +3,7 @@ import QRCode from "qrcode";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
+import { Schema } from "mongoose";
 import { send_email, send_email_with_attachment } from "../../utils/email.js";
 import { ISeats, ITickets, IUsers } from "../../../interfaces/index.js";
 import Sections from "../../database/models/sections.js";
@@ -12,6 +13,7 @@ import event_service from "../events/event.service.js";
 import logger from "../../utils/logging.js";
 import Transactions from "../../database/models/transactions.js";
 import createResponse from "../../utils/response_envelope.js";
+import env_vars from "../../config/env_vars.js";
 
 type Booking = {
   firstName: string;
@@ -71,27 +73,17 @@ const book_ticket = async (
     seats,
     tickets,
   } = data;
-  const attendees_emails: string[] = [];
   const event = await event_service.fetch_one_event(eventId);
   const event_data = event.data;
   if (!event_data) {
     logger.error("Event not found");
     return { success: false, message: "Could not proccess event" };
   }
-
+  const time = moment().tz("Africa/Nairobi").format("YYYY-MM-DD HH:mm:ss");
+  const title = event.data.title;
+  const organizer = event.data.organizer;
   if (event_data.has_seat_map) {
     const seat_ids = seats.map((seat) => seat.id);
-    for (const seat of seats) {
-      event_data.attendees.push({
-        first_name: seat.firstName,
-        last_name: seat.lastName,
-        email: seat.email,
-        phone_number: seat.phoneNumber,
-        seat_number: seat.seatNumber,
-        section_abr: seat.sectionAbr,
-      });
-      attendees_emails.push(seat.email);
-    }
     await Sections.updateMany(
       {
         event_id: eventId,
@@ -109,6 +101,17 @@ const book_ticket = async (
         multi: true,
       },
     );
+
+    await handle_ticket_purchase(
+      seats,
+      user_id,
+      eventId,
+      title,
+      organizer,
+      time,
+      tx_processor,
+      event_data,
+    );
   } else {
     let sold_out_message = null;
     for (const ticket of tickets) {
@@ -125,85 +128,84 @@ const book_ticket = async (
           event_data.tickets[ticket_index].ticket_quantity -= 1;
         }
       }
-      event_data.attendees.push({
-        first_name: ticket.firstName,
-        last_name: ticket.lastName,
-        email: ticket.email,
-        phone_number: ticket.phoneNumber,
-        ticket_type: ticket.ticketType,
-      });
-      attendees_emails.push(ticket.email);
     }
-
     if (sold_out_message) {
       return createResponse(false, sold_out_message, null);
     }
+    await handle_ticket_purchase(
+      tickets,
+      user_id,
+      eventId,
+      title,
+      organizer,
+      time,
+      tx_processor,
+      event_data,
+    );
     const update_result = await Events.updateOne(
       { _id: eventId },
       { $set: { tickets: event_data.tickets } },
       { returnDocument: "after" },
     );
-
     logger.info("Event ticket purchase quantity updated", update_result);
   }
-
-  const time = moment().tz("Africa/Nairobi").format("YYYY-MM-DD HH:mm:ss");
-  const title = event.data.title;
-  const organizer = event.data.organizer;
-
-  const [ticket, _] = await Promise.all([
-    Tickets.create({
+  await event_data.save();
+  return createResponse(true, "Ticket purchased, Check email", null);
+};
+async function handle_ticket_purchase(
+  purchases: Ticket[],
+  user_id: string,
+  eventId: string,
+  title: string,
+  organizer: Schema.Types.ObjectId,
+  time: string,
+  tx_processor: paymentProcessorResponse | null,
+  event_data: any,
+) {
+  purchases.map(async (purchase) => {
+    const ticket = await Tickets.create({
       user_id,
       event: {
         id: eventId,
         title,
       },
       organizer,
-      ticket_price: amount,
-      seat_number: seats.map((seat) => seat.seatNumber) || null,
-      ticket_type: "E-Ticket",
+      purchased_for: purchase.lastName + " " + purchase.firstName,
+      ticket_price: purchase.amount,
+      seat_number: purchase.seatNumber,
+      ticket_type: purchase.ticketType || "General",
       purchased_at: time,
-      ticket_discount_price: discount,
-      ticket_quantity: seats.length || tickets.length,
-    }),
-    event_data.save(),
-  ]);
-
-  const transaction = await Transactions.create({
-    ticket_id: ticket._id,
-    user_id: user_id,
-    events_id: eventId,
-    amount,
-    tx_processor: "Mpesa | Card",
-    ref_code: tx_processor ? tx_processor.reference : "no_ref",
-    time,
+      ticket_discount_price: purchase.discount,
+      ticket_quantity: 1, // This is always 1 for now
+    });
+    await Transactions.create({
+      ticket_id: ticket._id,
+      user_id,
+      events_id: eventId,
+      amount: purchase.amount,
+      tx_processor: "Mpesa | Card",
+      ref_code: tx_processor ? tx_processor.reference : "no_ref",
+      time,
+    });
+    const qr_code_url = `${env_vars.VERIFY_QRCODE_URL}/${ticket._id}`;
+    const qr_code = await generate_qr_code(qr_code_url);
+    const pdf = (await generate_ticket_pdf(ticket, qr_code)) as string;
+    send_email_with_attachment(
+      purchase.email,
+      "Ticket Purchase",
+      "You have successfully purchased a ticket",
+      purchase.firstName,
+      pdf,
+    );
+    event_data.attendees.push({
+      first_name: purchase.firstName,
+      last_name: purchase.lastName,
+      email: purchase.email,
+      phone_number: purchase.phoneNumber,
+      ticket_type: "E-Ticket",
+    });
   });
-  if (!ticket || !transaction) {
-    logger.error("Could not create ticket");
-    return { success: false, message: "Could not create ticket" };
-  }
-  //Should be a url the points to the backend
-  const qr_code_data = {
-    ticket_id: ticket._id,
-    user_id,
-    event_id: eventId,
-    time,
-  };
-
-  const qr_code = await generate_qr_code(qr_code_data);
-
-  const pdf = (await generate_ticket_pdf(ticket, qr_code)) as string;
-  const emails = tickets.map((ticket) => ticket.email);
-  await send_email_with_attachment(
-    attendees_emails,
-    "Ticket Purchase",
-    "You have successfully purchased a ticket",
-    user_name,
-    pdf,
-  );
-  return createResponse(true, "Ticket purchased, Check email", null);
-};
-
+}
 async function generate_qr_code(qr_code_data: {}) {
   return await QRCode.toDataURL(JSON.stringify(qr_code_data));
 }
@@ -278,6 +280,34 @@ function generate_ticket_pdf(
     });
   });
 }
-// const verify_qr_code = async (data: qrda) => {};
+const verify_qr_code = async (ticket_id: string) => {
+  const ticket = await Tickets.findOne({ _id: ticket_id })
+    .populate("event.id")
+    .populate("user_id");
+  if (!ticket) {
+    return createResponse(false, "Invalid ticket", null);
+  }
+  if (ticket.validated.status) {
+    return createResponse(
+      false,
+      `Ticket already validated at ${ticket.validated.validated_at}`,
+      null,
+    );
+  }
+  ticket.validated.status = true;
+  ticket.validated.validated_at = moment()
+    .tz("Africa/Nairobi")
+    .format("YYYY-MM-DD HH:mm:ss");
 
-export default { book_ticket };
+  await ticket.save();
+  const data = {
+    ticket_type: ticket.ticket_type,
+    seat_number: ticket.seat_number,
+    //@ts-ignore
+    event: ticket.event.id.title,
+    validated_at: ticket.validated.validated_at,
+  };
+  return createResponse(true, "Ticket validated", data);
+};
+
+export default { book_ticket, verify_qr_code };
