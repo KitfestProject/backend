@@ -288,7 +288,7 @@ const download_event_attendees = async (event_id: string) => {
       doc
         .rect(50, current_y - 5, 750, 20)
         .fill("#c18a73")
-        .fillColor("#000");
+        .fillColor("#fff");
     }
     doc
       .fontSize(12)
