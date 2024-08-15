@@ -82,6 +82,7 @@ const book_ticket = async (
   const time = moment().tz("Africa/Nairobi").format("YYYY-MM-DD HH:mm:ss");
   const title = event.data.title;
   const organizer = event.data.organizer;
+  const attendees = [];
   if (event_data.has_seat_map) {
     const seat_ids = seats.map((seat) => seat.id);
     await Sections.updateMany(
@@ -112,6 +113,12 @@ const book_ticket = async (
       tx_processor,
       event_data,
     );
+    const update_result = await Events.updateOne(
+      { _id: eventId },
+      { $push: { attendees: event_data.attendees } },
+      { returnDocument: "after" },
+    );
+    logger.info("Event ticket purchase quantity updated", update_result);
   } else {
     let sold_out_message = null;
     for (const ticket of tickets) {
@@ -142,14 +149,7 @@ const book_ticket = async (
       tx_processor,
       event_data,
     );
-    const update_result = await Events.updateOne(
-      { _id: eventId },
-      { $set: { tickets: event_data.tickets } },
-      { returnDocument: "after" },
-    );
-    logger.info("Event ticket purchase quantity updated", update_result);
   }
-  await event_data.save();
   return createResponse(true, "Ticket purchased, Check email", null);
 };
 async function handle_ticket_purchase(
@@ -197,13 +197,20 @@ async function handle_ticket_purchase(
       purchase.firstName,
       pdf,
     );
-    event_data.attendees.push({
-      first_name: purchase.firstName,
-      last_name: purchase.lastName,
-      email: purchase.email,
-      phone_number: purchase.phoneNumber,
-      ticket_type: "E-Ticket",
-    });
+    await Events.updateOne(
+      { _id: eventId },
+      {
+        $push: {
+          attendees: {
+            first_name: purchase.firstName,
+            last_name: purchase.lastName,
+            email: purchase.email,
+            phone_number: purchase.phoneNumber,
+            ticket_type: purchase.seatNumber || "General",
+          },
+        },
+      },
+    );
   });
 }
 async function generate_qr_code(qr_code_data: {}) {
