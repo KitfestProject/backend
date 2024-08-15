@@ -206,7 +206,8 @@ async function handle_ticket_purchase(
             last_name: purchase.lastName,
             email: purchase.email,
             phone_number: purchase.phoneNumber,
-            ticket_type: purchase.seatNumber || "General",
+            ticket_type:
+              purchase.seatNumber || purchase.ticketType || "General",
           },
         },
       },
