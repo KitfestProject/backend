@@ -3,8 +3,9 @@ import { get_current_date_time } from "../../utils/date_time.js";
 import Blogs from "../../database/models/blogs.js";
 import createResponse from "../../utils/response_envelope.js";
 import { send_email } from "../../utils/email.js";
+import { Schema } from "mongoose";
 
-const create_blog = async (author: IJwtPayload, data: IBlog) => {
+const create_blog = async (email: string, name: string, data: IBlog) => {
   /*
   Notification should be sent to the autor of the blog
   if active is true else return saved to draft
@@ -28,7 +29,7 @@ const create_blog = async (author: IJwtPayload, data: IBlog) => {
   }
   const message = `Your blog ${data.name} has been published successfully`;
   const subject = "Blog Published";
-  await send_email(author.email, subject, message, author.name);
+  await send_email(email, subject, message, name);
   return createResponse(true, "Blog created, and published successfully", blog);
 };
 const fetch_blogs = async (length: number, search: string, start: number) => {
@@ -41,6 +42,8 @@ const fetch_blogs = async (length: number, search: string, start: number) => {
   })
     .skip(start)
     .limit(length)
+    .populate("author", "name")
+    .populate("category", "name")
     .select("_id cover_image name active category created_at")
     .sort({
       created_at: -1,
@@ -52,10 +55,32 @@ const fetch_blogs = async (length: number, search: string, start: number) => {
       null,
     );
   }
+  const transformed_blogs = blogs.map((blog: any) => ({
+    id: blog._id,
+    name: blog.name,
+    author_name: blog.author.name,
+    category: blog.category ? blog.category.name : "General",
+    cover_image: blog.cover_image,
+    active: blog.active,
+    created_at: blog.created_at,
+  }));
   return createResponse(true, "Blogs fetched successfully", {
-    blogs,
+    blogs: transformed_blogs,
     total_records,
   });
 };
-
-export default { create_blog, fetch_blogs };
+const fetch_blogs_users = async (length: number, start: number) => {
+  const blogs = await Blogs.find({ active: true })
+    .populate("author", "name")
+    .skip(start)
+    .limit(length);
+  if (blogs.length < 1) {
+    return createResponse(
+      false,
+      "No blogs published yet, check back later",
+      null,
+    );
+  }
+  return createResponse(true, "Blogs fetched successfully", blogs);
+};
+export default { create_blog, fetch_blogs, fetch_blogs_users };

@@ -8,8 +8,10 @@ import Blogs from "../../database/models/blogs.js";
 const create_blog = async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    const author = req.user as IJwtPayload;
-    const response = await blogs_service.create_blog(author, data);
+    const { email, name, id } = req.user;
+
+    data.author = id;
+    const response = await blogs_service.create_blog(email, name, data);
     if (!response.success) {
       return res.status(400).json(response);
     }
@@ -44,7 +46,23 @@ const fetch_blogs = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
-const fetch_blogs_users = crud.getMany(Blogs);
+const fetch_blogs_users = async (req: Request, res: Response) => {
+  try {
+    const { length, start } = req.query;
+    const response = await blogs_service.fetch_blogs_users(
+      Number(length),
+      Number(start),
+    );
+    if (!response.success) {
+      return res.status(400).json(response);
+    }
+    return res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status;
+  }
+};
 const fetch_blog = crud.getOne(Blogs);
 const update_blog = crud.updateOne(Blogs);
 const delete_blog = crud.deleteOne(Blogs);
