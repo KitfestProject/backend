@@ -11,6 +11,11 @@ const blog_schema = new Schema<IBlog>({
     type: String,
     required: true,
   },
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: "Users",
+    required: true,
+  },
   description: {
     type: String,
     required: true,
