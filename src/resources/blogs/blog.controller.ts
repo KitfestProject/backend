@@ -60,7 +60,28 @@ const fetch_blogs_users = async (req: Request, res: Response) => {
   } catch (error) {
     const err = error as Error;
     logger.error(err.message);
-    return res.status;
+    return res.status(500).end();
+  }
+};
+const change_blog_status = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const response = await blogs_service.change_blog_status(id);
+    return res.status(200).json(response);
+  } catch (err) {
+    const error = err as Error;
+    logger.error(error.message);
+    res.status(500).end();
+  }
+};
+const blog_stats = async (req: Request, res: Response) => {
+  try {
+    const response = await blogs_service.blogs_stats();
+    return res.status(200).json(response);
+  } catch (err) {
+    const error = err as Error;
+    logger.error(error.message);
+    return res.status(500).end();
   }
 };
 const fetch_blog = crud.getOne(Blogs);
@@ -74,4 +95,6 @@ export default {
   update_blog,
   delete_blog,
   fetch_blogs_users,
+  change_blog_status,
+  blog_stats,
 };

@@ -6,17 +6,10 @@ import { send_email } from "../../utils/email.js";
 import { Schema } from "mongoose";
 
 const create_blog = async (email: string, name: string, data: IBlog) => {
-  /*
-  Notification should be sent to the autor of the blog
-  if active is true else return saved to draft
-  */
   const created_at = get_current_date_time();
-
   data.created_at = created_at;
   data.updated_at = created_at;
-
   const blog = await Blogs.create(data);
-
   if (!blog) {
     return createResponse(
       false,
@@ -24,13 +17,7 @@ const create_blog = async (email: string, name: string, data: IBlog) => {
       null,
     );
   }
-  if (!data.active) {
-    return createResponse(true, "Blog saved to draft successfully", blog);
-  }
-  const message = `Your blog ${data.name} has been published successfully`;
-  const subject = "Blog Published";
-  await send_email(email, subject, message, name);
-  return createResponse(true, "Blog created, and published successfully", blog);
+  return createResponse(true, "Blog saved to draft successfully", blog);
 };
 const fetch_blogs = async (length: number, search: string, start: number) => {
   const total_records = await Blogs.countDocuments();
@@ -46,7 +33,7 @@ const fetch_blogs = async (length: number, search: string, start: number) => {
     .populate("category", "name")
     .select("_id cover_image name active category created_at")
     .sort({
-      created_at: -1,
+      created_at: 1,
     });
   if (!blogs) {
     return createResponse(
@@ -83,4 +70,41 @@ const fetch_blogs_users = async (length: number, start: number) => {
   }
   return createResponse(true, "Blogs fetched successfully", blogs);
 };
-export default { create_blog, fetch_blogs, fetch_blogs_users };
+const change_blog_status = async (blog_id: string) => {
+  const blog = await Blogs.findOne({ _id: blog_id }).populate(
+    "author",
+    "email name",
+  );
+  if (!blog) {
+    return createResponse(false, "Blog not found", null);
+  }
+  blog.active ? (blog.active = false) : (blog.active = true);
+  await blog.save();
+  const message = `Your blog ${blog.name} has been published successfully`;
+  const subject = "Blog Published";
+  //@ts-ignore
+  await send_email(blog.author.email, subject, message, blog.author.name);
+  const status = blog.active ? "published" : "saved to draft";
+  return createResponse(true, `Blog ${status} successfully`, blog);
+};
+const blogs_stats = async () => {
+  const blogs = await Blogs.find();
+  if (blogs.length < 1) {
+    return createResponse(false, "No blogs found", null);
+  }
+  const total_blogs = blogs.length;
+  const total_published = blogs.filter((blog: IBlog) => blog.active).length;
+  const total_drafts = total_blogs - total_published;
+  return createResponse(true, "Blogs stats fetched successfully", {
+    total_blogs,
+    total_published,
+    total_drafts,
+  });
+};
+export default {
+  create_blog,
+  fetch_blogs,
+  fetch_blogs_users,
+  change_blog_status,
+  blogs_stats,
+};
