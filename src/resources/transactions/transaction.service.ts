@@ -42,7 +42,6 @@ const fetch_transactions = async (
       .sort({ time: -1 });
     total_records = await Transactions.countDocuments();
   }
-
   const tranformed_transactions = transactions.map((transaction) => ({
     ref_code: transaction.ref_code,
     status: "completed",
