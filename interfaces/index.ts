@@ -155,6 +155,7 @@ export interface IBlog extends Document {
   name: String;
   description: String;
   category: Schema.Types.ObjectId;
+  author: Schema.Types.ObjectId;
   tags: String[];
   cover_image: string;
   content: String;
