@@ -265,13 +265,43 @@ const download_event_attendees = async (event_id: string) => {
       50,
       130,
     );
+  const columnWidths = {
+    no: 50,
+    firstName: 120,
+    lastName: 120,
+    email: 200,
+    phone: 120,
+    ticket: 150,
+  };
   doc
     .fontSize(14)
-    .text("Firstname", 50, 180)
-    .text("Lastname", 200, 180)
-    .text("Email", 350, 180)
-    .text("Phone", 550, 180)
-    .text("TT/SN", 700, 180);
+    .text("No", 50, 180)
+    .text("Firstname", 50 + columnWidths.no, 180)
+    .text("Lastname", 50 + columnWidths.no + columnWidths.firstName, 180)
+    .text(
+      "Email",
+      50 + columnWidths.no + columnWidths.firstName + columnWidths.lastName,
+      180,
+    )
+    .text(
+      "Phone",
+      50 +
+        columnWidths.no +
+        columnWidths.firstName +
+        columnWidths.lastName +
+        columnWidths.email,
+      180,
+    )
+    .text(
+      "TT/SN",
+      50 +
+        columnWidths.no +
+        columnWidths.firstName +
+        columnWidths.lastName +
+        columnWidths.email +
+        columnWidths.phone,
+      180,
+    );
   doc.moveTo(50, 200).lineTo(800, 200).stroke();
 
   let current_y = 210;
@@ -292,11 +322,38 @@ const download_event_attendees = async (event_id: string) => {
     }
     doc
       .fontSize(12)
-      .text(attendee.first_name, 50, current_y)
-      .text(attendee.last_name, 200, current_y)
-      .text(attendee.email, 350, current_y, { width: 200, ellipsis: true })
-      .text(attendee.phone_number, 550, current_y)
-      .text(attendee.ticket_type || attendee.seat_number, 700, current_y);
+      .text((index + 1).toString(), 50, current_y)
+      .text(attendee.first_name, 50 + columnWidths.no, current_y)
+      .text(
+        attendee.last_name,
+        50 + columnWidths.no + columnWidths.firstName,
+        current_y,
+      )
+      .text(
+        attendee.email,
+        50 + columnWidths.no + columnWidths.firstName + columnWidths.lastName,
+        current_y,
+        { width: columnWidths.email, ellipsis: true },
+      )
+      .text(
+        attendee.phone_number,
+        50 +
+          columnWidths.no +
+          columnWidths.firstName +
+          columnWidths.lastName +
+          columnWidths.email,
+        current_y,
+      )
+      .text(
+        attendee.ticket_type || attendee.seat_number || "General",
+        50 +
+          columnWidths.no +
+          columnWidths.firstName +
+          columnWidths.lastName +
+          columnWidths.email +
+          columnWidths.phone,
+        current_y,
+      );
     current_y += 20;
   });
   doc.end();
