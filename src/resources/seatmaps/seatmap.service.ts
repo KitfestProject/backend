@@ -80,6 +80,17 @@ const fetch_section_by_abbr_name = async (
       return createResponse(false, "Section not found", null);
   }
 };
+const update_section = async (id: string, data: ISections) => {
+  const section = await Sections.findOneAndUpdate({
+    _id: id,
+    data,
+    returnDocument: "after",
+  });
+  if (!section) {
+    return createResponse(false, "Failed to update section", null);
+  }
+  return createResponse(true, "Section updated succesfully", section);
+};
 const fetch_sections = async (event_id: string) => {
   const data = {
     downStairsLeftSection: {} as ISections,
@@ -207,4 +218,9 @@ type IResponse = {
   total_seats: number;
 };
 
-export default { create_seatmap_section, fetch_sections, update_section_seats };
+export default {
+  create_seatmap_section,
+  fetch_sections,
+  update_section_seats,
+  update_section,
+};
