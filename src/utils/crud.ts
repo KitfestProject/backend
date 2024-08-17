@@ -63,7 +63,7 @@ const updateOne =
     try {
       const { id } = req.params;
       let data = req.body;
-      //data = collection.convert_keys(data);
+      data = collection.convert_keys(data);
       const updated_at = get_current_date_time();
       data.updated_at = updated_at;
       const doc = await model.findOneAndUpdate({ _id: id }, data, {
