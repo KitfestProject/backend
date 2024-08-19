@@ -166,11 +166,18 @@ export interface IBlog extends Document {
 export interface IArtist extends Document {
   name: string;
   email: string;
+  role: string;
   category: Schema.Types.ObjectId;
   description: string;
   image: string;
+  active: boolean;
+  artist_content: IArtistContent[];
   created_at: string;
   updated_at: string;
+}
+export interface IArtistContent {
+  title: string;
+  content: string;
 }
 export interface IWishlist extends Document {
   event: Schema.Types.ObjectId;

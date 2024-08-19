@@ -16,6 +16,9 @@ const artist_schema = new Schema<IArtist>({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+  },
   email: {
     type: String,
   },
@@ -23,6 +26,11 @@ const artist_schema = new Schema<IArtist>({
     type: String,
     required: true,
   },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  artist_content: [{}],
   created_at: {
     type: String,
     required: true,
