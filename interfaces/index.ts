@@ -168,12 +168,27 @@ export interface IArtist extends Document {
   email: string;
   role: string;
   category: Schema.Types.ObjectId;
-  description: string;
   image: string;
   active: boolean;
   artist_content: IArtistContent[];
   created_at: string;
   updated_at: string;
+}
+export interface ITeamMembers extends Document {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  position: string;
+  team: string;
+  image: string;
+  social_details: ISocialDetails[];
+  created_at: string;
+  updated_at: string;
+}
+interface ISocialDetails {
+  social_type: string;
+  social_link: string;
 }
 export interface IArtistContent {
   title: string;
