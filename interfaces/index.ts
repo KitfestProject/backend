@@ -182,13 +182,13 @@ export interface ITeamMembers extends Document {
   position: string;
   team: string;
   image: string;
-  social_details: ISocialDetails[];
+  socials: ISocialDetails[];
   created_at: string;
   updated_at: string;
 }
 interface ISocialDetails {
-  social_type: string;
-  social_link: string;
+  type: string;
+  link: string;
 }
 export interface IArtistContent {
   title: string;

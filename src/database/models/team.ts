@@ -31,7 +31,7 @@ const team = new Schema<ITeamMembers>({
     type: String,
     required: true,
   },
-  social_details: [{}],
+  socials: [{}],
   created_at: {
     type: String,
     required: true,
