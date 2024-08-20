@@ -12,10 +12,6 @@ const artist_schema = new Schema<IArtist>({
     ref: "Categories",
     required: true,
   },
-  description: {
-    type: String,
-    required: true,
-  },
   role: {
     type: String,
   },

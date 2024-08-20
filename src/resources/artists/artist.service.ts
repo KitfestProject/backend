@@ -9,7 +9,7 @@ const fetch_artists_admin = async (
   const artists = await Artists.find({
     $or: [
       { name: { $regex: search, $options: "i" } },
-      { description: { $regex: search, $options: "i" } },
+      { role: { $regex: search, $options: "i" } },
     ],
   })
     .skip(start)
@@ -21,8 +21,8 @@ const fetch_artists_admin = async (
   const tranformed_artists = artists.map((artist) => ({
     id: artist._id,
     name: artist.name,
-    description: artist.description,
     email: artist.email,
+    role: artist.role,
     image: artist.image,
     created_at: artist.created_at,
   }));
@@ -45,7 +45,7 @@ const fetch_artists = async (start: number, limit: number) => {
     id: artist._id,
     name: artist.name,
     image: artist.image,
-    description: artist.description,
+    role: artist.role,
     //@ts-ignore
     category: artist.category ? artist.category.name : "No category",
   }));
