@@ -81,11 +81,10 @@ const fetch_section_by_abbr_name = async (
   }
 };
 const update_section = async (id: string, data: ISections) => {
-  const section = await Sections.findOneAndUpdate({
-    _id: id,
-    data,
-    returnDocument: "after",
-  });
+  const section = await Sections.findOneAndUpdate(
+    { _id: id },
+    { data, returnDocument: "after" },
+  );
   if (!section) {
     return createResponse(false, "Failed to update section", null);
   }
@@ -204,19 +203,6 @@ function count_section_seats(section: ISections) {
   });
   return total_seats;
 }
-
-type IResponse = {
-  downStairsLeftSection: ISections;
-  downStairsMiddleSection: ISections;
-  downStairsRightSection: ISections;
-  upstairsFrontRightSection: ISections;
-  upstairsFrontLeftSection: ISections;
-  upstairsFrontMiddleSection: ISections;
-  upstairsBackLeftSection: ISections;
-  upstairsBackRightSection: ISections;
-  upstairsBackMiddleSection: ISections;
-  total_seats: number;
-};
 
 export default {
   create_seatmap_section,
