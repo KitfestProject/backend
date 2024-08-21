@@ -23,7 +23,7 @@ const create_wishlist = async (user: string, event: string) => {
   if (!update_event) {
     return createResponse(false, "Could not update event", null);
   }
-  const count = await Wishlists.countDocuments({ event });
+  const count = update_event.wishlist_count;
   return createResponse(true, "Wishlist created", { count });
 };
 const fetch_wishlist = async (user: string) => {
