@@ -12,6 +12,7 @@ import PDFDocument from "pdfkit";
 import path from "path";
 import env_vars from "../../config/env_vars.js";
 import files from "../../utils/file_upload.js";
+import Wishlists from "../../database/models/wishlists.js";
 
 const create_event = async (event: IEvents) => {
   if (event.has_seat_map) {

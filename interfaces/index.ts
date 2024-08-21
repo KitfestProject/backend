@@ -35,6 +35,7 @@ export interface IEvents extends Document {
   tickets: ITickets[];
   organizer: Schema.Types.ObjectId;
   reviews: Schema.Types.ObjectId[];
+  wishlist_count: number;
   attendees: {}[]; //Indeicate the type of attendees
   description: string;
   duration: string;
