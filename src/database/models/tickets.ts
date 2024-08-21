@@ -8,6 +8,9 @@ const ticketsSchema = new Schema<ITickets>({
     ref: "Users",
     required: true,
   },
+  purchased_for: {
+    type: String,
+  },
   event: {
     id: {
       type: Schema.Types.ObjectId,
@@ -49,6 +52,15 @@ const ticketsSchema = new Schema<ITickets>({
   ticket_quantity: {
     type: Number,
     required: true,
+  },
+  validated: {
+    status: {
+      type: Boolean,
+      default: false,
+    },
+    validated_at: {
+      type: String,
+    },
   },
 });
 

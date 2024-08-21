@@ -46,6 +46,7 @@ const fetch_venues_admin = async (req: Request, res: Response) => {
 
 const get_venues = crud.getMany(Venues);
 const get_venue = crud.getOne(Venues);
+const update_venue = crud.updateOne(Venues);
 const remove_venue = crud.deleteOne(Venues);
 
 export default {
@@ -53,6 +54,7 @@ export default {
   get_venue,
   create_venue,
   remove_venue,
+  update_venue,
   fetch_venues,
   fetch_venues_admin,
 };

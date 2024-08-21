@@ -15,6 +15,7 @@ import transaction_router from "../resources/transactions/transaction.router.js"
 import overview_router from "../resources/overview/overview.router.js";
 import wishlist_router from "../resources/wishlists/wishlist.router.js";
 import search_router from "../resources/search/search.router.js";
+import team_router from "../resources/team/team.router.js";
 
 const api = Router();
 
@@ -34,5 +35,6 @@ api.use("/transactions", transaction_router);
 api.use("/overview", overview_router);
 api.use("/wishlist", wishlist_router);
 api.use("/search", search_router);
+api.use("/team", team_router);
 
 export default api;

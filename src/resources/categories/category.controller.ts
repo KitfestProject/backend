@@ -13,11 +13,11 @@ const fetch_categories_admin = async (req: Request, res: Response) => {
       Number(length),
       value,
     );
-    const { categories, total_records, filtered_records } = response.data;
+    const { categories, total_records } = response.data;
     return res.status(200).json({
       draw,
       recordsTotal: total_records,
-      recordsFiltered: filtered_records,
+      recordsFiltered: total_records,
       data: categories,
     });
   } catch (error) {

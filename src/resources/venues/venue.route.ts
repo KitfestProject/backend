@@ -16,6 +16,7 @@ venue_routes.get("/", venue_controller.get_venues);
 venue_routes
   .route("/:id")
   .get(venue_controller.get_venue)
+  .patch(auth.authenticate, auth.authorize_admin, venue_controller.update_venue)
   .delete(venue_controller.remove_venue);
 
 export default venue_routes;

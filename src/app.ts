@@ -5,9 +5,14 @@ import env_vars from "./config/env_vars.js";
 import logger from "./utils/logging.js";
 import api from "./api/index.js";
 import db from "./database/index.js";
+import path from "path";
 
 const app = express();
 
+const dir = process.cwd();
+app.set("views", path.join(dir, "public"));
+app.set("view engine", "ejs");
+app.use(express.static(path.join(dir, "public")));
 app.use(express.json());
 app.use(cors());
 

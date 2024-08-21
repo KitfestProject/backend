@@ -23,7 +23,8 @@ const fetch_transactions = async (
       .populate("user_id", "name")
       .skip(start)
       .limit(length)
-      .select("ref_code status amount time");
+      .select("ref_code status amount time")
+      .sort({ time: -1 });
     total_records = await Transactions.countDocuments({
       events_id: { $in: event_ids },
     });
@@ -37,7 +38,8 @@ const fetch_transactions = async (
       .populate("user_id", "name")
       .skip(start)
       .limit(length)
-      .select("ref_code status amount time");
+      .select("ref_code status amount time")
+      .sort({ time: -1 });
     total_records = await Transactions.countDocuments();
   }
   const tranformed_transactions = transactions.map((transaction) => ({

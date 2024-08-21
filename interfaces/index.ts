@@ -35,6 +35,7 @@ export interface IEvents extends Document {
   tickets: ITickets[];
   organizer: Schema.Types.ObjectId;
   reviews: Schema.Types.ObjectId[];
+  wishlist_count: number;
   attendees: {}[]; //Indeicate the type of attendees
   description: string;
   duration: string;
@@ -127,6 +128,7 @@ export interface ITickets extends Document {
     id: Schema.Types.ObjectId;
     title: string;
   };
+  purchased_for: string;
   organizer: Schema.Types.ObjectId;
   seat_id: Schema.Types.ObjectId;
   ticket_type: string;
@@ -136,6 +138,10 @@ export interface ITickets extends Document {
   ticket_discount_price: number;
   ticket_quantity: number;
   _id: string;
+  validated: {
+    status: boolean;
+    validated_at: string;
+  };
 }
 export interface ITransaction {
   ticket_id: Schema.Types.ObjectId;
@@ -150,6 +156,7 @@ export interface IBlog extends Document {
   name: String;
   description: String;
   category: Schema.Types.ObjectId;
+  author: Schema.Types.ObjectId;
   tags: String[];
   cover_image: string;
   content: String;
@@ -160,11 +167,33 @@ export interface IBlog extends Document {
 export interface IArtist extends Document {
   name: string;
   email: string;
+  role: string;
   category: Schema.Types.ObjectId;
-  description: string;
   image: string;
+  active: boolean;
+  artist_content: IArtistContent[];
   created_at: string;
   updated_at: string;
+}
+export interface ITeamMembers extends Document {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  position: string;
+  team: string;
+  image: string;
+  socials: ISocialDetails[];
+  created_at: string;
+  updated_at: string;
+}
+interface ISocialDetails {
+  type: string;
+  link: string;
+}
+export interface IArtistContent {
+  title: string;
+  content: string;
 }
 export interface IWishlist extends Document {
   event: Schema.Types.ObjectId;
@@ -211,4 +240,5 @@ export interface IEventQuery {
   date: string;
   paid: string;
   featured: boolean;
+  past: boolean;
 }

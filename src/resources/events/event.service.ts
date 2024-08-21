@@ -12,6 +12,7 @@ import PDFDocument from "pdfkit";
 import path from "path";
 import env_vars from "../../config/env_vars.js";
 import files from "../../utils/file_upload.js";
+import Wishlists from "../../database/models/wishlists.js";
 
 const create_event = async (event: IEvents) => {
   if (event.has_seat_map) {
@@ -57,6 +58,43 @@ const create_event = async (event: IEvents) => {
 };
 
 const fetch_events = async (query: IEventQuery) => {
+  let past_events = [];
+  if (query.past) {
+    past_events = await Events.aggregate([
+      {
+        $match: {
+          $and: [
+            query.date ? { "event_date.start_date": query.date } : {},
+            query.paid ? { is_paid: query.paid } : {},
+            query.location ? { location: query.location } : {},
+            query.featured ? { featured: query.featured } : {},
+            { "event_date.end_date": { $lt: get_current_date_time() } },
+            { status: "published" },
+          ],
+        },
+      },
+      {
+        $sort: {
+          "event_date.start_date": -1,
+        },
+      },
+      {
+        $limit: query.limit ? query.limit : 6,
+      },
+      {
+        $skip: query.start ? query.start : 0,
+      },
+      {
+        $project: {
+          title: 1,
+          address: 1,
+          description: 1,
+          cover_image: 1,
+          "event_date.start_date": 1,
+        },
+      },
+    ]);
+  }
   const events = await Events.aggregate([
     {
       $match: {
@@ -92,11 +130,21 @@ const fetch_events = async (query: IEventQuery) => {
     },
   ]);
 
-  if (!events) {
+  if (events.length < 1 && past_events.length < 1) {
     return createResponse(false, "No events found", null);
   }
-  return createResponse(true, "Events found", events);
+  let data;
+  if (past_events.length < 1) {
+    data = events;
+  } else {
+    data = {
+      upcoming: events,
+      past: past_events,
+    };
+  }
+  return createResponse(true, "Events found", data);
 };
+
 const fetch_events_admin = async (
   organizer_id: string,
   is_admin: boolean,
@@ -265,13 +313,43 @@ const download_event_attendees = async (event_id: string) => {
       50,
       130,
     );
+  const columnWidths = {
+    no: 50,
+    firstName: 120,
+    lastName: 120,
+    email: 200,
+    phone: 120,
+    ticket: 150,
+  };
   doc
     .fontSize(14)
-    .text("Firstname", 50, 180)
-    .text("Lastname", 200, 180)
-    .text("Email", 350, 180)
-    .text("Phone", 550, 180)
-    .text("TT/SN", 700, 180);
+    .text("No", 50, 180)
+    .text("Firstname", 50 + columnWidths.no, 180)
+    .text("Lastname", 50 + columnWidths.no + columnWidths.firstName, 180)
+    .text(
+      "Email",
+      50 + columnWidths.no + columnWidths.firstName + columnWidths.lastName,
+      180,
+    )
+    .text(
+      "Phone",
+      50 +
+        columnWidths.no +
+        columnWidths.firstName +
+        columnWidths.lastName +
+        columnWidths.email,
+      180,
+    )
+    .text(
+      "TT/SN",
+      50 +
+        columnWidths.no +
+        columnWidths.firstName +
+        columnWidths.lastName +
+        columnWidths.email +
+        columnWidths.phone,
+      180,
+    );
   doc.moveTo(50, 200).lineTo(800, 200).stroke();
 
   let current_y = 210;
@@ -288,15 +366,42 @@ const download_event_attendees = async (event_id: string) => {
       doc
         .rect(50, current_y - 5, 750, 20)
         .fill("#c18a73")
-        .fillColor("#000");
+        .fillColor("#fff");
     }
     doc
       .fontSize(12)
-      .text(attendee.first_name, 50, current_y)
-      .text(attendee.last_name, 200, current_y)
-      .text(attendee.email, 350, current_y, { width: 200, ellipsis: true })
-      .text(attendee.phone_number, 550, current_y)
-      .text(attendee.ticket_type || attendee.seat_number, 700, current_y);
+      .text((index + 1).toString(), 50, current_y)
+      .text(attendee.first_name, 50 + columnWidths.no, current_y)
+      .text(
+        attendee.last_name,
+        50 + columnWidths.no + columnWidths.firstName,
+        current_y,
+      )
+      .text(
+        attendee.email,
+        50 + columnWidths.no + columnWidths.firstName + columnWidths.lastName,
+        current_y,
+        { width: columnWidths.email, ellipsis: true },
+      )
+      .text(
+        attendee.phone_number,
+        50 +
+          columnWidths.no +
+          columnWidths.firstName +
+          columnWidths.lastName +
+          columnWidths.email,
+        current_y,
+      )
+      .text(
+        attendee.ticket_type || attendee.seat_number || "General",
+        50 +
+          columnWidths.no +
+          columnWidths.firstName +
+          columnWidths.lastName +
+          columnWidths.email +
+          columnWidths.phone,
+        current_y,
+      );
     current_y += 20;
   });
   doc.end();

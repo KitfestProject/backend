@@ -1,5 +1,6 @@
 import Wishlists from "../../database/models/wishlists.js";
 import createResponse from "../../utils/response_envelope.js";
+import Events from "../../database/models/events.js";
 
 const create_wishlist = async (user: string, event: string) => {
   const existing_wishlist = await Wishlists.findOne({ user, event });
@@ -10,7 +11,19 @@ const create_wishlist = async (user: string, event: string) => {
   if (!wishlist) {
     return createResponse(false, "Could not create wishlist", null);
   }
-  const count = await Wishlists.countDocuments({ user });
+  const update_event = await Events.findOneAndUpdate(
+    {
+      _id: event,
+    },
+    {
+      $inc: { wishlist_count: 1 },
+    },
+    { returnDocument: "after" },
+  );
+  if (!update_event) {
+    return createResponse(false, "Could not update event", null);
+  }
+  const count = update_event.wishlist_count;
   return createResponse(true, "Wishlist created", { count });
 };
 const fetch_wishlist = async (user: string) => {

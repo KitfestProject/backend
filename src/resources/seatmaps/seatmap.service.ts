@@ -80,6 +80,16 @@ const fetch_section_by_abbr_name = async (
       return createResponse(false, "Section not found", null);
   }
 };
+const update_section = async (id: string, data: ISections) => {
+  const section = await Sections.findOneAndUpdate({ _id: id }, data, {
+    returnDocument: "after",
+  });
+  console.log(section);
+  if (!section) {
+    return createResponse(false, "Failed to update section", null);
+  }
+  return createResponse(true, "Section updated succesfully", section);
+};
 const fetch_sections = async (event_id: string) => {
   const data = {
     downStairsLeftSection: {} as ISections,
@@ -162,24 +172,23 @@ const fetch_sections = async (event_id: string) => {
 };
 const update_section_seats = async (section_id: string, seat: ISeats) => {
   // console.log(seats);
-  const result = await Sections.findOneAndUpdate(
+  const result = await Sections.updateOne(
     {
       _id: section_id,
       "rows.seats._id": seat._id,
     },
     {
       $set: {
-        seat,
+        "rows.$[].seats.$[seat]": seat,
       },
     },
     {
-      returnDocument: "after",
+      arrayFilters: [{ "seat._id": seat._id }],
     },
   );
-  console.log(result);
-  // if (result === 0) {
-  //   return createResponse(false, "Seats not updated", null);
-  // }
+  if (result.matchedCount < 0) {
+    return createResponse(false, "Failed to update seat.", null);
+  }
   return createResponse(true, "Seats updated successfully", null);
 };
 function count_section_seats(section: ISections) {
@@ -194,17 +203,9 @@ function count_section_seats(section: ISections) {
   return total_seats;
 }
 
-type IResponse = {
-  downStairsLeftSection: ISections;
-  downStairsMiddleSection: ISections;
-  downStairsRightSection: ISections;
-  upstairsFrontRightSection: ISections;
-  upstairsFrontLeftSection: ISections;
-  upstairsFrontMiddleSection: ISections;
-  upstairsBackLeftSection: ISections;
-  upstairsBackRightSection: ISections;
-  upstairsBackMiddleSection: ISections;
-  total_seats: number;
+export default {
+  create_seatmap_section,
+  fetch_sections,
+  update_section_seats,
+  update_section,
 };
-
-export default { create_seatmap_section, fetch_sections, update_section_seats };

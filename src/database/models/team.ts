@@ -1,38 +1,37 @@
 import { Schema, model } from "mongoose";
-import { IBlog } from "../../../interfaces/index.js";
+import { ITeamMembers } from "../../../interfaces";
 import { TModel } from "../../../types/index.js";
 
-const blog_schema = new Schema<IBlog>({
-  category: {
-    type: Schema.Types.ObjectId,
-    ref: "Categories",
-  },
-  name: {
+const team = new Schema<ITeamMembers>({
+  first_name: {
     type: String,
     required: true,
   },
-  author: {
-    type: Schema.Types.ObjectId,
-    ref: "Users",
-    required: true,
-  },
-  description: {
+  last_name: {
     type: String,
     required: true,
   },
-  cover_image: {
+  email: {
     type: String,
     required: true,
   },
-  tags: [{ type: String }],
-  content: {
+  phone: {
     type: String,
     required: true,
   },
-  active: {
-    type: Boolean,
+  position: {
+    type: String,
     required: true,
   },
+  team: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+    required: true,
+  },
+  socials: [{}],
   created_at: {
     type: String,
     required: true,
@@ -43,5 +42,5 @@ const blog_schema = new Schema<IBlog>({
   },
 });
 
-const Blogs: TModel<IBlog> = model("Blogs", blog_schema);
-export default Blogs;
+const Team: TModel<ITeamMembers> = model("Team", team);
+export default Team;

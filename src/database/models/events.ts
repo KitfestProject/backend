@@ -15,6 +15,10 @@ const eventsSchema = new Schema<IEvents>(
       required: true,
     },
     tickets: [],
+    wishlist_count: {
+      type: Number,
+      default: 0,
+    },
     organizer: {
       type: Schema.Types.ObjectId,
       ref: "Users",

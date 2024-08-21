@@ -19,7 +19,6 @@ const fetch_categories_admin = async (
   const total_records = await Categories.countDocuments();
   return createResponse(true, "Categories fetched successfully", {
     categories,
-    filtered_records: categories.length,
     total_records,
   });
 };

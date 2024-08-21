@@ -14,18 +14,28 @@ const book_ticket = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
-// const verify_qr_code = async (req: Request, res: Response) => {
-//   try {
-//     const { qr_code } = req.params;
-//     // const response = await booking_service.verify_qr_code(qr_code);
-//     // return res.status(200).json(response);
-//   } catch (err) {
-//     const error = err as Error;
-//     logger.error(error.message);
-//     return res.status(500).end();
-//   }
-// };
+const verify_qr_code = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const response = await booking_service.verify_qr_code(id);
+    if (!response.success) {
+      return res.render("error", {
+        message: response.message,
+      });
+    }
+    return res.render("ticket", {
+      eventTitle: response.data?.event,
+      ticketType: response.data?.ticket_type,
+      validatedAt: response.data?.validated_at,
+    });
+  } catch (err) {
+    const error = err as Error;
+    logger.error(error.message);
+    return res.status(500).end();
+  }
+};
 
 export default {
   book_ticket,
+  verify_qr_code,
 };
