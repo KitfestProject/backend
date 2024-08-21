@@ -46,7 +46,7 @@ const fetch_events = async (req: Request, res: Response) => {
         req.query[key] = undefined;
       }
     }
-    const { date, location, limit, paid, featured, start } = req.query;
+    const { date, location, limit, paid, featured, start, past } = req.query;
     const query = {
       date: date as string,
       location: location as string,
@@ -54,6 +54,7 @@ const fetch_events = async (req: Request, res: Response) => {
       start: parseInt(start as string) as number,
       paid: paid as string,
       featured: Boolean(featured as string) as boolean,
+      past: Boolean(past as string) as boolean,
     } as IEventQuery;
     const response = await events_service.fetch_events(query);
     if (!response.success) {

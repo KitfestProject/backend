@@ -239,4 +239,5 @@ export interface IEventQuery {
   date: string;
   paid: string;
   featured: boolean;
+  past: boolean;
 }

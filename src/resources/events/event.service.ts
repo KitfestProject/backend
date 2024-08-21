@@ -57,6 +57,43 @@ const create_event = async (event: IEvents) => {
 };
 
 const fetch_events = async (query: IEventQuery) => {
+  let past_events = [];
+  if (query.past) {
+    past_events = await Events.aggregate([
+      {
+        $match: {
+          $and: [
+            query.date ? { "event_date.start_date": query.date } : {},
+            query.paid ? { is_paid: query.paid } : {},
+            query.location ? { location: query.location } : {},
+            query.featured ? { featured: query.featured } : {},
+            { "event_date.end_date": { $lt: get_current_date_time() } },
+            { status: "published" },
+          ],
+        },
+      },
+      {
+        $sort: {
+          "event_date.start_date": -1,
+        },
+      },
+      {
+        $limit: query.limit ? query.limit : 6,
+      },
+      {
+        $skip: query.start ? query.start : 0,
+      },
+      {
+        $project: {
+          title: 1,
+          address: 1,
+          description: 1,
+          cover_image: 1,
+          "event_date.start_date": 1,
+        },
+      },
+    ]);
+  }
   const events = await Events.aggregate([
     {
       $match: {
@@ -92,11 +129,21 @@ const fetch_events = async (query: IEventQuery) => {
     },
   ]);
 
-  if (!events) {
+  if (events.length < 1 && past_events.length < 1) {
     return createResponse(false, "No events found", null);
   }
-  return createResponse(true, "Events found", events);
+  let data;
+  if (past_events.length < 1) {
+    data = events;
+  } else {
+    data = {
+      upcoming: events,
+      past: past_events,
+    };
+  }
+  return createResponse(true, "Events found", data);
 };
+
 const fetch_events_admin = async (
   organizer_id: string,
   is_admin: boolean,
