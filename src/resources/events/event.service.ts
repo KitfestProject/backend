@@ -129,10 +129,6 @@ const fetch_events = async (query: IEventQuery) => {
       },
     },
   ]);
-
-  if (events.length < 1 && past_events.length < 1) {
-    return createResponse(false, "No events found", null);
-  }
   let data;
   if (past_events.length < 1) {
     data = events;
