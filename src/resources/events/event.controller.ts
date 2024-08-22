@@ -28,9 +28,6 @@ const create_event = async (req: Request, res: Response) => {
     //Front end sends data in camelCase, convert to snake_case since all our schemas are in snake_case
     const convert_schema_keys = collection.convert_keys(data) as IEvents;
     const response = await events_service.create_event(convert_schema_keys);
-    if (!response.success) {
-      return res.status(400).json(response);
-    }
     res.status(200).json(response);
   } catch (error) {
     const err = error as Error;
@@ -57,9 +54,6 @@ const fetch_events = async (req: Request, res: Response) => {
       past: Boolean(past as string) as boolean,
     } as IEventQuery;
     const response = await events_service.fetch_events(query);
-    if (!response.success) {
-      return res.status(400).json(response);
-    }
     res.status(200).json(response);
   } catch (error) {
     const err = error as Error;
@@ -72,9 +66,6 @@ const fetch_one_event = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const response = await events_service.fetch_one_event(id);
-    if (!response.success) {
-      return res.status(400).json(response);
-    }
     res.status(200).json(response);
   } catch (error) {
     const err = error as Error;

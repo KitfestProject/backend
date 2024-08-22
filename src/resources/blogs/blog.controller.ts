@@ -12,9 +12,6 @@ const create_blog = async (req: Request, res: Response) => {
 
     data.author = id;
     const response = await blogs_service.create_blog(email, name, data);
-    if (!response.success) {
-      return res.status(400).json(response);
-    }
     res.status(200).json(response);
   } catch (error) {
     const err = error as Error;
@@ -30,9 +27,6 @@ const fetch_blogs = async (req: Request, res: Response) => {
       search.value,
       start,
     );
-    if (!response.success) {
-      return res.status(400).json(response);
-    }
     const response_data = {
       draw,
       recordsTotal: response.data?.total_records,
@@ -53,9 +47,6 @@ const fetch_blogs_users = async (req: Request, res: Response) => {
       Number(length),
       Number(start),
     );
-    if (!response.success) {
-      return res.status(400).json(response);
-    }
     return res.status(200).json(response);
   } catch (error) {
     const err = error as Error;
