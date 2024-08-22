@@ -61,7 +61,7 @@ const fetch_blogs_users = async (length: number, start: number) => {
     .populate("author", "name")
     .skip(start)
     .limit(length);
-  if (blogs.length < 1) {
+  if (!blogs) {
     return createResponse(
       false,
       "No blogs published yet, check back later",
