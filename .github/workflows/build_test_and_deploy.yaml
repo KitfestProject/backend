@@ -2,7 +2,7 @@ name: Build and Test
 
 on:
   push:
-    branches: [master]
+    branches: [develop]
 
 jobs:
   build:
@@ -36,10 +36,10 @@ jobs:
         run: |
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
       - name: Build Docker image
-        run: docker build -t oletepela/theatreke-prod .
+        run: docker build -t oletepela/${{ steps.repo_name.outputs.REPO_NAME }} .
 
       - name: Push Docker image to registry
-        run: docker push oletepela/theatreke-prod
+        run: docker push oletepela/${{ steps.repo_name.outputs.REPO_NAME }}
       - name: Copy compose file
         id: copy_compose
         run: |
@@ -56,9 +56,9 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            mkdir -p api-staging
-            cd api-staging
-            echo '${{ secrets.ENV_FILE_PROD }}' > .env
+            mkdir -p ${{ steps.repo_name.outputs.REPO_NAME }}
+            cd ${{ steps.repo_name.outputs.REPO_NAME }}
+            echo '${{ secrets.ENV_FILE }}' > .env
             cat << EOF > docker-compose.yaml
             ${{ steps.copy_compose.outputs.file }}
             EOF
