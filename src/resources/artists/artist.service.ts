@@ -26,9 +26,6 @@ const fetch_artists_admin = async (
     image: artist.image,
     created_at: artist.created_at,
   }));
-  if (artists.length < 1) {
-    return createResponse(false, "No artists found", null);
-  }
   return createResponse(true, "Artists found", {
     artists: tranformed_artists,
     total_records,
