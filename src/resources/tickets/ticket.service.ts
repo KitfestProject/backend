@@ -40,8 +40,9 @@ const fetch_tickets = async (
   const tranformed_tickets = tickets
     .map((ticket: ITickets) => ({
       id: ticket._id,
-      //@ts-ignore
-      user_name: ticket.purchased_for || ticket.user_id.name || "User", //this should not be hapening
+      user_name:
+        //@ts-ignore
+        ticket.purchased_for || ticket.user_id ? ticket.user_id.name : "User",
       event_title: ticket.event.title,
       seat_number: ticket.seat_number.join(", "),
       ticket_price: ticket.ticket_price,
@@ -55,10 +56,6 @@ const fetch_tickets = async (
     });
 
   const total_records = await Tickets.countDocuments({ organizer });
-
-  if (tickets.length < 1) {
-    return createResponse(false, "No tickets found", null);
-  }
   return createResponse(true, "Tickets found", {
     tickets: tranformed_tickets,
     total_records,
