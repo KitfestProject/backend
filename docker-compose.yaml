@@ -2,10 +2,10 @@ version: "3"
 
 services:
   SERVICE_NAME:
-    image: oletepela/theatreke-prod:latest
-    container_name: theaterke-api
+    image: oletepela/backend:latest
+    container_name: theaterke-api-staging
     ports:
-      - "5100:5100"
+      - "5000:5000"
     restart: on-failure
     env_file: .env
     volumes:

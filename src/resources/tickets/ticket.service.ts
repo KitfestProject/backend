@@ -41,7 +41,7 @@ const fetch_tickets = async (
     .map((ticket: ITickets) => ({
       id: ticket._id,
       //@ts-ignore
-      user_name: ticket.purchased_for || ticket.user_id.name,
+      user_name: ticket.purchased_for || ticket.user_id.name || "User", //this should not be hapening
       event_title: ticket.event.title,
       seat_number: ticket.seat_number.join(", "),
       ticket_price: ticket.ticket_price,

@@ -51,9 +51,6 @@ const fetch_transactions = async (
     user_name: transaction.user_id.name,
   }));
 
-  if (transactions.length < 1) {
-    return createResponse(false, "No transactions found", null);
-  }
   return createResponse(true, "Transactions found", {
     transactions: tranformed_transactions,
     total_records,
