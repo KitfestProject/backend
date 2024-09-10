@@ -16,6 +16,7 @@ const fetch_stats = async (id: string, is_admin: boolean) => {
     const tx = await Transactions.find({ events_id: { $in: event_ids } });
     total_tickets_sold = await Tickets.countDocuments({
       "event.id": { $in: event_ids },
+      user_id: { $ne: null },
     });
     total_events = events.length;
     total_revenue = tx.reduce((acc, tx) => acc + tx.amount, 0);
@@ -49,7 +50,9 @@ const fetch_stats = async (id: string, is_admin: boolean) => {
     const transactions = await Transactions.find({});
     total_events = await Events.countDocuments({});
     total_users = await Users.countDocuments({});
-    total_tickets_sold = await Tickets.countDocuments({});
+    total_tickets_sold = await Tickets.countDocuments({
+      user_id: { $ne: null },
+    });
     total_revenue = transactions.reduce(
       (acc, transaction) => acc + transaction.amount,
       0,
