@@ -17,6 +17,7 @@ const fetch_tickets = async (
         { ticket_type: { $regex: search, $options: "i" } },
         { ticket_description: { $regex: search, $options: "i" } },
       ],
+      user_id: { $ne: null },
     })
       .skip(start)
       .limit(length)
@@ -25,6 +26,7 @@ const fetch_tickets = async (
       .sort({ purchased_at: -1 });
   } else {
     tickets = await Tickets.find({
+      user_id: { $ne: null },
       $or: [
         { ticket_type: { $regex: search, $options: "i" } },
         { ticket_description: { $regex: search, $options: "i" } },
