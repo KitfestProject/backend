@@ -12,7 +12,7 @@ import PDFDocument from "pdfkit";
 import path from "path";
 import env_vars from "../../config/env_vars.js";
 import files from "../../utils/file_upload.js";
-import Wishlists from "../../database/models/wishlists.js";
+import collection from "../../utils/collection.js";
 
 const create_event = async (event: IEvents) => {
   if (event.has_seat_map) {
@@ -55,6 +55,45 @@ const create_event = async (event: IEvents) => {
     { event: _event },
   );
   return createResponse(true, "Event created successfully", new_event);
+};
+
+const update_event = async (organizer: string, id: string, data: IEvents) => {
+  const event = collection.convert_keys(data) as IEvents;
+  const current_date_time = get_current_date_time();
+  if (!event.has_seat_map) {
+    const updated_tickets = await Promise.all(
+      event.tickets.map(async (ticket) => {
+        if (ticket._id) {
+          const updated_ticket = await Tickets.findOneAndUpdate(
+            { _id: ticket._id },
+            {
+              ...ticket,
+            },
+            { new: true },
+          );
+          if (!updated_ticket) {
+            throw Error("An error occured - Updating ticket");
+          }
+          return updated_ticket;
+        } else {
+          return await Tickets.create({
+            ...ticket,
+            organizer,
+            purchased_at: current_date_time,
+          });
+        }
+      }),
+    );
+
+    event.tickets = updated_tickets;
+  }
+  const doc = await Events.findOneAndUpdate({ _id: id }, event, {
+    returnDocument: "after",
+  });
+  if (!doc) {
+    return createResponse(false, "Event not updated", null);
+  }
+  return createResponse(true, "Event updated successfully", doc);
 };
 
 const fetch_events = async (query: IEventQuery) => {
@@ -114,10 +153,10 @@ const fetch_events = async (query: IEventQuery) => {
       },
     },
     {
-      $limit: query.limit ? query.limit : 6,
+      $skip: query.start ? query.start : 0,
     },
     {
-      $skip: query.start ? query.start : 0,
+      $limit: query.limit ? query.limit : 12,
     },
     {
       $project: {
@@ -427,4 +466,5 @@ export default {
   fetch_events_admin,
   change_event_status,
   download_event_attendees,
+  update_event,
 };
