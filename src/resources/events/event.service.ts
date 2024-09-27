@@ -57,10 +57,8 @@ const create_event = async (event: IEvents) => {
   return createResponse(true, "Event created successfully", new_event);
 };
 
-const update_event = async (id: string, data: IEvents) => {
+const update_event = async (organizer: string, id: string, data: IEvents) => {
   const event = collection.convert_keys(data) as IEvents;
-  const _event = await Events.findOne({ _id: id });
-  const organizer = _event?.organizer;
   const current_date_time = get_current_date_time();
   if (!event.has_seat_map) {
     const updated_tickets = await Promise.all(
