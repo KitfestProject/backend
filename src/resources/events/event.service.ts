@@ -12,6 +12,7 @@ import PDFDocument from "pdfkit";
 import path from "path";
 import env_vars from "../../config/env_vars.js";
 import files from "../../utils/file_upload.js";
+import collection from "../../utils/collection.js";
 
 const create_event = async (event: IEvents) => {
   if (event.has_seat_map) {
@@ -56,7 +57,8 @@ const create_event = async (event: IEvents) => {
   return createResponse(true, "Event created successfully", new_event);
 };
 
-const update_event = async (id: string, event: IEvents) => {
+const update_event = async (id: string, data: IEvents) => {
+  const event = collection.convert_keys(data) as IEvents;
   const current_date_time = get_current_date_time();
   if (!event.has_seat_map) {
     const updated_tickets = await Promise.all(
