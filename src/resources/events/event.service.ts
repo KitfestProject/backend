@@ -59,6 +59,7 @@ const create_event = async (event: IEvents) => {
 
 const update_event = async (id: string, data: IEvents) => {
   const event = collection.convert_keys(data) as IEvents;
+  console.log(event.organizer);
   const current_date_time = get_current_date_time();
   if (!event.has_seat_map) {
     const updated_tickets = await Promise.all(
