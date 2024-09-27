@@ -57,7 +57,7 @@ const fetch_tickets = async (
       );
     });
 
-  const total_records = await Tickets.countDocuments({ organizer });
+  const total_records = tranformed_tickets.length;
   return createResponse(true, "Tickets found", {
     tickets: tranformed_tickets,
     total_records,
