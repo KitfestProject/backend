@@ -122,7 +122,19 @@ const download_event_attendees_pdf = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
-const update_event = crud.updateOne(Events);
+
+const update_event = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const data = req.body as IEvents;
+    const response = await events_service.update_event(id, data);
+    return res.status(200).json(response);
+  } catch (err) {
+    const error = err as Error;
+    logger.error(error.message);
+    return res.status(500).end();
+  }
+};
 
 const delete_event = crud.deleteOne(Events);
 export default {
