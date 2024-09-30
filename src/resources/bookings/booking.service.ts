@@ -14,6 +14,9 @@ import logger from "../../utils/logging.js";
 import Transactions from "../../database/models/transactions.js";
 import createResponse from "../../utils/response_envelope.js";
 import env_vars from "../../config/env_vars.js";
+import userService from "../users/user.service.js";
+import { utils } from "mocha";
+import { verify_token } from "../../utils/jwt.js";
 
 type Booking = {
   firstName: string;
@@ -54,11 +57,7 @@ type paymentProcessorResponse = {
 };
 type QRCodeData = {};
 
-const book_ticket = async (
-  data: Booking,
-  user_id: string,
-  user_name: string,
-) => {
+const book_ticket = async (data: Booking) => {
   const {
     firstName,
     lastName,
@@ -73,6 +72,30 @@ const book_ticket = async (
     seats,
     tickets,
   } = data;
+  //check if user with the provided email exists
+
+  const user = await userService.get_user_by_email(email);
+  let user_id = user.data?._id;
+  if (!user.success) {
+    const password = Math.random().toString(36).slice(-8);
+    const name = firstName + " " + lastName;
+    const phone_number = phoneNumber;
+    const user_data = {
+      name,
+      email,
+      password,
+      phone_number,
+    } as IUsers;
+    const new_user = await userService.create_user(user_data);
+    if (new_user.success) {
+      const token = new_user.data?.token;
+      const decode_token = verify_token(token!);
+      user_id = decode_token.id;
+    } else {
+      throw new Error("An error occured try again later");
+    }
+  }
+
   const event = await event_service.fetch_one_event(eventId);
   const event_data = event.data;
   if (!event_data) {
