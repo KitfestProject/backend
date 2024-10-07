@@ -311,7 +311,7 @@ const change_event_status = async (
   }
   const updated_event = await Events.findOneAndUpdate(
     { _id: id },
-    { data },
+    { $set: data },
     { returnDocument: "after" },
   );
   if (!updated_event) {
