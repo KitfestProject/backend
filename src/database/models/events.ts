@@ -121,7 +121,7 @@ const eventsSchema = new Schema<IEvents>(
       enum: ["draft", "published", "cancelled", "sold_out"],
       default: "draft",
     },
-    is_advertisment: {
+    is_advertisement: {
       type: String,
       enum: ["enabled", "disabled"],
       default: "disabled",

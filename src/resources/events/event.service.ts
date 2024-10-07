@@ -277,7 +277,7 @@ const fetch_one_event_client = async (id: string) => {
 };
 const change_event_status = async (
   id: string,
-  data: { status: string; fetured: string; is_advertisment: string },
+  data: { status: string; featured: string; is_advertisement: string },
 ) => {
   const event = await Events.findOne({ _id: id }).populate(
     "organizer",
