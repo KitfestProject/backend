@@ -61,7 +61,6 @@ const eventsSchema = new Schema<IEvents>(
     },
     advertisement_banner: {
       type: String,
-      required: true,
     },
     address: {
       type: String,
@@ -90,8 +89,9 @@ const eventsSchema = new Schema<IEvents>(
       },
     },
     featured: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ["enabled", "disabled"],
+      default: "disabled",
     },
     event_start_time: {
       type: String,
@@ -122,8 +122,9 @@ const eventsSchema = new Schema<IEvents>(
       default: "draft",
     },
     is_advertisment: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ["enabled", "disabled"],
+      default: "disabled",
     },
     shows: [
       {

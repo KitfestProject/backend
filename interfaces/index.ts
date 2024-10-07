@@ -44,7 +44,7 @@ export interface IEvents extends Document {
   title: string;
   tags: string[];
   cover_image: string;
-  advertisement_banner: string;
+  advertisement_banner: string | null;
   address: string;
   longitude: string;
   latitude: string;
@@ -52,13 +52,13 @@ export interface IEvents extends Document {
   event_start_time: string;
   event_end_time: string;
   has_seat_map: boolean;
-  featured: boolean;
+  featured: "enabled" | "disabled";
   is_paid: "paid" | "free";
   is_scheduled_published: boolean;
   publication_date: string;
   publish_time: string;
   status: "draft" | "published" | "cancelled" | "sold_out";
-  is_advertisment: boolean;
+  is_advertisment: "enabled" | "disabled";
   shows: IEventShows[];
 }
 interface IShows {
@@ -139,6 +139,7 @@ export interface ITickets extends Document {
     id: Schema.Types.ObjectId;
     title: string;
   };
+  show_id: string;
   purchased_for: string;
   organizer: Schema.Types.ObjectId;
   seat_id: Schema.Types.ObjectId;

@@ -275,7 +275,10 @@ const fetch_one_event_client = async (id: string) => {
   }
   return createResponse(true, "Event found", event);
 };
-const change_event_status = async (id: string, status: string) => {
+const change_event_status = async (
+  id: string,
+  data: { status: string; fetured: string; is_advertisment: string },
+) => {
   const event = await Events.findOne({ _id: id }).populate(
     "organizer",
     "name email",
@@ -283,10 +286,14 @@ const change_event_status = async (id: string, status: string) => {
   if (!event) {
     return createResponse(false, "Event not found", null);
   }
-  if (event.status === status) {
-    return createResponse(false, `Event is already on status ${status}`, null);
-  }
-  if (status === "published" && event.has_seat_map) {
+  // if (event.status === data.status) {
+  //   return createResponse(
+  //     false,
+  //     `Event is already on status ${data.status}`,
+  //     null,
+  //   );
+  // }
+  if (data.status === "published" && event.has_seat_map) {
     const seat_map = await seatmap_service.fetch_sections(id);
     const seat_map_data = seat_map.data;
     const validate_seatmap = find_emptyobject_keys(seat_map_data!);
@@ -304,7 +311,7 @@ const change_event_status = async (id: string, status: string) => {
   }
   const updated_event = await Events.findOneAndUpdate(
     { _id: id },
-    { status },
+    { data },
     { returnDocument: "after" },
   );
   if (!updated_event) {
@@ -313,19 +320,15 @@ const change_event_status = async (id: string, status: string) => {
   const sent_email = await send_email(
     // @ts-ignore
     event.organizer.email,
-    `Event ${status}`,
-    `Your event ${event.title} has been ${status} successfully.`,
+    `Event ${data.status}`,
+    `Your event ${event.title} has been ${data.status} successfully.`,
     // @ts-ignore
     event.organizer.name,
   );
   //@ts-ignore
   logger.info(`Email sent to ${event.organizer.email} ${sent_email}`);
 
-  return createResponse(
-    true,
-    `Event status updated to ${status} successfully`,
-    null,
-  );
+  return createResponse(true, `Event updated successfully`, null);
 };
 
 function find_emptyobject_keys(obj: Record<string, any>): string[] {
