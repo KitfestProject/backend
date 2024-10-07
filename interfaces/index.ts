@@ -251,6 +251,6 @@ export interface IEventQuery {
   location: string;
   date: string;
   paid: string;
-  featured: boolean;
+  featured: string;
   past: boolean;
 }
