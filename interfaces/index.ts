@@ -44,6 +44,7 @@ export interface IEvents extends Document {
   title: string;
   tags: string[];
   cover_image: string;
+  advertisement_banner: string;
   address: string;
   longitude: string;
   latitude: string;
@@ -57,6 +58,16 @@ export interface IEvents extends Document {
   publication_date: string;
   publish_time: string;
   status: "draft" | "published" | "cancelled" | "sold_out";
+  is_advertisment: boolean;
+  shows: IEventShows[];
+}
+interface IShows {
+  start_time: string;
+  end_time: string;
+}
+interface IEventShows {
+  date: string;
+  shows: IShows[];
 }
 interface EventDate {
   start_date: string;

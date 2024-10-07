@@ -9,9 +9,10 @@ events_routes
   .route("/")
   .post(auth.authenticate, event_controller.create_event)
   .get(event_controller.fetch_events);
+events_routes.get("/:id/client", event_controller.fetch_one_event_client);
 events_routes
   .route("/:id")
-  .get(event_controller.fetch_one_event)
+  .get(auth.authenticate, event_controller.fetch_one_event)
   .patch(auth.authenticate, event_controller.update_event)
   .delete(auth.authenticate, event_controller.delete_event)
   .put(auth.authenticate, event_controller.change_event_status);

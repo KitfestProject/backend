@@ -73,6 +73,17 @@ const fetch_one_event = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const fetch_one_event_client = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const response = await events_service.fetch_one_event_client(id);
+    res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
 
 const fetch_events_admin = async (req: Request, res: Response) => {
   try {
@@ -147,4 +158,5 @@ export default {
   update_event,
   change_event_status,
   download_event_attendees_pdf,
+  fetch_one_event_client,
 };

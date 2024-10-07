@@ -261,6 +261,20 @@ const fetch_one_event = async (id: string) => {
   }
   return createResponse(true, "Event found", event);
 };
+const fetch_one_event_client = async (id: string) => {
+  const event = await Events.findOne({ _id: id })
+    .populate({
+      path: "venue",
+      select: "name address longitude latitude",
+    })
+    .select(
+      "-reviews -attendees -images -videos -is_scheduled_published -publication_date -__v -publish_time -createdAt -updatedAt -tags -category",
+    );
+  if (!event) {
+    return createResponse(false, "Event not found", null);
+  }
+  return createResponse(true, "Event found", event);
+};
 const change_event_status = async (id: string, status: string) => {
   const event = await Events.findOne({ _id: id }).populate(
     "organizer",
@@ -467,4 +481,5 @@ export default {
   change_event_status,
   download_event_attendees,
   update_event,
+  fetch_one_event_client,
 };

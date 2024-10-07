@@ -59,6 +59,10 @@ const eventsSchema = new Schema<IEvents>(
       type: String,
       required: true,
     },
+    advertisement_banner: {
+      type: String,
+      required: true,
+    },
     address: {
       type: String,
       required: true,
@@ -117,6 +121,30 @@ const eventsSchema = new Schema<IEvents>(
       enum: ["draft", "published", "cancelled", "sold_out"],
       default: "draft",
     },
+    is_advertisment: {
+      type: Boolean,
+      default: false,
+    },
+    shows: [
+      {
+        date: {
+          type: String,
+          required: true,
+        },
+        shows: [
+          {
+            start_time: {
+              type: String,
+              required: true,
+            },
+            end_time: {
+              type: String,
+              required: true,
+            },
+          },
+        ],
+      },
+    ],
   },
   { timestamps: true },
 );
