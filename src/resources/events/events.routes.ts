@@ -9,6 +9,7 @@ events_routes
   .route("/")
   .post(auth.authenticate, event_controller.create_event)
   .get(event_controller.fetch_events);
+events_routes.get("/ads", event_controller.fetch_advertisement_banners);
 events_routes.get("/:id/client", event_controller.fetch_one_event_client);
 events_routes
   .route("/:id")

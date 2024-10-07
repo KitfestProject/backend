@@ -272,7 +272,7 @@ const fetch_one_event_client = async (id: string) => {
       select: "name address longitude latitude",
     })
     .select(
-      "-reviews -attendees -images -videos -is_scheduled_published -publication_date -__v -publish_time -createdAt -updatedAt -tags -category -is_advertisement featured",
+      "-reviews -attendees -images -videos -is_scheduled_published -publication_date -__v -publish_time -createdAt -updatedAt -tags -category -is_advertisement -featured",
     );
   if (!event) {
     return createResponse(false, "Event not found", null);
@@ -334,7 +334,18 @@ const change_event_status = async (
 
   return createResponse(true, `Event updated successfully`, null);
 };
-
+const fetch_advertisement_banners = async () => {
+  const events = await Events.find({
+    status: "published",
+    is_advertisement: "enabled",
+  })
+    .select("_id advertisement_banner")
+    .limit(6);
+  if (!events) {
+    return createResponse(false, "No advertisement banners found", null);
+  }
+  return createResponse(true, "Advertisement banners found", events);
+};
 function find_emptyobject_keys(obj: Record<string, any>): string[] {
   return Object.keys(obj).filter((key) => {
     const value = obj[key];
@@ -489,4 +500,5 @@ export default {
   download_event_attendees,
   update_event,
   fetch_one_event_client,
+  fetch_advertisement_banners,
 };

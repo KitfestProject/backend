@@ -50,7 +50,7 @@ const fetch_events = async (req: Request, res: Response) => {
       limit: parseInt(limit as string) as number,
       start: parseInt(start as string) as number,
       paid: paid as string,
-      featured: Boolean(featured as string) as boolean,
+      featured: featured as string,
       past: Boolean(past as string) as boolean,
     } as IEventQuery;
     const response = await events_service.fetch_events(query);
@@ -147,6 +147,16 @@ const update_event = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const fetch_advertisement_banners = async (req: Request, res: Response) => {
+  try {
+    const response = await events_service.fetch_advertisement_banners();
+    return res.status(200).json(response);
+  } catch (err) {
+    const error = err as Error;
+    logger.error(error.message);
+    return res.status(500).end();
+  }
+};
 
 const delete_event = crud.deleteOne(Events);
 export default {
@@ -159,4 +169,5 @@ export default {
   change_event_status,
   download_event_attendees_pdf,
   fetch_one_event_client,
+  fetch_advertisement_banners,
 };
