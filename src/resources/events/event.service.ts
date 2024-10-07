@@ -290,13 +290,6 @@ const change_event_status = async (
   if (!event) {
     return createResponse(false, "Event not found", null);
   }
-  // if (event.status === data.status) {
-  //   return createResponse(
-  //     false,
-  //     `Event is already on status ${data.status}`,
-  //     null,
-  //   );
-  // }
   if (data.status === "published" && event.has_seat_map) {
     const seat_map = await seatmap_service.fetch_sections(id);
     const seat_map_data = seat_map.data;
@@ -321,16 +314,6 @@ const change_event_status = async (
   if (!updated_event) {
     return createResponse(false, "Could not update event status", null);
   }
-  const sent_email = await send_email(
-    // @ts-ignore
-    event.organizer.email,
-    `Event ${data.status}`,
-    `Your event ${event.title} has been ${data.status} successfully.`,
-    // @ts-ignore
-    event.organizer.name,
-  );
-  //@ts-ignore
-  logger.info(`Email sent to ${event.organizer.email} ${sent_email}`);
 
   return createResponse(true, `Event updated successfully`, null);
 };
