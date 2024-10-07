@@ -237,6 +237,8 @@ const fetch_events_admin = async (
     cover_image: event.cover_image,
     address: event.address,
     status: event.status,
+    feutured: event.feautured,
+    is_advertisement: event.is_advertisement,
   }));
 
   if (!events) {
