@@ -113,7 +113,7 @@ const fetch_events_admin = async (req: Request, res: Response) => {
 const change_event_status = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const data = req.body;
+    const { updateData } = req.body;
     const response = await events_service.change_event_status(id, data);
     return res.status(200).json(response);
   } catch (error) {
