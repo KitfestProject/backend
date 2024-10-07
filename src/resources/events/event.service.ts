@@ -129,6 +129,7 @@ const fetch_events = async (query: IEventQuery) => {
           address: 1,
           description: 1,
           cover_image: 1,
+          advertisement_banner: 1,
           "event_date.start_date": 1,
         },
       },
@@ -164,6 +165,7 @@ const fetch_events = async (query: IEventQuery) => {
         address: 1,
         description: 1,
         cover_image: 1,
+        advertisement_banner: 1,
         "event_date.start_date": 1,
       },
     },
@@ -270,7 +272,7 @@ const fetch_one_event_client = async (id: string) => {
       select: "name address longitude latitude",
     })
     .select(
-      "-reviews -attendees -images -videos -is_scheduled_published -publication_date -__v -publish_time -createdAt -updatedAt -tags -category",
+      "-reviews -attendees -images -videos -is_scheduled_published -publication_date -__v -publish_time -createdAt -updatedAt -tags -category -is_advertisement featured",
     );
   if (!event) {
     return createResponse(false, "Event not found", null);
