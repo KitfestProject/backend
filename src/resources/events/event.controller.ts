@@ -114,7 +114,7 @@ const change_event_status = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { updateData } = req.body;
-    const response = await events_service.change_event_status(id, data);
+    const response = await events_service.change_event_status(id, updateData);
     return res.status(200).json(response);
   } catch (error) {
     const err = error as Error;
