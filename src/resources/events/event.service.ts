@@ -223,7 +223,7 @@ const fetch_events_admin = async (
       .limit(length)
       .sort({ "event_date.start_date": -1 })
       .select(
-        "_id title description cover_image address status event_date.start_date",
+        "_id title description cover_image address status event_date.start_date feautured is_advertisement",
       );
 
     total_records = await Events.countDocuments({});
