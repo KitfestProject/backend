@@ -57,7 +57,7 @@ export interface IEvents extends Document {
   publish_time: string;
   status: "draft" | "published" | "cancelled" | "sold_out";
   is_advertisement: "enabled" | "disabled" | boolean;
-  shows: IEventShows[];
+  event_shows: IEventShows[];
 }
 interface IShows {
   _id: Schema.Types.ObjectId;

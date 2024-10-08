@@ -237,7 +237,7 @@ async function handle_ticket_purchase(
       ref_code: tx_processor ? tx_processor.reference : "no_ref",
       time,
     });
-    const show = event_data.shows.find(
+    const show = event_data.event_shows.find(
       (show) => show._id.toString() === event_show_id,
     );
     const show_time = show?.shows.find(
@@ -371,7 +371,7 @@ const verify_qr_code = async (
   if (!event_data) {
     return createResponse(false, "Event not found", null);
   }
-  const show = event_data.shows.find(
+  const show = event_data.event_shows.find(
     (show) => show._id.toString() === event_show_id,
   );
   const show_time = show?.shows.find(

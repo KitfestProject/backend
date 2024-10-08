@@ -118,7 +118,7 @@ const eventsSchema = new Schema<IEvents>(
       enum: ["enabled", "disabled"],
       default: "disabled",
     },
-    shows: [
+    event_shows: [
       {
         date: {
           type: String,
