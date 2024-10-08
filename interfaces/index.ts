@@ -62,10 +62,14 @@ export interface IEvents extends Document {
   shows: IEventShows[];
 }
 interface IShows {
+  _id: Schema.Types.ObjectId;
+  bookings: number;
+  scan_count: number;
   start_time: string;
   end_time: string;
 }
 interface IEventShows {
+  _id: Schema.Types.ObjectId;
   date: string;
   shows: IShows[];
 }

@@ -134,6 +134,14 @@ const eventsSchema = new Schema<IEvents>(
         },
         shows: [
           {
+            bookings: {
+              type: Number,
+              default: 0,
+            },
+            scan_count: {
+              type: Number,
+              default: 0,
+            },
             start_time: {
               type: String,
               required: true,
