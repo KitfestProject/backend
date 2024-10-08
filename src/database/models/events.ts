@@ -93,14 +93,6 @@ const eventsSchema = new Schema<IEvents>(
       enum: ["enabled", "disabled"],
       default: "disabled",
     },
-    event_start_time: {
-      type: String,
-      required: true,
-    },
-    event_end_time: {
-      type: String,
-      required: true,
-    },
     is_paid: {
       type: String,
       enum: ["paid", "free"],

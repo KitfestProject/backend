@@ -49,8 +49,6 @@ export interface IEvents extends Document {
   longitude: string;
   latitude: string;
   event_date: EventDate;
-  event_start_time: string;
-  event_end_time: string;
   has_seat_map: boolean;
   featured: "enabled" | "disabled";
   is_paid: "paid" | "free";
