@@ -58,6 +58,7 @@ type Booking = {
   tickets: Ticket[];
   eventShowId: string;
   showTimeId: string;
+  humanDate: string;
 };
 
 type Ticket = {
@@ -99,6 +100,7 @@ const book_ticket = async (data: Booking) => {
     tickets,
     eventShowId,
     showTimeId,
+    humanDate,
   } = data;
   const user = await userService.get_user_by_email(email);
   let user_id = user.data?._id;
@@ -162,6 +164,7 @@ const book_ticket = async (data: Booking) => {
       event_data,
       eventShowId,
       showTimeId,
+      humanDate,
     );
   } else {
     let sold_out_message = null;
@@ -194,6 +197,7 @@ const book_ticket = async (data: Booking) => {
       event_data,
       eventShowId,
       showTimeId,
+      humanDate,
     );
     await event_data.save();
   }
@@ -210,6 +214,7 @@ async function handle_ticket_purchase(
   event_data: IEvents,
   event_show_id: string,
   show_time_id: string,
+  humanDate: string,
 ) {
   purchases.map(async (purchase) => {
     const ticket = await Tickets.create({
@@ -260,7 +265,7 @@ async function handle_ticket_purchase(
       ticket_id: ticket._id,
       event_title: title,
       cover_image: event_data.cover_image,
-      event_date: show!.date,
+      event_date: humanDate,
       event_time: show_time?.start_time,
       buyers_name: purchase.lastName + " " + purchase.firstName,
       ticket_type: purchase.ticketType || "General",
