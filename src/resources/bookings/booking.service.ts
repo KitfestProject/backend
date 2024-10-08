@@ -314,7 +314,9 @@ async function generate_ticket_pdf(
     const __dirname = process.cwd();
     const templatePath = path.join(__dirname, "public", "e-ticket.ejs");
     const html = await ejs.renderFile(templatePath, pdf_data);
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
     const page = await browser.newPage();
     await page.setContent(html);
     await page.pdf({
