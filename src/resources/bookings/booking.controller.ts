@@ -15,8 +15,12 @@ const book_ticket = async (req: Request, res: Response) => {
 };
 const verify_qr_code = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const response = await booking_service.verify_qr_code(id);
+    const { id, event_show_id, show_time_id } = req.params;
+    const response = await booking_service.verify_qr_code(
+      id,
+      event_show_id,
+      show_time_id,
+    );
     if (!response.success) {
       return res.render("error", {
         message: response.message,
