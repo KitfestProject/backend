@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>eTicket</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 10px;
+                background-color: #f0f0f0;
+            }
+            .ticket-container {
+                background-color: white;
+                border: 2px solid #732e1c;
+                border-radius: 10px;
+                padding: 20px;
+                max-width: 400px;
+                margin: 0 auto;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .logo {
+                width: 30px;
+                height: 30px;
+            }
+            .logo img {
+                max-width: 100%;
+                height: auto;
+            }
+            .details {
+                display: flex;
+                justify-content: space-between;
+            }
+            .event-title {
+                font-size: 16px;
+                font-weight: bold;
+                text-align: center;
+                margin-bottom: 4px;
+                color: #732e1c;
+            }
+            .cover-image {
+                text-align: center;
+                margin-bottom: 4px;
+            }
+            .cover-image img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 5px;
+            }
+            .ticket-info {
+                margin-bottom: 5px;
+                font-size: 8px;
+            }
+            .ticket-info p {
+                margin: 5px 0;
+            }
+            .ticket-info strong {
+                font-weight: bold;
+                color: #333;
+            }
+            .terms {
+                font-size: 6px;
+                margin-top: 5px;
+                border-top: 1px solid #ddd;
+            }
+            .terms ul {
+                padding-left: 20px;
+                margin: 5px 0;
+            }
+            .terms li {
+                margin-bottom: 2px;
+            }
+            .footer {
+                text-align: center;
+                font-size: 8px;
+                color: #666;
+                margin-top: 8px;
+            }
+            .footer a {
+                color: #732e1c;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="ticket-container">
+                <div class="logo">
+                    <img
+                        src="https://theatreke.com/assets/kitft-logo-light-Cz9sQ0qV.png"
+                        alt="Company Logo"
+                    />
+                </div>
+            <div class="event-title"><%= event_title %></div>
+            <div class="cover-image">
+                <img src="<%= cover_image %>" alt="Event Cover Image" />
+            </div>
+            <div class="details">
+                <div class="ticket-info">
+                    <p><strong>Name:</strong> <%= buyers_name %></p>
+                    <p><strong>Allows:</strong> <%= allows %></p>
+                    <p>
+                        <strong>Category/SN:</strong> <%= ticket_type %> (Ksh. <%=
+                        ticket_price %>)
+                    </p>
+                    <p><strong>Day:</strong> <%= event_date %> (At. <%= start_time %>)</p>
+                    <p><strong>Duration:</strong> <%= duration %></p>
+                    <p><strong>Ticket ID:</strong> <%= ticket_id %></p>
+                    <p><strong>Venue:</strong><%= venue %></p>
+                </div>
+                <div class="qr-code">
+                    <img src="<%= qr_code %>" width="100" height="100" />
+                </div>
+            </div>
+            <div class="terms">
+                <p><strong>Terms and Conditions:</strong></p>
+                <ul>
+                    <li>
+                        This ticket is non-transferable and can only be used by
+                        or together with the person whose name appears on the
+                        ticket.
+                    </li>
+                    <li>
+                        The organizer may reschedule or cancel the event due to
+                        unforeseen circumstances beyond their control.
+                    </li>
+                    <li>
+                        The organizer is not liable for personal injury, loss,
+                        or property damage during the event.
+                    </li>
+                    <li>
+                        By attending, you consent to being photographed and
+                        recorded for promotional purposes.
+                    </li>
+                    <li>
+                        No refunds will be issued unless the event is canceled.
+                    </li>
+                </ul>
+            </div>
+            <div class="footer">
+                <a href="https://theatreke.com">theatreke.com</a>
+            </div>
+        </div>
+    </body>
+</html>
