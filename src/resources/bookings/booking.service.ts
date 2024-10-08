@@ -323,7 +323,7 @@ async function generate_ticket_pdf(
         "--disable-gpu",
         "--disable-extensions",
         "--disable-software-rasterizer",
-        "--single-process",
+        "--headless=new",
       ],
       headless: true,
       protocolTimeout: 120000,
