@@ -315,6 +315,8 @@ async function generate_ticket_pdf(
     const templatePath = path.join(__dirname, "public", "e-ticket.ejs");
     const html = await ejs.renderFile(templatePath, pdf_data);
     const browser = await puppeteer.launch({
+      //only on production
+      executablePath: "/usr/bin/google-chrome",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
