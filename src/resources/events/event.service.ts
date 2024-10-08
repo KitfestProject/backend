@@ -15,6 +15,10 @@ import files from "../../utils/file_upload.js";
 import collection from "../../utils/collection.js";
 
 const create_event = async (event: IEvents) => {
+  const is_advertisement = event.is_advertisement;
+  is_advertisement
+    ? (event.is_advertisement = "enabled")
+    : (event.is_advertisement = "disabled");
   if (event.has_seat_map) {
     const [venue, new_event] = await Promise.all([
       Venues.findOne({ _id: event.venue }).select("name seat_map_url"),

@@ -58,7 +58,7 @@ export interface IEvents extends Document {
   publication_date: string;
   publish_time: string;
   status: "draft" | "published" | "cancelled" | "sold_out";
-  is_advertisement: "enabled" | "disabled";
+  is_advertisement: "enabled" | "disabled" | boolean;
   shows: IEventShows[];
 }
 interface IShows {
