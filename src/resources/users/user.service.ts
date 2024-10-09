@@ -31,11 +31,25 @@ const create_user = async (user: IUsers) => {
     is_admin: new_user.is_admin,
   });
   const verification_link = `${env_vars.EMAIL_VERIFICATION_URL}?token=${token}`;
-  const message = `Thank you for creating an account with us, we are super excited to have you. click this link <a href=${verification_link}>verify</a> to verify your email`;
   await send_email(
     new_user.email,
-    "Welcome to Theater.ke",
-    message,
+    "Welcome to Theatreke! Please Verify Your Account",
+    `<!DOCTYPE html>
+    <html>
+      <body>
+        <p>Hi ${user.name},</p>
+        <p>Welcome to <strong>Theatreke</strong>! We're thrilled to have you join our community of theatre lovers.</p>
+        <p>Before you can start exploring, we need you to verify your email address. Please click the button below to verify your account:</p>
+        <p style="text-align: center;">
+          <a href="${verification_link}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: #4CAF50; text-decoration: none; border-radius: 5px;">Verify Account</a>
+        </p>
+        <p>Once your account is verified, you'll be able to log in and start booking tickets for your favorite shows.</p>
+        <h3>Need Help?</h3>
+        <p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
+        <p>Thank you for joining us, and we can't wait to see you at our next show!</p>
+        <p>Best regards,<br>Your Theatreke Team</p>
+      </body>
+    </html>`,
     new_user.name,
   );
   let role = "user";
@@ -320,7 +334,16 @@ const become_organizer = async (id: string) => {
   await send_email(
     admin!.email,
     "Organizer Request",
-    `User ${user!.name} with email ${user!.email} has requested to become an organizer, please review the request`,
+    `<!DOCTYPE html>
+     <html>
+       <body>
+         <p>Dear ${admin!.name},</p>
+         <p>User <strong>${user!.name}</strong> with email <strong>${user!.email}</strong> has requested to become an organizer.</p>
+         <p>Please review the request and take the appropriate action.</p>
+         <p>Thank you!</p>
+         <p>Best regards,<br>Your Theatreke Team</p>
+       </body>
+     </html>`,
     admin!.name,
   );
   return createResponse(true, "Request sent to admin ", null);

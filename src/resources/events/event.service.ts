@@ -349,6 +349,14 @@ const download_event_attendees = async (event_id: string) => {
   if (!event.success) {
     return event;
   }
+  // get scanned tickets vs booked tickets
+  const event_shows = event.data?.event_shows;
+  const total_booked_tickets = event_shows!.map((show) => {
+    return show.shows.reduce((acc, show) => acc + show.bookings, 0);
+  });
+  const total_scanned_tickets = event_shows!.map((show) => {
+    return show.shows.reduce((acc, show) => acc + show.scan_count, 0);
+  });
   const event_attendees = event.data?.attendees!;
   const directory = path.join(process.cwd(), "uploads");
   if (!fs.existsSync(directory)) {
@@ -367,6 +375,12 @@ const download_event_attendees = async (event_id: string) => {
       50,
       130,
     );
+  doc
+    .fontSize(15)
+    .text("Total Booked Tickets: " + total_booked_tickets, 50, 160);
+  doc
+    .fontSize(15)
+    .text("Total Scanned Tickets: " + total_scanned_tickets, 50, 190);
   const columnWidths = {
     no: 50,
     firstName: 120,

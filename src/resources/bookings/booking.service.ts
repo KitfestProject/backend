@@ -249,9 +249,9 @@ async function handle_ticket_purchase(
       (show) => show._id.toString() === show_time_id,
     );
     if (!show_time) {
+      throw new Error("Show time not found");
     }
-
-    show_time!.bookings += 1;
+    show_time.bookings += 1;
     await event_data.save();
     const qr_code_url = `${env_vars.VERIFY_QRCODE_URL}/${ticket._id}/${event_show_id}/${show_time_id}`;
     const qr_code = await generate_qr_code(qr_code_url);
@@ -276,11 +276,30 @@ async function handle_ticket_purchase(
       start_time: show_time?.start_time,
       duration: show_duration,
     } as PdfData;
+
     const pdf = await generate_ticket_pdf(pdf_data);
     send_email_with_attachment(
       purchase.email,
       "Ticket Purchase",
-      "You have successfully purchased a ticket",
+      `<!DOCTYPE html>
+      <html>
+        <body>
+          <p>Hi ${purchase.firstName},</p>
+          <p>Thank you for purchasing a ticket to <strong>${event_data.title}</strong>! We’re excited to have you join us.</p>
+          <p>Please find your ticket attached to this email. It includes all the event details, along with a QR code for easy check-in at the venue.</p>
+          <h3>Event Details:</h3>
+          <ul>
+            <li><strong>Show Name:</strong> ${event_data.title}</li>
+            <li><strong>Date & Time:</strong> ${new Date(show?.date!).toLocaleDateString()} at ${show_time.start_time}</li>
+            <li><strong>Venue:</strong> ${event_data.address}</li>
+            <li><strong>Ticket Type:</strong> ${purchase.ticketType || "General"}</li>
+          </ul>
+          <p>Be sure to bring the ticket with you, either printed or on your phone, and show the QR code at the entrance for a smooth check-in.</p>
+          <p>If you have any questions or need assistance, feel free to reach out.</p>
+          <p>Looking forward to seeing you at the show!</p>
+          <p>Best regards,<br>Your Theatreke Team</p>
+        </body>
+      </html>`,
       purchase.firstName,
       pdf as string,
     );
