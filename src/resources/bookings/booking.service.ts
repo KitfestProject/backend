@@ -63,7 +63,7 @@ type Booking = {
 
 type Ticket = {
   id: string;
-  seatNumber: number;
+  seatNumber: string;
   discount: number;
   sectionAbr: string;
   amount: number;
@@ -252,6 +252,14 @@ async function handle_ticket_purchase(
       throw new Error("Show time not found");
     }
     show_time.bookings += 1;
+    show_time.attendees.push({
+      first_name: purchase.firstName,
+      last_name: purchase.lastName,
+      email: purchase.email,
+      phone_number: purchase.phoneNumber,
+      ticket_type_or_sn:
+        purchase.ticketType || purchase.seatNumber || "General",
+    });
     await event_data.save();
     const qr_code_url = `${env_vars.VERIFY_QRCODE_URL}/${ticket._id}/${event_show_id}/${show_time_id}`;
     const qr_code = await generate_qr_code(qr_code_url);
@@ -302,21 +310,6 @@ async function handle_ticket_purchase(
       </html>`,
       purchase.firstName,
       pdf as string,
-    );
-    await Events.updateOne(
-      { _id: eventId },
-      {
-        $push: {
-          attendees: {
-            first_name: purchase.firstName,
-            last_name: purchase.lastName,
-            email: purchase.email,
-            phone_number: purchase.phoneNumber,
-            ticket_type:
-              purchase.seatNumber || purchase.ticketType || "General",
-          },
-        },
-      },
     );
   });
 }
