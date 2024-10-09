@@ -30,7 +30,6 @@ const eventsSchema = new Schema<IEvents>(
         ref: "Reviews",
       },
     ],
-    attendees: [{}],
     title: {
       type: String,
       required: true,
@@ -142,6 +141,25 @@ const eventsSchema = new Schema<IEvents>(
               type: String,
               required: true,
             },
+            attendees: [
+              {
+                first_name: {
+                  type: String,
+                },
+                last_name: {
+                  type: String,
+                },
+                email: {
+                  type: String,
+                },
+                phone_number: {
+                  type: String,
+                },
+                ticket_type_or_sn: {
+                  type: String,
+                },
+              },
+            ],
           },
         ],
       },

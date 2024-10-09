@@ -59,12 +59,20 @@ export interface IEvents extends Document {
   is_advertisement: "enabled" | "disabled" | boolean;
   event_shows: IEventShows[];
 }
+interface IAttende {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  ticket_type_or_sn: string;
+}
 interface IShows {
   _id: Schema.Types.ObjectId;
   bookings: number;
   scan_count: number;
   start_time: string;
   end_time: string;
+  attendees: IAttende[];
 }
 interface IEventShows {
   _id: Schema.Types.ObjectId;
