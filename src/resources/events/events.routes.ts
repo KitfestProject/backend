@@ -18,7 +18,7 @@ events_routes
   .delete(auth.authenticate, event_controller.delete_event)
   .put(auth.authenticate, event_controller.change_event_status);
 events_routes.get(
-  "/:id/download_attendees",
+  "/:id/:event_show_id/:show_time_id/download_attendees",
   event_controller.download_event_attendees_pdf,
 );
 events_routes.post(

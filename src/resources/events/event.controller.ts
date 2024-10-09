@@ -123,9 +123,13 @@ const change_event_status = async (req: Request, res: Response) => {
   }
 };
 const download_event_attendees_pdf = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id, event_show_id, show_time_id } = req.params;
   try {
-    const response = await events_service.download_event_attendees(id);
+    const response = await events_service.download_event_attendees(
+      id,
+      event_show_id,
+      show_time_id,
+    );
     return res.status(200).json(response);
   } catch (err) {
     const error = err as Error;
