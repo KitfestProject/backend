@@ -5,7 +5,7 @@ import ejs from "ejs";
 import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
-import { Schema } from "mongoose";
+import mongoose, { ClientSession, Schema } from "mongoose";
 import { send_email, send_email_with_attachment } from "../../utils/email.js";
 import {
   IEvents,
@@ -102,106 +102,133 @@ const book_ticket = async (data: Booking) => {
     showTimeId,
     humanDate,
   } = data;
-  const user = await userService.get_user_by_email(email);
-  let user_id = user.data?._id;
-  if (!user.success) {
-    const password = Math.random().toString(36).slice(-8);
-    const name = firstName + " " + lastName;
-    const phone_number = phoneNumber;
-    const user_data = {
-      name,
-      email,
-      password,
-      phone_number,
-    } as IUsers;
-    const new_user = await userService.create_user(user_data);
-    if (new_user.success) {
-      const token = new_user.data?.token;
-      const decode_token = verify_token(token!);
-      user_id = decode_token.id;
-    } else {
-      throw new Error("An error occured try again later");
-    }
-  }
-
-  const event = await event_service.fetch_one_event(eventId);
-  const event_data = event.data;
-  if (!event_data) {
-    logger.error("Event not found");
-    return { success: false, message: "Could not proccess event" };
-  }
-  const time = moment().tz("Africa/Nairobi").format("YYYY-MM-DD HH:mm:ss");
-  const title = event.data.title;
-  const organizer = event.data.organizer;
-  if (event_data.has_seat_map) {
-    const seat_ids = seats.map((seat) => seat.id);
-    await Sections.updateMany(
-      {
-        event_id: eventId,
-      },
-      {
-        $set: {
-          "rows.$[i].seats.$[j].status": "booked",
-        },
-      },
-      {
-        arrayFilters: [
-          { "i.seats._id": { $in: seat_ids } },
-          { "j._id": { $in: seat_ids } },
-        ],
-        multi: true,
-      },
-    );
-
-    await handle_ticket_purchase(
-      seats,
-      user_id,
-      eventId,
-      title,
-      organizer,
-      time,
-      tx_processor,
-      event_data,
-      eventShowId,
-      showTimeId,
-      humanDate,
-    );
-  } else {
-    let sold_out_message = null;
-    for (const ticket of tickets) {
-      const ticket_index = event_data.tickets.findIndex(
-        (t) => t._id.toString() === ticket.id,
-      );
-      if (ticket_index !== -1) {
-        const current_quantity =
-          event_data.tickets[ticket_index].ticket_quantity;
-        if (current_quantity === 0) {
-          sold_out_message = `This ticket is sold out.`;
-          break;
-        } else {
-          event_data.tickets[ticket_index].ticket_quantity -= 1;
-        }
+  try {
+    const user = await userService.get_user_by_email(email);
+    let user_id = user.data?._id;
+    if (!user.success) {
+      const password = Math.random().toString(36).slice(-8);
+      const name = firstName + " " + lastName;
+      const phone_number = phoneNumber;
+      const user_data = {
+        name,
+        email,
+        password,
+        phone_number,
+      } as IUsers;
+      const new_user = await userService.create_user(user_data);
+      if (new_user.success) {
+        const token = new_user.data?.token;
+        const decode_token = verify_token(token!);
+        user_id = decode_token.id;
+      } else {
+        throw new Error("An error occured try again later");
       }
     }
-    if (sold_out_message) {
-      return createResponse(false, sold_out_message, null);
+
+    const event = await event_service.fetch_one_event(eventId);
+    const event_data = event.data;
+    if (!event_data) {
+      logger.error("Event not found");
+      return { success: false, message: "Could not proccess event" };
     }
-    await handle_ticket_purchase(
-      tickets,
-      user_id,
-      eventId,
-      title,
-      organizer,
-      time,
-      tx_processor,
-      event_data,
-      eventShowId,
-      showTimeId,
-      humanDate,
+    const time = moment().tz("Africa/Nairobi").format("YYYY-MM-DD HH:mm:ss");
+    const title = event.data.title;
+    const organizer = event.data.organizer;
+    if (event_data.has_seat_map) {
+      const seat_ids = seats.map((seat) => seat.id);
+      await Sections.updateMany(
+        {
+          event_id: eventId,
+        },
+        {
+          $set: {
+            "rows.$[i].seats.$[j].status": "booked",
+          },
+        },
+        {
+          arrayFilters: [
+            { "i.seats._id": { $in: seat_ids } },
+            { "j._id": { $in: seat_ids } },
+          ],
+          multi: true,
+        },
+      );
+
+      await handle_ticket_purchase(
+        seats,
+        user_id,
+        eventId,
+        title,
+        organizer,
+        time,
+        tx_processor,
+        event_data,
+        eventShowId,
+        showTimeId,
+        humanDate,
+      );
+    } else {
+      let sold_out_message = null;
+      const ticket_updates = [];
+      for (const ticket of tickets) {
+        const ticket_data = event_data.tickets.find(
+          (t) => t._id.toString() === ticket.id,
+        );
+
+        if (ticket_data) {
+          const current_quantity = ticket_data.ticket_quantity;
+          const requested_quantity = 1;
+
+          if (current_quantity < requested_quantity) {
+            sold_out_message = `Not enough tickets available. Only ${current_quantity} left for this ticket type.`;
+            break;
+          } else {
+            const new_ticket_quantity =
+              ticket_data.ticket_quantity - requested_quantity;
+            ticket_updates.push({
+              updateOne: {
+                filter: { _id: event_data._id, "tickets._id": ticket_data._id },
+                update: {
+                  $set: { "tickets.$.ticket_quantity": new_ticket_quantity },
+                },
+              },
+            });
+          }
+        }
+      }
+      if (sold_out_message) {
+        return createResponse(false, sold_out_message, null);
+      }
+      if (ticket_updates.length > 0) {
+        await Events.bulkWrite(ticket_updates);
+      }
+      await handle_ticket_purchase(
+        tickets,
+        user_id,
+        eventId,
+        title,
+        organizer,
+        time,
+        tx_processor,
+        event_data,
+        eventShowId,
+        showTimeId,
+        humanDate,
+      );
+    }
+    return createResponse(
+      true,
+      "Ticket purchase successfull, check email",
+      null,
     );
-    await event_data.save();
+  } catch (error) {
+    logger.error("Error in book_ticket:", error);
+    return createResponse(
+      false,
+      "An error occurred while booking the ticket",
+      null,
+    );
   }
-  return createResponse(true, "Ticket purchased, Check email", null);
 };
 async function handle_ticket_purchase(
   purchases: Ticket[],
@@ -290,28 +317,29 @@ async function handle_ticket_purchase(
       purchase.email,
       "Ticket Purchase",
       `<!DOCTYPE html>
-      <html>
-        <body>
-          <p>Hi ${purchase.firstName},</p>
-          <p>Thank you for purchasing a ticket to <strong>${event_data.title}</strong>! We’re excited to have you join us.</p>
-          <p>Please find your ticket attached to this email. It includes all the event details, along with a QR code for easy check-in at the venue.</p>
-          <h3>Event Details:</h3>
-          <ul>
-            <li><strong>Show Name:</strong> ${event_data.title}</li>
-            <li><strong>Date & Time:</strong> ${new Date(show?.date!).toLocaleDateString()} at ${show_time.start_time}</li>
-            <li><strong>Venue:</strong> ${event_data.address}</li>
-            <li><strong>Ticket Type:</strong> ${purchase.ticketType || "General"}</li>
-          </ul>
-          <p>Be sure to bring the ticket with you, either printed or on your phone, and show the QR code at the entrance for a smooth check-in.</p>
-          <p>If you have any questions or need assistance, feel free to reach out.</p>
-          <p>Looking forward to seeing you at the show!</p>
-          <p>Best regards,<br>Your Theatreke Team</p>
-        </body>
-      </html>`,
+        <html>
+          <body>
+            <p>Hi ${purchase.firstName},</p>
+            <p>Thank you for purchasing a ticket to <strong>${event_data.title}</strong>! We’re excited to have you join us.</p>
+            <p>Please find your ticket attached to this email. It includes all the event details, along with a QR code for easy check-in at the venue.</p>
+            <h3>Event Details:</h3>
+            <ul>
+              <li><strong>Show Name:</strong> ${event_data.title}</li>
+              <li><strong>Date & Time:</strong> ${new Date(show?.date!).toLocaleDateString()} at ${show_time.start_time}</li>
+              <li><strong>Venue:</strong> ${event_data.address}</li>
+              <li><strong>Ticket Type:</strong> ${purchase.ticketType || "General"}</li>
+            </ul>
+            <p>Be sure to bring the ticket with you, either printed or on your phone, and show the QR code at the entrance for a smooth check-in.</p>
+            <p>If you have any questions or need assistance, feel free to reach out.</p>
+            <p>Looking forward to seeing you at the show!</p>
+            <p>Best regards,<br>Your Theatreke Team</p>
+          </body>
+        </html>`,
       purchase.firstName,
       pdf as string,
     );
   });
+  await event_data.save();
 }
 async function generate_qr_code(qr_code_data: {}) {
   return await QRCode.toDataURL(JSON.stringify(qr_code_data));
