@@ -66,6 +66,8 @@ const create_event = async (event: IEvents) => {
 const update_event = async (organizer: string, id: string, data: IEvents) => {
   const event = collection.convert_keys(data) as IEvents;
   const current_date_time = get_current_date_time();
+  const is_advertisement = data.is_advertisement ? "enabled" : "disabled";
+  event.is_advertisement = is_advertisement;
   if (!event.has_seat_map) {
     const updated_tickets = await Promise.all(
       event.tickets.map(async (ticket) => {
