@@ -1,17 +1,14 @@
 import moment from "moment-timezone";
 import QRCode from "qrcode";
-import PDFDocument from "pdfkit";
 import ejs from "ejs";
 import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
-import mongoose, { ClientSession, Schema } from "mongoose";
-import { send_email, send_email_with_attachment } from "../../utils/email.js";
+import { Schema } from "mongoose";
+import { send_email_with_attachment } from "../../utils/email.js";
 import {
   IEvents,
   IResponseEnvelope,
-  ISeats,
-  ITickets,
   IUsers,
 } from "../../../interfaces/index.js";
 import Sections from "../../database/models/sections.js";
@@ -21,9 +18,7 @@ import event_service from "../events/event.service.js";
 import logger from "../../utils/logging.js";
 import Transactions from "../../database/models/transactions.js";
 import createResponse from "../../utils/response_envelope.js";
-import env_vars from "../../config/env_vars.js";
 import userService from "../users/user.service.js";
-import { utils } from "mocha";
 import { verify_token } from "../../utils/jwt.js";
 
 type PdfData = {
@@ -82,7 +77,6 @@ type paymentProcessorResponse = {
   trxref: string;
   redirecturl: string;
 };
-type QRCodeData = {};
 
 const book_ticket = async (data: Booking) => {
   const {
@@ -90,11 +84,7 @@ const book_ticket = async (data: Booking) => {
     lastName,
     email,
     phoneNumber,
-    // updateMe,
-    // agree,
     eventId,
-    amount,
-    discount,
     tx_processor,
     seats,
     tickets,
