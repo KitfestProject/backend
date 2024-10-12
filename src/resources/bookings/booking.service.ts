@@ -290,7 +290,7 @@ async function handle_ticket_purchase(
         purchase.ticketType || purchase.seatNumber || "General",
     });
     await event_data.save();
-    const qr_code_url = `/booking/verify/${ticket._id}/${event_show_id}/${show_time_id}`;
+    const qr_code_url = `booking/verify/${ticket._id}/${event_show_id}/${show_time_id}`;
     const qr_code = await generate_qr_code(qr_code_url);
     const show_duration =
       (
