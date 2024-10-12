@@ -76,7 +76,7 @@ const HTML_TEMPLATE = (text: string, subject: string, name: string) => {
       <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>TheatReke.com Email</title>
+          <title>theatreke.com email</title>
           <style>
               body {
                   font-family: "Arial", sans-serif;
@@ -190,7 +190,7 @@ const HTML_TEMPLATE = (text: string, subject: string, name: string) => {
           <div class="container">
               <div class="header">
                   <img
-                      src="https://theatreke.com/assets/kitft-logo-light-Cz9sQ0qV.png"
+                      src="https://theatreke.com/assets/kitft-logo-dark-DynrISun.png"
                       alt="TheatreKe.com Logo"
                       class="logo"
                   />
