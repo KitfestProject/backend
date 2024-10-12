@@ -21,16 +21,7 @@ const verify_qr_code = async (req: Request, res: Response) => {
       event_show_id,
       show_time_id,
     );
-    if (!response.success) {
-      return res.render("error", {
-        message: response.message,
-      });
-    }
-    return res.render("ticket", {
-      eventTitle: response.data?.event,
-      ticketType: response.data?.ticket_type,
-      validatedAt: response.data?.validated_at,
-    });
+    return res.status(200).json(response);
   } catch (err) {
     const error = err as Error;
     logger.error(error.message);
