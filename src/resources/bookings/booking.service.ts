@@ -121,7 +121,8 @@ const book_ticket = async (data: Booking) => {
         const decode_token = verify_token(token!);
         user_id = decode_token.id;
       } else {
-        throw new Error("An error occured try again later");
+        logger.error("Could not create user");
+        return createResponse(false, "An error occured, try again later", null);
       }
     }
 
@@ -276,7 +277,8 @@ async function handle_ticket_purchase(
       (show) => show._id.toString() === show_time_id,
     );
     if (!show_time) {
-      throw new Error("Show time not found");
+      logger.error(`Show time not found for event: ` + eventId);
+      return createResponse(false, "Show time not found", null);
     }
     show_time.bookings += 1;
     show_time.attendees.push({
@@ -339,7 +341,6 @@ async function handle_ticket_purchase(
       pdf as string,
     );
   });
-  await event_data.save();
 }
 async function generate_qr_code(qr_code_data: {}) {
   return await QRCode.toDataURL(JSON.stringify(qr_code_data));
