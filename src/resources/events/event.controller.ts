@@ -50,7 +50,7 @@ const fetch_events = async (req: Request, res: Response) => {
       limit: parseInt(limit as string) as number,
       start: parseInt(start as string) as number,
       paid: paid as string,
-      featured: Boolean(featured as string) as boolean,
+      featured: featured as string,
       past: Boolean(past as string) as boolean,
     } as IEventQuery;
     const response = await events_service.fetch_events(query);
@@ -66,6 +66,17 @@ const fetch_one_event = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const response = await events_service.fetch_one_event(id);
+    res.status(200).json(response);
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    return res.status(500).end();
+  }
+};
+const fetch_one_event_client = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const response = await events_service.fetch_one_event_client(id);
     res.status(200).json(response);
   } catch (error) {
     const err = error as Error;
@@ -102,8 +113,8 @@ const fetch_events_admin = async (req: Request, res: Response) => {
 const change_event_status = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
-    const response = await events_service.change_event_status(id, status);
+    const { updateData } = req.body;
+    const response = await events_service.change_event_status(id, updateData);
     return res.status(200).json(response);
   } catch (error) {
     const err = error as Error;
@@ -112,9 +123,13 @@ const change_event_status = async (req: Request, res: Response) => {
   }
 };
 const download_event_attendees_pdf = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id, event_show_id, show_time_id } = req.params;
   try {
-    const response = await events_service.download_event_attendees(id);
+    const response = await events_service.download_event_attendees(
+      id,
+      event_show_id,
+      show_time_id,
+    );
     return res.status(200).json(response);
   } catch (err) {
     const error = err as Error;
@@ -136,6 +151,16 @@ const update_event = async (req: Request, res: Response) => {
     return res.status(500).end();
   }
 };
+const fetch_advertisement_banners = async (req: Request, res: Response) => {
+  try {
+    const response = await events_service.fetch_advertisement_banners();
+    return res.status(200).json(response);
+  } catch (err) {
+    const error = err as Error;
+    logger.error(error.message);
+    return res.status(500).end();
+  }
+};
 
 const delete_event = crud.deleteOne(Events);
 export default {
@@ -147,4 +172,6 @@ export default {
   update_event,
   change_event_status,
   download_event_attendees_pdf,
+  fetch_one_event_client,
+  fetch_advertisement_banners,
 };

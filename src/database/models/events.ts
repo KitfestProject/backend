@@ -30,7 +30,6 @@ const eventsSchema = new Schema<IEvents>(
         ref: "Reviews",
       },
     ],
-    attendees: [{}],
     title: {
       type: String,
       required: true,
@@ -59,6 +58,9 @@ const eventsSchema = new Schema<IEvents>(
       type: String,
       required: true,
     },
+    advertisement_banner: {
+      type: String,
+    },
     address: {
       type: String,
       required: true,
@@ -86,16 +88,9 @@ const eventsSchema = new Schema<IEvents>(
       },
     },
     featured: {
-      type: Boolean,
-      default: false,
-    },
-    event_start_time: {
       type: String,
-      required: true,
-    },
-    event_end_time: {
-      type: String,
-      required: true,
+      enum: ["enabled", "disabled"],
+      default: "disabled",
     },
     is_paid: {
       type: String,
@@ -117,6 +112,58 @@ const eventsSchema = new Schema<IEvents>(
       enum: ["draft", "published", "cancelled", "sold_out"],
       default: "draft",
     },
+    is_advertisement: {
+      type: String,
+      enum: ["enabled", "disabled"],
+      default: "disabled",
+    },
+    event_shows: [
+      {
+        date: {
+          type: String,
+          required: true,
+        },
+        shows: [
+          {
+            bookings: {
+              type: Number,
+              default: 0,
+            },
+            scan_count: {
+              type: Number,
+              default: 0,
+            },
+            start_time: {
+              type: String,
+              required: true,
+            },
+            end_time: {
+              type: String,
+              required: true,
+            },
+            attendees: [
+              {
+                first_name: {
+                  type: String,
+                },
+                last_name: {
+                  type: String,
+                },
+                email: {
+                  type: String,
+                },
+                phone_number: {
+                  type: String,
+                },
+                ticket_type_or_sn: {
+                  type: String,
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
   { timestamps: true },
 );

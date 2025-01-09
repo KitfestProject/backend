@@ -15,18 +15,13 @@ const book_ticket = async (req: Request, res: Response) => {
 };
 const verify_qr_code = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const response = await booking_service.verify_qr_code(id);
-    if (!response.success) {
-      return res.render("error", {
-        message: response.message,
-      });
-    }
-    return res.render("ticket", {
-      eventTitle: response.data?.event,
-      ticketType: response.data?.ticket_type,
-      validatedAt: response.data?.validated_at,
-    });
+    const { id, event_show_id, show_time_id } = req.params;
+    const response = await booking_service.verify_qr_code(
+      id,
+      event_show_id,
+      show_time_id,
+    );
+    return res.status(200).json(response);
   } catch (err) {
     const error = err as Error;
     logger.error(error.message);

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= eventName %> - Attendees List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 800px;
+            height: 1000px;
+            position: relative;
+        }
+        .header {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 700px;
+            height: 60px;
+            background-color: #732e1c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .event-info {
+            position: absolute;
+            top: 130px;
+            left: 50px;
+            width: 700px;
+            height: 100px;
+            background-color: #f2f2f2;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .event-info p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        .totals {
+            position: absolute;
+            top: 250px;
+            left: 70px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333333;
+        }
+        .table-header {
+            position: absolute;
+            top: 330px;
+            left: 50px;
+            width: 700px;
+            height: 40px;
+            background-color: #732e1c;
+            display: flex;
+            align-items: center;
+        }
+        .table-header span {
+            color: white;
+            font-size: 14px;
+        }
+        .table-row {
+            position: absolute;
+            left: 50px;
+            width: 700px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+        }
+        .table-row span {
+            font-size: 14px;
+            color: #333333;
+        }
+        .table-row:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .table-row:nth-child(odd) {
+            background-color: #ffffff;
+        }
+        .col1 { width: 50px; padding-left: 20px; }
+        .col2 { width: 110px; }
+        .col3 { width: 110px; }
+        .col4 { width: 210px; }
+        .col5 { width: 100px; }
+        .col6 { width: 100px; }
+    </style>
+</head>
+<body>
+    <div class="header"><%= eventName %> - Attendees List </div>
+
+    <div class="event-info">
+        <p>Event Name: <%= eventName %></p>
+        <p>Show Date: <%= eventDate %></p>
+        <p>Show Time: <%= showTime %></p>
+    </div>
+
+    <div class="totals">
+        <p>Total Booked Tickets: <%= totalBookedTickets %></p>
+        <p>Total Scanned Tickets: <%= totalScannedTickets %></p>
+    </div>
+
+    <div class="table-header">
+        <span class="col1">No</span>
+        <span class="col2">First Name</span>
+        <span class="col3">Last Name</span>
+        <span class="col4">Email</span>
+        <span class="col5">Phone</span>
+        <span class="col6">TT/SN</span>
+    </div>
+
+    <% attendees.forEach((attendee, index) => { %>
+        <div class="table-row" style="top: <%= 370 + index * 40 %>px;">
+            <span class="col1"><%= attendee.no %></span>
+            <span class="col2"><%= attendee.firstName %></span>
+            <span class="col3"><%= attendee.lastName %></span>
+            <span class="col4"><%= attendee.email %></span>
+            <span class="col5"><%= attendee.phone %></span>
+            <span class="col6"><%= attendee.ticketTypeOrSeatNumber %></span>
+        </div>
+    <% }); %>
+</body>
+</html>

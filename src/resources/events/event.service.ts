@@ -1,3 +1,7 @@
+import fs from "fs/promises";
+import path from "path";
+import ejs from "ejs";
+import puppeteer from "puppeteer";
 import { IEventQuery, IEvents, ITickets } from "../../../interfaces/index.js";
 import Tickets from "../../database/models/tickets.js";
 import Events from "../../database/models/events.js";
@@ -7,14 +11,16 @@ import createResponse from "../../utils/response_envelope.js";
 import { send_email } from "../../utils/email.js";
 import logger from "../../utils/logging.js";
 import seatmap_service from "../seatmaps/seatmap.service.js";
-import fs from "fs";
 import PDFDocument from "pdfkit";
-import path from "path";
 import env_vars from "../../config/env_vars.js";
 import files from "../../utils/file_upload.js";
 import collection from "../../utils/collection.js";
 
 const create_event = async (event: IEvents) => {
+  const is_advertisement = event.is_advertisement;
+  is_advertisement
+    ? (event.is_advertisement = "enabled")
+    : (event.is_advertisement = "disabled");
   if (event.has_seat_map) {
     const [venue, new_event] = await Promise.all([
       Venues.findOne({ _id: event.venue }).select("name seat_map_url"),
@@ -60,6 +66,8 @@ const create_event = async (event: IEvents) => {
 const update_event = async (organizer: string, id: string, data: IEvents) => {
   const event = collection.convert_keys(data) as IEvents;
   const current_date_time = get_current_date_time();
+  const is_advertisement = data.is_advertisement ? "enabled" : "disabled";
+  event.is_advertisement = is_advertisement;
   if (!event.has_seat_map) {
     const updated_tickets = await Promise.all(
       event.tickets.map(async (ticket) => {
@@ -129,6 +137,7 @@ const fetch_events = async (query: IEventQuery) => {
           address: 1,
           description: 1,
           cover_image: 1,
+          advertisement_banner: 1,
           "event_date.start_date": 1,
         },
       },
@@ -164,6 +173,7 @@ const fetch_events = async (query: IEventQuery) => {
         address: 1,
         description: 1,
         cover_image: 1,
+        advertisement_banner: 1,
         "event_date.start_date": 1,
       },
     },
@@ -223,7 +233,7 @@ const fetch_events_admin = async (
       .limit(length)
       .sort({ "event_date.start_date": -1 })
       .select(
-        "_id title description cover_image address status event_date.start_date",
+        "_id title description cover_image address status event_date.start_date featured is_advertisement",
       );
 
     total_records = await Events.countDocuments({});
@@ -237,6 +247,8 @@ const fetch_events_admin = async (
     cover_image: event.cover_image,
     address: event.address,
     status: event.status,
+    featured: event.featured,
+    is_advertisement: event.is_advertisement,
   }));
 
   if (!events) {
@@ -261,7 +273,24 @@ const fetch_one_event = async (id: string) => {
   }
   return createResponse(true, "Event found", event);
 };
-const change_event_status = async (id: string, status: string) => {
+const fetch_one_event_client = async (id: string) => {
+  const event = await Events.findOne({ _id: id })
+    .populate({
+      path: "venue",
+      select: "name address longitude latitude",
+    })
+    .select(
+      "-reviews -attendees -images -videos -is_scheduled_published -publication_date -__v -publish_time -createdAt -updatedAt -tags -category -is_advertisement -featured",
+    );
+  if (!event) {
+    return createResponse(false, "Event not found", null);
+  }
+  return createResponse(true, "Event found", event);
+};
+const change_event_status = async (
+  id: string,
+  data: { status: string; featured: string; is_advertisement: string },
+) => {
   const event = await Events.findOne({ _id: id }).populate(
     "organizer",
     "name email",
@@ -269,10 +298,7 @@ const change_event_status = async (id: string, status: string) => {
   if (!event) {
     return createResponse(false, "Event not found", null);
   }
-  if (event.status === status) {
-    return createResponse(false, `Event is already on status ${status}`, null);
-  }
-  if (status === "published" && event.has_seat_map) {
+  if (data.status === "published" && event.has_seat_map) {
     const seat_map = await seatmap_service.fetch_sections(id);
     const seat_map_data = seat_map.data;
     const validate_seatmap = find_emptyobject_keys(seat_map_data!);
@@ -290,30 +316,27 @@ const change_event_status = async (id: string, status: string) => {
   }
   const updated_event = await Events.findOneAndUpdate(
     { _id: id },
-    { status },
+    { $set: data },
     { returnDocument: "after" },
   );
   if (!updated_event) {
     return createResponse(false, "Could not update event status", null);
   }
-  const sent_email = await send_email(
-    // @ts-ignore
-    event.organizer.email,
-    `Event ${status}`,
-    `Your event ${event.title} has been ${status} successfully.`,
-    // @ts-ignore
-    event.organizer.name,
-  );
-  //@ts-ignore
-  logger.info(`Email sent to ${event.organizer.email} ${sent_email}`);
 
-  return createResponse(
-    true,
-    `Event status updated to ${status} successfully`,
-    null,
-  );
+  return createResponse(true, `Event updated successfully`, null);
 };
-
+const fetch_advertisement_banners = async () => {
+  const events = await Events.find({
+    status: "published",
+    is_advertisement: "enabled",
+  })
+    .select("_id advertisement_banner")
+    .limit(6);
+  if (!events) {
+    return createResponse(false, "No advertisement banners found", null);
+  }
+  return createResponse(true, "Advertisement banners found", events);
+};
 function find_emptyobject_keys(obj: Record<string, any>): string[] {
   return Object.keys(obj).filter((key) => {
     const value = obj[key];
@@ -325,139 +348,106 @@ function find_emptyobject_keys(obj: Record<string, any>): string[] {
     );
   });
 }
-const download_event_attendees = async (event_id: string) => {
+const download_event_attendees = async (
+  event_id: string,
+  event_show_id: string,
+  show_time_id: string,
+) => {
   const event = await fetch_one_event(event_id);
   if (!event.success) {
     return event;
   }
-  const event_attendees = event.data?.attendees!;
-  const directory = path.join(process.cwd(), "uploads");
-  if (!fs.existsSync(directory)) {
-    fs.mkdirSync(directory, { recursive: true });
+
+  const show = event.data?.event_shows.find(
+    (show) => show._id.toString() == event_show_id,
+  );
+  if (!show) {
+    return createResponse(false, "Show not found", null);
   }
-  const file_path = path.join(directory, `${event.data?.title}_attendees.pdf`);
-  const doc = new PDFDocument({ size: "A3", layout: "portrait" });
-  doc.pipe(fs.createWriteStream(file_path));
 
-  doc.fontSize(25).text("Event Attendees", 50, 50);
-  doc.fontSize(15).text("Event Name: " + event.data?.title, 50, 100);
-  doc
-    .fontSize(15)
-    .text(
-      "Event Date: " + event.data?.event_date.start_date.split("T")[0],
-      50,
-      130,
-    );
-  const columnWidths = {
-    no: 50,
-    firstName: 120,
-    lastName: 120,
-    email: 200,
-    phone: 120,
-    ticket: 150,
-  };
-  doc
-    .fontSize(14)
-    .text("No", 50, 180)
-    .text("Firstname", 50 + columnWidths.no, 180)
-    .text("Lastname", 50 + columnWidths.no + columnWidths.firstName, 180)
-    .text(
-      "Email",
-      50 + columnWidths.no + columnWidths.firstName + columnWidths.lastName,
-      180,
-    )
-    .text(
-      "Phone",
-      50 +
-        columnWidths.no +
-        columnWidths.firstName +
-        columnWidths.lastName +
-        columnWidths.email,
-      180,
-    )
-    .text(
-      "TT/SN",
-      50 +
-        columnWidths.no +
-        columnWidths.firstName +
-        columnWidths.lastName +
-        columnWidths.email +
-        columnWidths.phone,
-      180,
-    );
-  doc.moveTo(50, 200).lineTo(800, 200).stroke();
+  const show_time = show.shows.find(
+    (show_time) => show_time._id.toString() == show_time_id,
+  );
+  if (!show_time) {
+    return createResponse(false, "Show time not found", null);
+  }
 
-  let current_y = 210;
+  const bookings = show_time.bookings;
+  const scanned_tickets = show_time.scan_count;
+  const event_attendees = show_time.attendees;
+
   const sorted_attendees = event_attendees.sort((a: any, b: any) =>
     a.first_name.localeCompare(b.first_name),
   );
-  sorted_attendees.forEach((attendee: any, index: number) => {
-    if (index % 2 === 0) {
-      doc
-        .rect(50, current_y - 5, 750, 20)
-        .fill("#e0e0e0")
-        .fillColor("#000");
-    } else {
-      doc
-        .rect(50, current_y - 5, 750, 20)
-        .fill("#c18a73")
-        .fillColor("#fff");
-    }
-    doc
-      .fontSize(12)
-      .text((index + 1).toString(), 50, current_y)
-      .text(attendee.first_name, 50 + columnWidths.no, current_y)
-      .text(
-        attendee.last_name,
-        50 + columnWidths.no + columnWidths.firstName,
-        current_y,
-      )
-      .text(
-        attendee.email,
-        50 + columnWidths.no + columnWidths.firstName + columnWidths.lastName,
-        current_y,
-        { width: columnWidths.email, ellipsis: true },
-      )
-      .text(
-        attendee.phone_number,
-        50 +
-          columnWidths.no +
-          columnWidths.firstName +
-          columnWidths.lastName +
-          columnWidths.email,
-        current_y,
-      )
-      .text(
-        attendee.ticket_type || attendee.seat_number || "General",
-        50 +
-          columnWidths.no +
-          columnWidths.firstName +
-          columnWidths.lastName +
-          columnWidths.email +
-          columnWidths.phone,
-        current_y,
-      );
-    current_y += 20;
+
+  const templateData = {
+    eventName: event.data?.title,
+    //format date to human readable
+    eventDate: new Date(show.date).toDateString(),
+    showTime: show_time.start_time + " - " + show_time.end_time,
+    totalBookedTickets: bookings,
+    totalScannedTickets: scanned_tickets,
+    attendees: sorted_attendees.map((attendee: any, index: number) => ({
+      no: index + 1,
+      firstName: attendee.first_name,
+      lastName: attendee.last_name,
+      email: attendee.email,
+      phone: attendee.phone_number,
+      ticketTypeOrSeatNumber: attendee.ticket_type_or_sn,
+    })),
+  };
+
+  const templatePath = path.join(process.cwd(), "public", "attendees.ejs");
+  const template = await fs.readFile(templatePath, "utf-8");
+  const html = ejs.render(template, templateData);
+
+  const browser = await puppeteer.launch({
+    executablePath: "/usr/bin/chromium-browser",
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--disable-extensions",
+      "--disable-software-rasterizer",
+      "--headless=new",
+    ],
+    headless: true,
+    protocolTimeout: 120000,
   });
-  doc.end();
-  const file_stream = fs.createReadStream(file_path);
+  const page = await browser.newPage();
+  await page.setContent(html);
+  const pdf = await page.pdf({
+    format: "a4",
+    printBackground: true,
+  });
+
+  await browser.close();
+  const directory = path.join(process.cwd(), "uploads");
+  await fs.mkdir(directory, { recursive: true });
+  const file_path = path.join(directory, `${event.data?.title}_attendees.pdf`);
+  await fs.writeFile(file_path, pdf);
+
   const upload_params = {
     Bucket: env_vars.BUCKET,
     Key: path.basename(file_path),
-    Body: file_stream,
+    Body: pdf,
     ACL: "public-read",
     ContentType: "application/pdf",
   };
-  const upload_response = await files.s3.upload(upload_params).promise();
-  if (!upload_response) {
+
+  try {
+    await files.s3.upload(upload_params).promise();
+    const public_url = files.get_public_url(upload_params.Key);
+    return createResponse(
+      true,
+      "Here is your link to download the pdf",
+      public_url,
+    );
+  } catch (error) {
+    console.error("Error uploading file to S3:", error);
     return createResponse(false, "Could not upload file", null);
   }
-  const public_url = files.get_public_url(upload_params.Key);
-  return createResponse(
-    true,
-    "Here is your link to download the pdf",
-    public_url,
-  );
 };
 export default {
   create_event,
@@ -467,4 +457,6 @@ export default {
   change_event_status,
   download_event_attendees,
   update_event,
+  fetch_one_event_client,
+  fetch_advertisement_banners,
 };

@@ -1,4 +1,18 @@
-FROM node:lts-alpine AS builder
+FROM node:22-alpine AS builder
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
+RUN apk update && apk add --no-cache \
+    bash \
+    wget \
+    gnupg \
+    udev \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
 
 WORKDIR /app
 

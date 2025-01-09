@@ -44,19 +44,40 @@ export interface IEvents extends Document {
   title: string;
   tags: string[];
   cover_image: string;
+  advertisement_banner: string | null;
   address: string;
   longitude: string;
   latitude: string;
   event_date: EventDate;
-  event_start_time: string;
-  event_end_time: string;
   has_seat_map: boolean;
-  featured: boolean;
+  featured: "enabled" | "disabled";
   is_paid: "paid" | "free";
   is_scheduled_published: boolean;
   publication_date: string;
   publish_time: string;
   status: "draft" | "published" | "cancelled" | "sold_out";
+  is_advertisement: "enabled" | "disabled" | boolean;
+  event_shows: IEventShows[];
+}
+interface IAttende {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  ticket_type_or_sn: string;
+}
+interface IShows {
+  _id: Schema.Types.ObjectId;
+  bookings: number;
+  scan_count: number;
+  start_time: string;
+  end_time: string;
+  attendees: IAttende[];
+}
+interface IEventShows {
+  _id: Schema.Types.ObjectId;
+  date: string;
+  shows: IShows[];
 }
 interface EventDate {
   start_date: string;
@@ -128,6 +149,7 @@ export interface ITickets extends Document {
     id: Schema.Types.ObjectId;
     title: string;
   };
+  show_id: string;
   purchased_for: string;
   organizer: Schema.Types.ObjectId;
   seat_id: Schema.Types.ObjectId;
@@ -239,6 +261,6 @@ export interface IEventQuery {
   location: string;
   date: string;
   paid: string;
-  featured: boolean;
+  featured: string;
   past: boolean;
 }
