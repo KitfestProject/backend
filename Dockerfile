@@ -1,28 +1,19 @@
-# Use BuildKit syntax
-# syntax=docker/dockerfile:1.4
-
-FROM node:20.10-slim
-
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
-
-# Use Debian-based image which might have better ARM64 support
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     chromium \
-#     fonts-freefont-ttf \
-#     ca-certificates \
-#     wget \
-#     gnupg \
-#     && rm -rf /var/lib/apt/lists/*
-
+FROM node:20-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+COPY . /app
 WORKDIR /app
 
-# Setup pnpm (using NPM instead of corepack which might have arch issues)
-RUN npm install -g pnpm@latest-9
+FROM base AS prod-deps
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
-COPY . .
-RUN pnpm install
+FROM base AS build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run build
 
-EXPOSE 5001
-
-CMD ["pnpm", "start"]
+FROM base
+COPY --from=prod-deps /app/node_modules /app/node_modules
+COPY --from=build /app/dist /app/dist
+EXPOSE 5500
+CMD [ "pnpm", "start" ]
