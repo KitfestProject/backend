@@ -40,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           push: true
           tags: oletepela/${{ steps.repo_name.outputs.REPO_NAME }}
       - name: Copy compose file
@@ -59,7 +59,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            mkdir -p api-staging
+            mkdir -p api-production
             cd api-staging
             echo '${{ secrets.ENV_FILE_PROD }}' > .env
             cat << EOF > docker-compose.yaml
