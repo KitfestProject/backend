@@ -1,4 +1,4 @@
-# Theater.ke backend and APIs(for KITfest) :construction: 
+# Theater.ke backend and APIs(for KITfest)
 
 KITFest is an immersive and enlightening theatrical experience, where diverse performances and educational opportunities come 
 together to inspire and connect artists and audiences from around the world, as well as enjoy the magical Kenya through tourism and cultural experiences.
