@@ -1,7 +1,7 @@
 # Use BuildKit syntax
 # syntax=docker/dockerfile:1.4
 
-FROM node:20.10-bullseye-slim
+FROM node:20.10-slim
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
