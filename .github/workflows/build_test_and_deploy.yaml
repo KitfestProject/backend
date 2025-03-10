@@ -36,7 +36,7 @@ jobs:
         run: |
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
       - name: Build Docker image
-        run: docker build -t oletepela/${{ steps.repo_name.outputs.REPO_NAME }} .
+        run: docker build --platform linux/arm64  -t oletepela/${{ steps.repo_name.outputs.REPO_NAME }} .
 
       - name: Push Docker image to registry
         run: docker push oletepela/${{ steps.repo_name.outputs.REPO_NAME }}
