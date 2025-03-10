@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM --platform=linux/arm64 node:20-alpine AS builder
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
@@ -25,7 +25,7 @@ RUN pnpm install
 RUN pnpm run build
 
 # Multi-architecture build
-FROM node:20-alpine AS runner
+FROM --platform=linux/arm64 node:20-alpine AS runner
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
