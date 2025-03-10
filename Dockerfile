@@ -1,4 +1,4 @@
-FROM node:22-alpine AS builder
+FROM  --platform=linux/amd64 node:22-alpine AS builder
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
