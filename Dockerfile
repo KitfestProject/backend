@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 node:20-alpine AS builder
+FROM FROM arm64v8/node:20-slim  AS builder
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
