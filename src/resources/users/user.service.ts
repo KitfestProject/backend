@@ -320,6 +320,7 @@ const become_organizer = async (id: string) => {
   if (!user) {
     return createResponse(false, "User not found", null);
   }
+  console.log(user)
   if (user.organizer_request_status === "inprogress") {
     return createResponse(false, "Request already in progress", null);
   }
